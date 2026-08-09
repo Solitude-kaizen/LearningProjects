@@ -51,6 +51,7 @@ Build a professional AI-assisted development environment that can eventually be 
 - Marketing projects
 - Software development
 - Portfolio projects
+- Lifetime Assistance
 
 ## Working Rules
 
