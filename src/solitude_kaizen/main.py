@@ -10,6 +10,9 @@ with open(profile_path, "r") as file:
 
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")
+learning_goal = profile.get("learning_goal")
+career_goal = profile.get("career_goal")
+health_goal = profile.get("health_goal")
 
 print(name, "V" + version)
 print("Hello,", user_name + ".")
@@ -22,7 +25,8 @@ while True:
     print("What would you like to do?")
     print("1. View current goal")
     print("2. Change current goal")
-    print("3. Exit")
+    print("3. View my profile")
+    print("4. Exit")
 
     choice = input("Choose an option: ")
 
@@ -44,6 +48,15 @@ while True:
         print("Your goal has been updated.")
 
     elif choice == "3":
+        print()
+        print("--- My Profile ---")
+        print("Name:", user_name)
+        print("Current Goal:", current_goal)
+        print("Learning Goal:", learning_goal)
+        print("Career Goal:", career_goal)
+        print("Health Goal:", health_goal)
+
+    elif choice == "4":
         print("Goodbye!")
         break
 
