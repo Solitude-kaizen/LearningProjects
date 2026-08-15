@@ -1,12 +1,11 @@
-import json
+from memory import load_profile
 
 name = "Solitude-Kaizen"
 version = "0.1"
 
 profile_path = "src/solitude_kaizen/data/profile.json"
 
-with open(profile_path, "r") as file:
-    profile = json.load(file)
+profile = load_profile(profile_path)
 
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")
@@ -41,9 +40,6 @@ while True:
 
         profile["current_goal"] = new_goal
         current_goal = new_goal
-
-        with open(profile_path, "w") as file:
-            json.dump(profile, file, indent=4)
 
         print("Your goal has been updated.")
 
