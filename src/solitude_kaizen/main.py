@@ -28,7 +28,8 @@ while True:
     print("3. View my profile")
     print("4. Remember something")
     print("5. View memories")
-    print("6. Exit")
+    print("6. Forget a memory")
+    print("7. Exit")
 
     choice = input("Choose an option: ")
 
@@ -43,6 +44,8 @@ while True:
 
         profile["current_goal"] = new_goal
         current_goal = new_goal
+
+        save_profile(profile_path, profile)
 
         print("Your goal has been updated.")
 
@@ -74,6 +77,34 @@ while True:
             print("I do not have any memories saved yet.")
 
     elif choice == "6":
+        if memories:
+            print()
+            print("--- Memories ---")
+
+            for index, memory in enumerate(memories, start=1):
+                print(index, "-", memory)
+
+            memory_number = input(
+                "Enter the number of the memory to forget: "
+            )
+
+            if memory_number.isdigit():
+                memory_index = int(memory_number) - 1
+
+                if 0 <= memory_index < len(memories):
+                    forgotten_memory = memories.pop(memory_index)
+
+                    save_memories(memory_path, memory_data)
+
+                    print("I forgot:", forgotten_memory)
+                else:
+                    print("That memory number does not exist.")
+            else:
+                print("Please enter a valid number.")
+        else:
+            print("I do not have any memories to forget.")
+
+    elif choice == "7":
         print("Goodbye!")
         break
 
