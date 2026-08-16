@@ -1,5 +1,5 @@
 import json
-
+from datetime import datetime
 
 def load_profile(profile_path):
     with open(profile_path, "r") as file:
@@ -23,15 +23,15 @@ def save_memories(memory_path, memory_data):
     with open(memory_path, "w") as file:
         json.dump(memory_data, file, indent=4)
 
-def create_memory(text, category, importance, created_at):
-    memory_item = {
+def create_memory(text, category, importance):
+    created_at = datetime.now().isoformat(timespec="seconds")
+
+    return {
         "text": text,
         "category": category,
         "importance": importance,
         "created_at": created_at
     }
-
-    return memory_item
 
 def search_memories(memories, search_term):
     matches = []
