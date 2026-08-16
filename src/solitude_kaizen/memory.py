@@ -53,3 +53,9 @@ def search_memories(memories, search_term):
                 matches.append(memory)
 
     return matches
+
+def forget_memory(memories, memory_index):
+    if 0 <= memory_index < len(memories):
+        return memories.pop(memory_index)
+
+    return None
