@@ -82,3 +82,20 @@ def validate_importance(value):
             return importance
 
     return None
+
+def validate_category(value):
+    valid_categories = [
+        "learning",
+        "career",
+        "health",
+        "project",
+        "personal",
+        "test"
+    ]
+
+    category = value.strip().lower()
+
+    if category in valid_categories:
+        return category
+
+    return None

@@ -8,6 +8,7 @@ from memory import (
     forget_memory,
     format_memory,
     validate_importance,
+    validate_category,
 )
 
 name = "Solitude-Kaizen"
@@ -72,7 +73,21 @@ while True:
 
     elif choice == "4":
         new_memory = input("What would you like me to remember? ")
-        category = input("What category does this memory belong to? ")
+
+        while True:
+            category_input = input(
+                "What category does this memory belong to? "
+            )
+
+            category = validate_category(category_input)
+
+            if category is not None:
+                break
+
+            print(
+                "Please choose: learning, career, health, "
+                "project, personal, or test."
+            )
 
         while True:
             importance_input = input(
@@ -89,14 +104,13 @@ while True:
         memory_item = create_memory(
             new_memory,
             category,
-            importance,
+            importance
         )
 
         memories.append(memory_item)
         save_memories(memory_path, memory_data)
 
         print("I will remember that.")
-
     elif choice == "5":
         print()
         print("--- Memories ---")
