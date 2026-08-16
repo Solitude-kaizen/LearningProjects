@@ -59,3 +59,17 @@ def forget_memory(memories, memory_index):
         return memories.pop(memory_index)
 
     return None
+
+def format_memory(memory):
+    if isinstance(memory, dict):
+        importance = memory.get("importance", "not set")
+        created_at = memory.get("created_at", "unknown")
+
+        return (
+            f"{memory['text']} "
+            f"[Category: {memory['category']} "
+            f"| Importance: {importance} "
+            f"| Created At: {created_at}]"
+        )
+
+    return memory
