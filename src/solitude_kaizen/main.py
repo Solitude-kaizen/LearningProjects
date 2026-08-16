@@ -23,13 +23,12 @@ if current_goal:
     print("Your current goal is:", current_goal)
 
 while True:
-    print()
-    print("What would you like to do?")
     print("1. View current goal")
     print("2. Change current goal")
     print("3. View my profile")
     print("4. Remember something")
-    print("5. Exit")
+    print("5. View memories")
+    print("6. Exit")
 
     choice = input("Choose an option: ")
 
@@ -65,5 +64,18 @@ while True:
         print("I will remember that.")
 
     elif choice == "5":
+        print()
+        print("--- Memories ---")
+
+        if memories:
+            for memory in memories:
+                print("-", memory)
+        else:
+            print("I do not have any memories saved yet.")
+
+    elif choice == "6":
         print("Goodbye!")
         break
+
+    else:
+        print("Invalid option. Please choose again.")
