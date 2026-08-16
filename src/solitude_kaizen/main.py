@@ -95,6 +95,7 @@ while True:
             for memory in memories:
                 if isinstance(memory, dict):
                     importance = memory.get("importance", "not set")
+                    created_at = memory.get("created_at", "unknown")
 
                     print(
                         "-",
@@ -102,8 +103,10 @@ while True:
                         "[Category:",
                         memory["category"],
                        "| Importance:",
-        str(importance) + "]"
-    )
+                       str(importance),
+                       "| Created At:",
+                          created_at + "]" 
+                    )
                 else:
                      print("-", memory)
         else:
