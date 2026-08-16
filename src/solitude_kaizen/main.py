@@ -6,7 +6,8 @@ from memory import (
     create_memory,
     search_memories,
     forget_memory,
-    format_memory
+    format_memory,
+    validate_importance,
 )
 from datetime import datetime
 
@@ -76,10 +77,13 @@ while True:
         category = input("What category does this memory belong to? ")
 
         while True:
-            importance = input("How important is this memory? (1-5): ")
+            importance_input = input(
+                "How important is this memory? (1-5): "
+            )
 
-            if importance.isdigit() and 1 <= int(importance) <= 5:
-                importance = int(importance)
+            importance = validate_importance(importance_input)
+
+            if importance is not None:
                 break
 
             print("Please enter a valid importance level between 1 and 5.")
