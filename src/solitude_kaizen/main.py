@@ -61,8 +61,14 @@ while True:
 
     elif choice == "4":
         new_memory = input("What would you like me to remember? ")
+        category = input("What category does this memory belong to?")
 
-        memories.append(new_memory)
+        memory_item = {
+            "text" : new_memory,    
+            "category" : category
+        }
+        
+        memories.append(memory_item)
         save_memories(memory_path, memory_data)
 
         print("I will remember that.")
@@ -73,7 +79,15 @@ while True:
 
         if memories:
             for memory in memories:
-                print("-", memory)
+                if isinstance(memory, dict):
+                    print(
+                        "-",
+                        memory["text"],
+                        "[Category:",
+                        memory["category"] + "]"
+                    )
+                else:
+                     print("-", memory)
         else:
             print("I do not have any memories saved yet.")
 
@@ -83,7 +97,16 @@ while True:
             print("--- Memories ---")
 
             for index, memory in enumerate(memories, start=1):
-                print(index, "-", memory)
+                if isinstance(memory, dict):
+                    print(
+                        index,
+                        "-",
+                        memory["text"],
+                        "[Category:",
+                        memory["category"] + "]"
+                    )
+                else:
+                    print(index, "-", memory)
 
             memory_number = input(
                 "Enter the number of the memory to forget: "
@@ -111,15 +134,34 @@ while True:
         matches = []
 
         for memory in memories:
-            if search_term in memory.lower():
-                matches.append(memory)
+            if isinstance(memory, dict):
+                memory_text = memory["text"]
+                memory_category = memory["category"]
+
+                if (
+                    search_term in memory_text.lower()
+                    or search_term in memory_category.lower()
+                ):
+                    matches.append(memory)
+
+            else:
+                if search_term in memory.lower():
+                    matches.append(memory)
 
         if matches:
             print()
             print("--- Matching Memories ---")
 
             for memory in matches:
-                print("-", memory)
+                if isinstance(memory, dict):
+                    print(
+                        "-",
+                        memory["text"],
+                        "[Category:",
+                        memory["category"] + "]"
+                    )
+                else:
+                    print("-", memory)
         else:
             print("I could not find a matching memory.")
 
