@@ -22,3 +22,13 @@ def load_memories(memory_path):
 def save_memories(memory_path, memory_data):
     with open(memory_path, "w") as file:
         json.dump(memory_data, file, indent=4)
+
+def create_memory(text, category, importance, created_at):
+    memory_item = {
+        "text": text,
+        "category": category,
+        "importance": importance,
+        "created_at": created_at
+    }
+
+    return memory_item

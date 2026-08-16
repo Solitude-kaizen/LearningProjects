@@ -1,4 +1,10 @@
-from memory import load_profile, save_profile, load_memories, save_memories
+from memory import (
+    load_profile,
+    save_profile,
+    load_memories,
+    save_memories,
+    create_memory
+)
 from datetime import datetime
 
 name = "Solitude-Kaizen"
@@ -75,12 +81,7 @@ while True:
 
         created_at = datetime.now().isoformat(timespec="seconds")
 
-        memory_item = {
-            "text": new_memory,
-            "category": category,
-            "importance": importance,
-            "created_at": created_at
-        }
+        memory_item = create_memory(new_memory, category, importance, created_at)
 
         memories.append(memory_item)
         save_memories(memory_path, memory_data)
