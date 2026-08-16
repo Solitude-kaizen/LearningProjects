@@ -2,6 +2,11 @@
     "memories": [
         "I am building Solitude-Kaizen one step at a time.",
         "I want to improve my Python skills.",
-        "I want to build a strong HR career."
+        "I want to build a strong HR career.",
+        "I want to become better at Python programming.",
+        {
+            "text": "I want to become better at Python programming.",
+            "category": " learning"
+        }
     ]
 }
