@@ -6,6 +6,7 @@ from memory import (
     create_memory,
     search_memories,
     forget_memory,
+    format_memory
 )
 from datetime import datetime
 
@@ -103,22 +104,7 @@ while True:
 
         if memories:
             for memory in memories:
-                if isinstance(memory, dict):
-                    importance = memory.get("importance", "not set")
-                    created_at = memory.get("created_at", "unknown")
-
-                    print(
-                        "-",
-                        memory["text"],
-                        "[Category:",
-                        memory["category"],
-                        "| Importance:",
-                        str(importance),
-                        "| Created At:",
-                        created_at + "]"
-                    )
-                else:
-                    print("-", memory)
+                print("-", format_memory(memory))
         else:
             print("I do not have any memories saved yet.")
 
@@ -171,19 +157,7 @@ while True:
             print("--- Matching Memories ---")
 
             for memory in matches:
-                if isinstance(memory, dict):
-                    importance = memory.get("importance", "not set")
-
-                    print(
-                        "-",
-                        memory["text"],
-                        "[Category:",
-                        memory["category"],
-                        "| Importance:",
-                        str(importance) + "]"
-                    )
-                else:
-                    print("-", memory)
+                print("-", format_memory(memory))
         else:
             print("I could not find a matching memory.")
 
