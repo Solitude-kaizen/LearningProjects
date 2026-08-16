@@ -114,16 +114,7 @@ while True:
             print("--- Memories ---")
 
             for index, memory in enumerate(memories, start=1):
-                if isinstance(memory, dict):
-                    print(
-                        index,
-                        "-",
-                        memory["text"],
-                        "[Category:",
-                        memory["category"] + "]"
-                    )
-                else:
-                    print(index, "-", memory)
+               print(index, "-", format_memory(memory))
 
             memory_number = input(
                 "Enter the number of the memory to forget: "
