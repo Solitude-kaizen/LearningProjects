@@ -62,12 +62,14 @@ while True:
     elif choice == "4":
         new_memory = input("What would you like me to remember? ")
         category = input("What category does this memory belong to?")
+        importance = input("How important is this memory? (1-5) ")
 
         memory_item = {
             "text" : new_memory,    
-            "category" : category
+            "category" : category,
+            "importance" : importance 
         }
-        
+
         memories.append(memory_item)
         save_memories(memory_path, memory_data)
 
@@ -80,12 +82,16 @@ while True:
         if memories:
             for memory in memories:
                 if isinstance(memory, dict):
+                    importance = memory.get("importance", "not set")
+
                     print(
                         "-",
                         memory["text"],
                         "[Category:",
-                        memory["category"] + "]"
-                    )
+                        memory["category"],
+                       "| Importance:",
+        str(importance) + "]"
+    )
                 else:
                      print("-", memory)
         else:
@@ -143,7 +149,6 @@ while True:
                     or search_term in memory_category.lower()
                 ):
                     matches.append(memory)
-
             else:
                 if search_term in memory.lower():
                     matches.append(memory)
@@ -154,11 +159,15 @@ while True:
 
             for memory in matches:
                 if isinstance(memory, dict):
+                    importance = memory.get("importance", "not set")
+
                     print(
                         "-",
                         memory["text"],
                         "[Category:",
-                        memory["category"] + "]"
+                        memory["category"],
+                        "| Importance:",
+                        str(importance) + "]"
                     )
                 else:
                     print("-", memory)

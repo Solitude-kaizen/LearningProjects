@@ -7,6 +7,11 @@
         {
             "text": "I want to become better at Python programming.",
             "category": " learning"
+        },
+        {
+            "text": "Finish Solitude-Kaizen V1 by September 16.",
+            "category": " project",
+            "importance": "5"
         }
     ]
 }
