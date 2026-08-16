@@ -12,6 +12,11 @@
             "text": "Finish Solitude-Kaizen V1 by September 16.",
             "category": " project",
             "importance": "5"
+        },
+        {
+            "text": "Test importance validation.",
+            "category": " test",
+            "importance": 3
         }
     ]
 }
