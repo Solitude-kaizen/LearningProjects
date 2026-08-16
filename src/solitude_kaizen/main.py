@@ -62,7 +62,14 @@ while True:
     elif choice == "4":
         new_memory = input("What would you like me to remember? ")
         category = input("What category does this memory belong to?")
-        importance = input("How important is this memory? (1-5) ")
+        importance = input("How important is this memory? (1-5): ")
+        while True:
+            importance = input("How important is this memory? (1-5): ")
+
+            if importance.isdigit() and 1 <= int(importance) <= 5:
+                importance = int(importance)
+                break
+            print("Please enter a valid importance level between 1 and 5.")     
 
         memory_item = {
             "text" : new_memory,    
