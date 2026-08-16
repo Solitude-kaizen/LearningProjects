@@ -9,8 +9,6 @@ from memory import (
     format_memory,
     validate_importance,
 )
-from datetime import datetime
-
 
 name = "Solitude-Kaizen"
 version = "0.1"
@@ -88,13 +86,10 @@ while True:
 
             print("Please enter a valid importance level between 1 and 5.")
 
-        created_at = datetime.now().isoformat(timespec="seconds")
-
         memory_item = create_memory(
             new_memory,
             category,
             importance,
-            created_at
         )
 
         memories.append(memory_item)
