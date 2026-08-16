@@ -1,11 +1,14 @@
-from memory import load_profile
+from memory import load_profile, save_profile, load_memories, save_memories
 
 name = "Solitude-Kaizen"
 version = "0.1"
 
 profile_path = "src/solitude_kaizen/data/profile.json"
+memory_path = "src/solitude_kaizen/data/memories.json"
 
 profile = load_profile(profile_path)
+memory_data = load_memories(memory_path)
+memories = memory_data["memories"]
 
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")
@@ -25,7 +28,8 @@ while True:
     print("1. View current goal")
     print("2. Change current goal")
     print("3. View my profile")
-    print("4. Exit")
+    print("4. Remember something")
+    print("5. Exit")
 
     choice = input("Choose an option: ")
 
@@ -53,8 +57,13 @@ while True:
         print("Health Goal:", health_goal)
 
     elif choice == "4":
+        new_memory = input("What would you like me to remember? ")
+
+        memories.append(new_memory)
+        save_memories(memory_path, memory_data)
+
+        print("I will remember that.")
+
+    elif choice == "5":
         print("Goodbye!")
         break
-
-    else:
-        print("Invalid option. Please choose again.")
