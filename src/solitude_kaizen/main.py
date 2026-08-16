@@ -1,4 +1,5 @@
 from memory import load_profile, save_profile, load_memories, save_memories
+from datetime import datetime
 
 name = "Solitude-Kaizen"
 version = "0.1"
@@ -61,20 +62,24 @@ while True:
 
     elif choice == "4":
         new_memory = input("What would you like me to remember? ")
-        category = input("What category does this memory belong to?")
-        importance = input("How important is this memory? (1-5): ")
+        category = input("What category does this memory belong to? ")
+
         while True:
             importance = input("How important is this memory? (1-5): ")
 
             if importance.isdigit() and 1 <= int(importance) <= 5:
                 importance = int(importance)
                 break
-            print("Please enter a valid importance level between 1 and 5.")     
+
+            print("Please enter a valid importance level between 1 and 5.")
+
+        created_at = datetime.now().isoformat(timespec="seconds")
 
         memory_item = {
-            "text" : new_memory,    
-            "category" : category,
-            "importance" : importance 
+            "text": new_memory,
+            "category": category,
+            "importance": importance,
+            "created_at": created_at
         }
 
         memories.append(memory_item)
