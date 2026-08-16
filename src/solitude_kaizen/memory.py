@@ -32,3 +32,24 @@ def create_memory(text, category, importance, created_at):
     }
 
     return memory_item
+
+def search_memories(memories, search_term):
+    matches = []
+
+    search_term = search_term.lower()
+
+    for memory in memories:
+        if isinstance(memory, dict):
+            memory_text = memory["text"]
+            memory_category = memory["category"]
+
+            if (
+                search_term in memory_text.lower()
+                or search_term in memory_category.lower()
+            ):
+                matches.append(memory)
+        else:
+            if search_term in memory.lower():
+                matches.append(memory)
+
+    return matches

@@ -3,7 +3,8 @@ from memory import (
     save_profile,
     load_memories,
     save_memories,
-    create_memory
+    create_memory,
+    search_memories
 )
 from datetime import datetime
 
@@ -153,21 +154,7 @@ while True:
     elif choice == "7":
         search_term = input("Search memories for: ").lower()
 
-        matches = []
-
-        for memory in memories:
-            if isinstance(memory, dict):
-                memory_text = memory["text"]
-                memory_category = memory["category"]
-
-                if (
-                    search_term in memory_text.lower()
-                    or search_term in memory_category.lower()
-                ):
-                    matches.append(memory)
-            else:
-                if search_term in memory.lower():
-                    matches.append(memory)
+        matches = search_memories(memories, search_term)
 
         if matches:
             print()
