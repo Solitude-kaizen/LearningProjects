@@ -6,3 +6,19 @@ def load_profile(profile_path):
         profile = json.load(file)
 
     return profile
+
+
+def save_profile(profile_path, profile):
+    with open(profile_path, "w") as file:
+        json.dump(profile, file, indent=4)
+
+
+def load_memories(memory_path):
+    with open(memory_path, "r") as file:
+        memory_data = json.load(file)
+
+    return memory_data
+
+def save_memories(memory_path, memory_data):
+    with open(memory_path, "w") as file:
+        json.dump(memory_data, file, indent=4)
