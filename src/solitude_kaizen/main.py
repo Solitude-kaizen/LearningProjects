@@ -29,7 +29,8 @@ while True:
     print("4. Remember something")
     print("5. View memories")
     print("6. Forget a memory")
-    print("7. Exit")
+    print("7. Search for a memory")
+    print("8. Exit")
 
     choice = input("Choose an option: ")
 
@@ -105,6 +106,24 @@ while True:
             print("I do not have any memories to forget.")
 
     elif choice == "7":
+        search_term = input("Search memories for: ").lower()
+
+        matches = []
+
+        for memory in memories:
+            if search_term in memory.lower():
+                matches.append(memory)
+
+        if matches:
+            print()
+            print("--- Matching Memories ---")
+
+            for memory in matches:
+                print("-", memory)
+        else:
+            print("I could not find a matching memory.")
+
+    elif choice == "8":
         print("Goodbye!")
         break
 
