@@ -4,9 +4,11 @@ from memory import (
     load_memories,
     save_memories,
     create_memory,
-    search_memories
+    search_memories,
+    forget_memory,
 )
 from datetime import datetime
+
 
 name = "Solitude-Kaizen"
 version = "0.1"
@@ -31,6 +33,7 @@ if current_goal:
     print("Your current goal is:", current_goal)
 
 while True:
+    print()
     print("1. View current goal")
     print("2. Change current goal")
     print("3. View my profile")
@@ -82,7 +85,12 @@ while True:
 
         created_at = datetime.now().isoformat(timespec="seconds")
 
-        memory_item = create_memory(new_memory, category, importance, created_at)
+        memory_item = create_memory(
+            new_memory,
+            category,
+            importance,
+            created_at
+        )
 
         memories.append(memory_item)
         save_memories(memory_path, memory_data)
@@ -104,13 +112,13 @@ while True:
                         memory["text"],
                         "[Category:",
                         memory["category"],
-                       "| Importance:",
-                       str(importance),
-                       "| Created At:",
-                          created_at + "]" 
+                        "| Importance:",
+                        str(importance),
+                        "| Created At:",
+                        created_at + "]"
                     )
                 else:
-                     print("-", memory)
+                    print("-", memory)
         else:
             print("I do not have any memories saved yet.")
 
@@ -138,11 +146,13 @@ while True:
             if memory_number.isdigit():
                 memory_index = int(memory_number) - 1
 
-                if 0 <= memory_index < len(memories):
-                    forgotten_memory = memories.pop(memory_index)
+                forgotten_memory = forget_memory(
+                    memories,
+                    memory_index
+                )
 
+                if forgotten_memory is not None:
                     save_memories(memory_path, memory_data)
-
                     print("I forgot:", forgotten_memory)
                 else:
                     print("That memory number does not exist.")
@@ -152,7 +162,7 @@ while True:
             print("I do not have any memories to forget.")
 
     elif choice == "7":
-        search_term = input("Search memories for: ").lower()
+        search_term = input("Search memories for: ")
 
         matches = search_memories(memories, search_term)
 
