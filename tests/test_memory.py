@@ -9,6 +9,7 @@ from src.solitude_kaizen.memory import (
     validate_category,
     normalize_memory,
     filter_memories_by_category,
+    sort_memories_by_importance,
 )
 
 
@@ -194,3 +195,31 @@ def test_filter_memories_by_category():
     assert len(matches) == 2
     assert matches[0]["text"] == "Study Python"
     assert matches[1]["text"] == "Practice Python"
+
+def test_sort_memories_by_importance():
+    memories = [
+        {
+            "text": "Low priority",
+            "category": "personal",
+            "importance": 1,
+            "created_at": "unknown"
+        },
+        {
+            "text": "High priority",
+            "category": "project",
+            "importance": 5,
+            "created_at": "unknown"
+        },
+        {
+            "text": "Medium priority",
+            "category": "learning",
+            "importance": 3,
+            "created_at": "unknown"
+        }
+    ]
+
+    sorted_memories = sort_memories_by_importance(memories)
+
+    assert sorted_memories[0]["importance"] == 5
+    assert sorted_memories[1]["importance"] == 3
+    assert sorted_memories[2]["importance"] == 1
