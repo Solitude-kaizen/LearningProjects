@@ -345,3 +345,19 @@ def test_build_memory_context():
     assert "Practice Python" in context
     assert "category: project" in context
     assert "importance: 5" in context
+
+from src.solitude_kaizen.prompt import build_system_prompt
+
+
+def test_build_system_prompt():
+    memory_context = (
+        "- Finish Solitude-Kaizen V1 "
+        "(category: project, importance: 5)"
+    )
+
+    prompt = build_system_prompt(memory_context)
+
+    assert "You are Solitude-Kaizen" in prompt
+    assert "Relevant memories:" in prompt
+    assert "Finish Solitude-Kaizen V1" in prompt
+    assert "Do not force memories" in prompt
