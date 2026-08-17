@@ -14,7 +14,10 @@ from memory import (
     sort_memories_by_importance,
     sort_memories_by_recency,
     rank_memories,
+    build_memory_context,
 )
+from prompt import build_system_prompt
+from ai_service import generate_response
 
 name = "Solitude-Kaizen"
 version = "0.1"
@@ -57,7 +60,8 @@ while True:
     print("9. View memories by importance")
     print("10. View memories by recency")
     print("11. View memories by rank")
-    print("12. Exit")
+    print("12. Talk to Solitude-Kaizen")
+    print("13. Exit")
 
     choice = input("Choose an option: ")
 
@@ -233,8 +237,28 @@ while True:
 
         for memory in sorted_memories:
             print("-", format_memory(memory))
-
     elif choice == "12":
+        user_message = input("You: ")
+
+        memory_context = build_memory_context(
+            memories,
+            limit=5
+        )
+
+        system_prompt = build_system_prompt(
+            memory_context
+        )
+
+        response = generate_response(
+            system_prompt,
+            user_message
+        )
+
+        print()
+        print("Solitude-Kaizen:")
+        print(response)
+
+    elif choice == "13":
         print("Goodbye!")
         break
 
