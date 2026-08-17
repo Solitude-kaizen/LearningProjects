@@ -4,6 +4,7 @@ from src.solitude_kaizen.memory import (
     create_memory,
     search_memories,
     forget_memory,
+    format_memory,
     validate_importance,
     validate_category,
     normalize_memory,
@@ -144,3 +145,20 @@ def test_save_and_load_memories(tmp_path):
     loaded_data = load_memories(memory_path)
 
     assert loaded_data == memory_data
+
+def test_format_memory():
+    memory = {
+        "text": "Study Python",
+        "category": "learning",
+        "importance": 4,
+        "created_at": "2026-08-17T16:00:00"
+    }
+
+    formatted = format_memory(memory)
+
+    assert formatted == (
+        "Study Python "
+        "[Category: learning "
+        "| Importance: 4 "
+        "| Created At: 2026-08-17T16:00:00]"
+    )
