@@ -141,3 +141,13 @@ def sort_memories_by_importance(memories):
         key=lambda memory: memory["importance"],
         reverse=True
     )
+
+def sort_memories_by_recency(memories):
+    return sorted(
+        memories,
+        key=lambda memory: (
+            memory["created_at"] != "unknown",
+            memory["created_at"]
+        ),
+        reverse=True
+    )
