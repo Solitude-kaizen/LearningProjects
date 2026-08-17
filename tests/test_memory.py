@@ -1,3 +1,5 @@
+from urllib import response
+
 from src.solitude_kaizen.memory import (
     load_memories,
     save_memories,
@@ -407,5 +409,10 @@ def test_generate_groq_response_handles_error(monkeypatch):
         "Hello"
     )
 
-    assert "I could not reach the Groq AI service right now." in response
-    assert "Simulated Groq failure" in response
+    assert (
+        response
+        == "I am having trouble connecting to my AI service "
+        "right now. Please try again in a moment."
+    )
+
+    assert "Simulated Groq failure" not in response
