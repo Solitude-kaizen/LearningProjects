@@ -123,3 +123,14 @@ def normalize_memory(memory):
         "importance": importance,
         "created_at": created_at
     }
+
+def filter_memories_by_category(memories, category):
+    category = category.strip().lower()
+
+    matches = []
+
+    for memory in memories:
+        if memory["category"] == category:
+            matches.append(memory)
+
+    return matches

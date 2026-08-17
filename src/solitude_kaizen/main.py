@@ -10,6 +10,7 @@ from memory import (
     validate_importance,
     validate_category,
     normalize_memory,
+    filter_memories_by_category,
 )
 
 name = "Solitude-Kaizen"
@@ -50,7 +51,8 @@ while True:
     print("5. View memories")
     print("6. Forget a memory")
     print("7. Search for a memory")
-    print("8. Exit")
+    print("8. View memories by category")
+    print("9. Exit")
 
     choice = input("Choose an option: ")
 
@@ -174,6 +176,33 @@ while True:
             print("I could not find a matching memory.")
 
     elif choice == "8":
+        category_input = input(
+            "Which category would you like to view? "
+        )
+
+        category = validate_category(category_input)
+
+        if category is None:
+            print(
+                "Please choose: learning, career, health, "
+                "project, personal, or test."
+            )
+        else:
+            matches = filter_memories_by_category(
+                memories,
+                category
+            )
+
+            if matches:
+                print()
+                print("---", category.title(), "Memories ---")
+
+                for memory in matches:
+                    print("-", format_memory(memory))
+            else:
+                print("I do not have memories in that category.")
+
+    elif choice == "9":
         print("Goodbye!")
         break
 
