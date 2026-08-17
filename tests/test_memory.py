@@ -10,6 +10,7 @@ from src.solitude_kaizen.memory import (
     normalize_memory,
     filter_memories_by_category,
     sort_memories_by_importance,
+    sort_memories_by_recency,
 )
 
 
@@ -223,3 +224,31 @@ def test_sort_memories_by_importance():
     assert sorted_memories[0]["importance"] == 5
     assert sorted_memories[1]["importance"] == 3
     assert sorted_memories[2]["importance"] == 1
+
+def test_sort_memories_by_recency():
+    memories = [
+        {
+            "text": "Old legacy memory",
+            "category": "personal",
+            "importance": 3,
+            "created_at": "unknown"
+        },
+        {
+            "text": "Older memory",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "2026-08-15T10:00:00"
+        },
+        {
+            "text": "Newest memory",
+            "category": "project",
+            "importance": 5,
+            "created_at": "2026-08-17T17:00:00"
+        }
+    ]
+
+    sorted_memories = sort_memories_by_recency(memories)
+
+    assert sorted_memories[0]["text"] == "Newest memory"
+    assert sorted_memories[1]["text"] == "Older memory"
+    assert sorted_memories[2]["text"] == "Old legacy memory"
