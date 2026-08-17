@@ -11,6 +11,7 @@ from memory import (
     validate_category,
     normalize_memory,
     filter_memories_by_category,
+    sort_memories_by_importance,
 )
 
 name = "Solitude-Kaizen"
@@ -52,7 +53,8 @@ while True:
     print("6. Forget a memory")
     print("7. Search for a memory")
     print("8. View memories by category")
-    print("9. Exit")
+    print("9. View memories sorted by importance")
+    print("10. Exit")
 
     choice = input("Choose an option: ")
 
@@ -203,6 +205,15 @@ while True:
                 print("I do not have memories in that category.")
 
     elif choice == "9":
+        sorted_memories = sort_memories_by_importance(memories)
+
+        print()
+        print("--- Memories Sorted by Importance ---")
+
+        for memory in sorted_memories:
+            print("-", format_memory(memory))
+
+    elif choice == "10":
         print("Goodbye!")
         break
 
