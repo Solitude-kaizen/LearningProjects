@@ -8,6 +8,7 @@ from src.solitude_kaizen.memory import (
     validate_importance,
     validate_category,
     normalize_memory,
+    filter_memories_by_category,
 )
 
 
@@ -162,3 +163,34 @@ def test_format_memory():
         "| Importance: 4 "
         "| Created At: 2026-08-17T16:00:00]"
     )
+
+def test_filter_memories_by_category():
+    memories = [
+        {
+            "text": "Study Python",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "unknown"
+        },
+        {
+            "text": "Build HR career",
+            "category": "career",
+            "importance": 5,
+            "created_at": "unknown"
+        },
+        {
+            "text": "Practice Python",
+            "category": "learning",
+            "importance": 3,
+            "created_at": "unknown"
+        }
+    ]
+
+    matches = filter_memories_by_category(
+        memories,
+        "learning"
+    )
+
+    assert len(matches) == 2
+    assert matches[0]["text"] == "Study Python"
+    assert matches[1]["text"] == "Practice Python"
