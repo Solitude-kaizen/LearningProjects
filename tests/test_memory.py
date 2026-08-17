@@ -19,6 +19,7 @@ from src.solitude_kaizen.memory import (
 )
 from src.solitude_kaizen.ai_service import generate_response
 from src.solitude_kaizen.ai_service import generate_groq_response
+from src.solitude_kaizen.ai_service import generate_ollama_response
 
 def test_validate_importance():
     assert validate_importance("1") == 1
@@ -416,3 +417,55 @@ def test_generate_groq_response_handles_error(monkeypatch):
     )
 
     assert "Simulated Groq failure" not in response
+
+def test_generate_ollama_response(monkeypatch):
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {
+                "response": "Mock local response"
+            }
+
+    def fake_post(*args, **kwargs):
+        return FakeResponse()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.requests.post",
+        fake_post
+    )
+
+    response = generate_ollama_response(
+        "System prompt",
+        "Hello"
+    )
+
+    assert response == "Mock local response"
+
+def test_generate_response_falls_back_to_ollama(monkeypatch):
+    def fake_groq_response(system_prompt, user_message):
+        return (
+            "I am having trouble connecting to my AI service "
+            "right now. Please try again in a moment."
+        )
+
+    def fake_ollama_response(system_prompt, user_message):
+        return "Local fallback response"
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_groq_response",
+        fake_groq_response
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response
+    )
+
+    response = generate_response(
+        "System prompt",
+        "Hello"
+    )
+
+    assert response == "Local fallback response"

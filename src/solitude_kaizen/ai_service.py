@@ -1,4 +1,5 @@
 import os
+import requests
 
 from dotenv import load_dotenv
 from groq import Groq
@@ -6,6 +7,37 @@ from openai import OpenAI
 
 
 load_dotenv()
+
+def generate_ollama_response(system_prompt, user_message):
+    prompt = (
+        f"{system_prompt}\n\n"
+        f"User: {user_message}\n"
+        "Solitude-Kaizen:"
+    )
+
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": "qwen3:4b",
+                "prompt": prompt,
+                "stream": False,
+            },
+            timeout=120,
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        return data["response"]
+
+    except Exception as error:
+        print("Ollama error:", error)
+
+        return (
+            "My local AI service is unavailable right now."
+        )
 
 
 def get_groq_api_key():
@@ -73,7 +105,29 @@ def generate_response(system_prompt, user_message):
     provider = get_active_provider()
 
     if provider == "groq":
-        return generate_groq_response(
+        groq_response = generate_groq_response(
+            system_prompt,
+            user_message,
+        )
+
+        groq_failure_messages = [
+            "Groq API key is not configured yet.",
+            (
+                "I am having trouble connecting to my AI service "
+                "right now. Please try again in a moment."
+            ),
+        ]
+
+        if groq_response not in groq_failure_messages:
+            return groq_response
+
+        return generate_ollama_response(
+            system_prompt,
+            user_message,
+        )
+
+    if provider == "ollama":
+        return generate_ollama_response(
             system_prompt,
             user_message,
         )
@@ -84,6 +138,4 @@ def generate_response(system_prompt, user_message):
             user_message,
         )
 
-    return (
-        "No AI provider is currently configured."
-    )
+    return "No AI provider is currently configured."
