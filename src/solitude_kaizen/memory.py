@@ -167,3 +167,23 @@ def select_memories_for_context(memories, limit=5):
     ranked_memories = rank_memories(memories)
 
     return ranked_memories[:limit]
+
+def build_memory_context(memories, limit=5):
+    selected_memories = select_memories_for_context(
+        memories,
+        limit=limit
+    )
+
+    if not selected_memories:
+        return "No relevant memories available."
+
+    lines = []
+
+    for memory in selected_memories:
+        lines.append(
+            f"- {memory['text']} "
+            f"(category: {memory['category']}, "
+            f"importance: {memory['importance']})"
+        )
+
+    return "\n".join(lines)

@@ -13,6 +13,7 @@ from src.solitude_kaizen.memory import (
     sort_memories_by_recency,
     rank_memories,
     select_memories_for_context,
+    build_memory_context,
 )
 
 
@@ -319,3 +320,28 @@ def test_select_memories_for_context():
     assert len(selected) == 2
     assert selected[0]["text"] == "Memory B"
     assert selected[1]["text"] == "Memory C"
+def test_build_memory_context():
+    memories = [
+        {
+            "text": "Finish Solitude-Kaizen V1",
+            "category": "project",
+            "importance": 5,
+            "created_at": "2026-08-17T10:00:00"
+        },
+        {
+            "text": "Practice Python",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "2026-08-17T09:00:00"
+        }
+    ]
+
+    context = build_memory_context(
+        memories,
+        limit=2
+    )
+
+    assert "Finish Solitude-Kaizen V1" in context
+    assert "Practice Python" in context
+    assert "category: project" in context
+    assert "importance: 5" in context
