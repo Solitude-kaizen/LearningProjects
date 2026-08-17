@@ -12,6 +12,7 @@ from memory import (
     normalize_memory,
     filter_memories_by_category,
     sort_memories_by_importance,
+    sort_memories_by_recency,
 )
 
 name = "Solitude-Kaizen"
@@ -44,7 +45,6 @@ if current_goal:
     print("Your current goal is:", current_goal)
 
 while True:
-    print()
     print("1. View current goal")
     print("2. Change current goal")
     print("3. View my profile")
@@ -53,8 +53,9 @@ while True:
     print("6. Forget a memory")
     print("7. Search for a memory")
     print("8. View memories by category")
-    print("9. View memories sorted by importance")
-    print("10. Exit")
+    print("9. View memories by importance")
+    print("10. View memories by recency")
+    print("11. Exit")
 
     choice = input("Choose an option: ")
 
@@ -214,6 +215,15 @@ while True:
             print("-", format_memory(memory))
 
     elif choice == "10":
+        sorted_memories = sort_memories_by_recency(memories)
+
+        print()
+        print("--- Memories by Recency ---")
+
+        for memory in sorted_memories:
+            print("-", format_memory(memory))
+
+    elif choice == "11":
         print("Goodbye!")
         break
 
