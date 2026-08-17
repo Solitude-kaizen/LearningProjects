@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from groq import Groq
 from openai import OpenAI
 
-
+last_provider_used = None 
 load_dotenv()
 
 def generate_ollama_response(system_prompt, user_message):
@@ -102,6 +102,8 @@ def get_active_provider():
 
 
 def generate_response(system_prompt, user_message):
+    global last_provider_used
+
     provider = get_active_provider()
 
     if provider == "groq":
@@ -119,23 +121,35 @@ def generate_response(system_prompt, user_message):
         ]
 
         if groq_response not in groq_failure_messages:
+            last_provider_used = "groq"
             return groq_response
 
-        return generate_ollama_response(
+        ollama_response = generate_ollama_response(
             system_prompt,
             user_message,
         )
 
+        last_provider_used = "ollama"
+        return ollama_response
+
     if provider == "ollama":
+        last_provider_used = "ollama"
+
         return generate_ollama_response(
             system_prompt,
             user_message,
         )
 
     if provider == "openai":
+        last_provider_used = "openai"
+
         return generate_openai_response(
             system_prompt,
             user_message,
         )
 
+    last_provider_used = None
     return "No AI provider is currently configured."
+
+def get_last_provider_used():
+    return last_provider_used

@@ -17,7 +17,7 @@ from memory import (
     build_memory_context,
 )
 from prompt import build_system_prompt
-from ai_service import generate_response
+from ai_service import generate_response, get_last_provider_used
 
 name = "Solitude-Kaizen"
 version = "0.1"
@@ -257,6 +257,11 @@ while True:
         print()
         print("Solitude-Kaizen:")
         print(response)
+
+        provider_used = get_last_provider_used()
+
+        if provider_used:
+           print("[Provider:", provider_used + "]")
 
     elif choice == "13":
         print("Goodbye!")

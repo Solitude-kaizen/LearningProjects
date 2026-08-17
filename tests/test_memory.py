@@ -17,7 +17,7 @@ from src.solitude_kaizen.memory import (
     select_memories_for_context,
     build_memory_context,
 )
-from src.solitude_kaizen.ai_service import generate_response
+from src.solitude_kaizen.ai_service import generate_response, get_last_provider_used
 from src.solitude_kaizen.ai_service import generate_groq_response
 from src.solitude_kaizen.ai_service import generate_ollama_response
 
@@ -469,3 +469,22 @@ def test_generate_response_falls_back_to_ollama(monkeypatch):
     )
 
     assert response == "Local fallback response"
+
+def test_provider_tracking_records_groq(monkeypatch):
+    def fake_groq_response(system_prompt, user_message):
+        return "Mock Groq response"
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_groq_response",
+        fake_groq_response
+    )
+
+    response = generate_response(
+        "System prompt",
+        "Hello"
+    )
+
+    provider = get_last_provider_used()
+
+    assert response == "Mock Groq response"
+    assert provider == "groq"
