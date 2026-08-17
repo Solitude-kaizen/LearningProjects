@@ -42,11 +42,12 @@ def generate_groq_response(system_prompt, user_message):
         return response.choices[0].message.content
 
     except Exception as error:
-        return (
-            "I could not reach the Groq AI service right now. "
-            f"Error: {error}"
-        )
+        print("Groq error:", error)
 
+    return (
+        "I am having trouble connecting to my AI service "
+        "right now. Please try again in a moment."
+    )
 
 def generate_openai_response(system_prompt, user_message):
     api_key = get_openai_api_key()
