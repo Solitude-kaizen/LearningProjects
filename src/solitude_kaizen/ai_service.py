@@ -65,9 +65,25 @@ def generate_openai_response(system_prompt, user_message):
 
     return response.output_text
 
+def get_active_provider():
+    return "groq"
+
 
 def generate_response(system_prompt, user_message):
-    return generate_groq_response(
-        system_prompt,
-        user_message,
+    provider = get_active_provider()
+
+    if provider == "groq":
+        return generate_groq_response(
+            system_prompt,
+            user_message,
+        )
+
+    if provider == "openai":
+        return generate_openai_response(
+            system_prompt,
+            user_message,
+        )
+
+    return (
+        "No AI provider is currently configured."
     )
