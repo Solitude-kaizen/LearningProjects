@@ -134,3 +134,10 @@ def filter_memories_by_category(memories, category):
             matches.append(memory)
 
     return matches
+
+def sort_memories_by_importance(memories):
+    return sorted(
+        memories,
+        key=lambda memory: memory["importance"],
+        reverse=True
+    )
