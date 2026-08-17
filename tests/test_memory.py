@@ -363,11 +363,18 @@ def test_build_system_prompt():
     assert "Finish Solitude-Kaizen V1" in prompt
     assert "Do not force memories" in prompt
 
-def test_generate_response_placeholder():
+def test_generate_response_uses_groq(monkeypatch):
+    def fake_groq_response(system_prompt, user_message):
+        return f"Mock response to: {user_message}"
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_groq_response",
+        fake_groq_response
+    )
+
     response = generate_response(
         "System prompt",
         "Hello"
     )
 
-    assert "AI service not connected yet." in response
-    assert "Hello" in response
+    assert response == "Mock response to: Hello"
