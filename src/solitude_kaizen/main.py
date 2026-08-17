@@ -9,6 +9,7 @@ from memory import (
     format_memory,
     validate_importance,
     validate_category,
+    normalize_memory,
 )
 
 name = "Solitude-Kaizen"
@@ -19,7 +20,14 @@ memory_path = "src/solitude_kaizen/data/memories.json"
 
 profile = load_profile(profile_path)
 memory_data = load_memories(memory_path)
-memories = memory_data["memories"]
+
+memories = [
+    normalize_memory(memory)
+    for memory in memory_data["memories"]
+]
+
+memory_data["memories"] = memories
+save_memories(memory_path, memory_data)
 
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")

@@ -99,3 +99,34 @@ def validate_category(value):
         return category
 
     return None
+
+def normalize_memory(memory):
+    if not isinstance(memory, dict):
+        return {
+            "text": memory,
+            "category": "personal",
+            "importance": 3,
+            "created_at": "unknown"
+        }
+
+    text = memory.get("text", "")
+
+    category = memory.get("category", "personal")
+    category = category.strip().lower()
+
+    importance = memory.get("importance", 3)
+
+    if isinstance(importance, str) and importance.isdigit():
+        importance = int(importance)
+
+    if not isinstance(importance, int) or not 1 <= importance <= 5:
+        importance = 3
+
+    created_at = memory.get("created_at", "unknown")
+
+    return {
+        "text": text,
+        "category": category,
+        "importance": importance,
+        "created_at": created_at
+    }
