@@ -1,22 +1,46 @@
 {
     "memories": [
-        "I am building Solitude-Kaizen one step at a time.",
-        "I want to improve my Python skills.",
-        "I want to build a strong HR career.",
-        "I want to become better at Python programming.",
+        {
+            "text": "I am building Solitude-Kaizen one step at a time.",
+            "category": "personal",
+            "importance": 3,
+            "created_at": "unknown"
+        },
+        {
+            "text": "I want to improve my Python skills.",
+            "category": "personal",
+            "importance": 3,
+            "created_at": "unknown"
+        },
+        {
+            "text": "I want to build a strong HR career.",
+            "category": "personal",
+            "importance": 3,
+            "created_at": "unknown"
+        },
         {
             "text": "I want to become better at Python programming.",
-            "category": " learning"
+            "category": "personal",
+            "importance": 3,
+            "created_at": "unknown"
+        },
+        {
+            "text": "I want to become better at Python programming.",
+            "category": "learning",
+            "importance": 3,
+            "created_at": "unknown"
         },
         {
             "text": "Finish Solitude-Kaizen V1 by September 16.",
-            "category": " project",
-            "importance": "5"
+            "category": "project",
+            "importance": 5,
+            "created_at": "unknown"
         },
         {
             "text": "Test importance validation.",
-            "category": " test",
-            "importance": 3
+            "category": "test",
+            "importance": 3,
+            "created_at": "unknown"
         }
     ]
 }
