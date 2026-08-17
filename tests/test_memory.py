@@ -1,5 +1,13 @@
-from src.solitude_kaizen.memory import (create_memory, search_memories, forget_memory, 
-validate_importance, validate_category, normalize_memory,)
+from src.solitude_kaizen.memory import (
+    load_memories,
+    save_memories,
+    create_memory,
+    search_memories,
+    forget_memory,
+    validate_importance,
+    validate_category,
+    normalize_memory,
+)
 
 
 def test_validate_importance():
@@ -116,3 +124,23 @@ def test_forget_memory_invalid_index():
 
     assert forgotten is None
     assert len(memories) == 1
+
+def test_save_and_load_memories(tmp_path):
+    memory_path = tmp_path / "memories.json"
+
+    memory_data = {
+        "memories": [
+            {
+                "text": "Test persistence",
+                "category": "test",
+                "importance": 4,
+                "created_at": "unknown"
+            }
+        ]
+    }
+
+    save_memories(memory_path, memory_data)
+
+    loaded_data = load_memories(memory_path)
+
+    assert loaded_data == memory_data
