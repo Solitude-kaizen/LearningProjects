@@ -16,7 +16,7 @@ from src.solitude_kaizen.memory import (
     build_memory_context,
 )
 from src.solitude_kaizen.ai_service import generate_response
-
+from src.solitude_kaizen.ai_service import generate_groq_response
 
 def test_validate_importance():
     assert validate_importance("1") == 1
@@ -378,3 +378,34 @@ def test_generate_response_uses_groq(monkeypatch):
     )
 
     assert response == "Mock response to: Hello"
+
+def test_generate_groq_response_handles_error(monkeypatch):
+    class FakeCompletions:
+        def create(self, *args, **kwargs):
+            raise RuntimeError("Simulated Groq failure")
+
+    class FakeChat:
+        def __init__(self):
+            self.completions = FakeCompletions()
+
+    class FakeGroq:
+        def __init__(self, *args, **kwargs):
+            self.chat = FakeChat()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.Groq",
+        FakeGroq
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_groq_api_key",
+        lambda: "fake-key"
+    )
+
+    response = generate_groq_response(
+        "System prompt",
+        "Hello"
+    )
+
+    assert "I could not reach the Groq AI service right now." in response
+    assert "Simulated Groq failure" in response

@@ -22,23 +22,30 @@ def generate_groq_response(system_prompt, user_message):
     if not api_key:
         return "Groq API key is not configured yet."
 
-    client = Groq(api_key=api_key)
+    try:
+        client = Groq(api_key=api_key)
 
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-20b",
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt,
-            },
-            {
-                "role": "user",
-                "content": user_message,
-            },
-        ],
-    )
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[
+                {
+                    "role": "system",
+                    "content": system_prompt,
+                },
+                {
+                    "role": "user",
+                    "content": user_message,
+                },
+            ],
+        )
 
-    return response.choices[0].message.content
+        return response.choices[0].message.content
+
+    except Exception as error:
+        return (
+            "I could not reach the Groq AI service right now. "
+            f"Error: {error}"
+        )
 
 
 def generate_openai_response(system_prompt, user_message):
