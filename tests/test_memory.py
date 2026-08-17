@@ -12,6 +12,7 @@ from src.solitude_kaizen.memory import (
     sort_memories_by_importance,
     sort_memories_by_recency,
     rank_memories,
+    select_memories_for_context,
 )
 
 
@@ -281,3 +282,40 @@ def test_rank_memories():
     assert ranked[0]["text"] == "New important memory"
     assert ranked[1]["text"] == "Old important memory"
     assert ranked[2]["text"] == "Recent lower-priority memory"
+
+def test_select_memories_for_context():
+    memories = [
+        {
+            "text": "Memory A",
+            "category": "personal",
+            "importance": 2,
+            "created_at": "2026-08-15T10:00:00"
+        },
+        {
+            "text": "Memory B",
+            "category": "project",
+            "importance": 5,
+            "created_at": "2026-08-17T10:00:00"
+        },
+        {
+            "text": "Memory C",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "2026-08-17T09:00:00"
+        },
+        {
+            "text": "Memory D",
+            "category": "career",
+            "importance": 3,
+            "created_at": "2026-08-16T10:00:00"
+        }
+    ]
+
+    selected = select_memories_for_context(
+        memories,
+        limit=2
+    )
+
+    assert len(selected) == 2
+    assert selected[0]["text"] == "Memory B"
+    assert selected[1]["text"] == "Memory C"

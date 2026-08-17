@@ -162,3 +162,8 @@ def rank_memories(memories):
         ),
         reverse=True
     )
+
+def select_memories_for_context(memories, limit=5):
+    ranked_memories = rank_memories(memories)
+
+    return ranked_memories[:limit]
