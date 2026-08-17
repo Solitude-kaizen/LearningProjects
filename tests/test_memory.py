@@ -1,5 +1,3 @@
-from urllib import response
-
 from src.solitude_kaizen.memory import (
     load_memories,
     save_memories,
@@ -17,9 +15,13 @@ from src.solitude_kaizen.memory import (
     select_memories_for_context,
     build_memory_context,
 )
-from src.solitude_kaizen.ai_service import generate_response, get_last_provider_used
-from src.solitude_kaizen.ai_service import generate_groq_response
-from src.solitude_kaizen.ai_service import generate_ollama_response
+from src.solitude_kaizen.ai_service import (
+    generate_response,
+    generate_groq_response,
+    generate_ollama_response,
+    get_last_provider_used,
+    get_active_provider,
+)
 
 def test_validate_importance():
     assert validate_importance("1") == 1
@@ -367,6 +369,8 @@ def test_build_system_prompt():
     assert "Do not force memories" in prompt
 
 def test_generate_response_uses_groq(monkeypatch):
+    monkeypatch.setenv("AI_PROVIDER", "groq")
+
     def fake_groq_response(system_prompt, user_message):
         return f"Mock response to: {user_message}"
 
@@ -444,6 +448,8 @@ def test_generate_ollama_response(monkeypatch):
     assert response == "Mock local response"
 
 def test_generate_response_falls_back_to_ollama(monkeypatch):
+    monkeypatch.setenv("AI_PROVIDER", "groq")
+
     def fake_groq_response(system_prompt, user_message):
         return (
             "I am having trouble connecting to my AI service "
@@ -471,6 +477,8 @@ def test_generate_response_falls_back_to_ollama(monkeypatch):
     assert response == "Local fallback response"
 
 def test_provider_tracking_records_groq(monkeypatch):
+    monkeypatch.setenv("AI_PROVIDER", "groq")
+
     def fake_groq_response(system_prompt, user_message):
         return "Mock Groq response"
 
@@ -488,3 +496,10 @@ def test_provider_tracking_records_groq(monkeypatch):
 
     assert response == "Mock Groq response"
     assert provider == "groq"
+
+def test_get_active_provider_from_env(monkeypatch):
+    monkeypatch.setenv("AI_PROVIDER", "ollama")
+
+    provider = get_active_provider()
+
+    assert provider == "ollama"

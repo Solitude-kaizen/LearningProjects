@@ -98,8 +98,7 @@ def generate_openai_response(system_prompt, user_message):
     return response.output_text
 
 def get_active_provider():
-    return "groq"
-
+    return os.getenv("AI_PROVIDER", "groq").strip().lower()
 
 def generate_response(system_prompt, user_message):
     global last_provider_used
@@ -153,3 +152,10 @@ def generate_response(system_prompt, user_message):
 
 def get_last_provider_used():
     return last_provider_used
+
+def test_get_active_provider_from_env(monkeypatch):
+    monkeypatch.setenv("AI_PROVIDER", "ollama")
+
+    provider = get_active_provider()
+
+    assert provider == "ollama"
