@@ -13,6 +13,7 @@ from memory import (
     filter_memories_by_category,
     sort_memories_by_importance,
     sort_memories_by_recency,
+    rank_memories,
 )
 
 name = "Solitude-Kaizen"
@@ -55,7 +56,8 @@ while True:
     print("8. View memories by category")
     print("9. View memories by importance")
     print("10. View memories by recency")
-    print("11. Exit")
+    print("11. View memories by rank")
+    print("12. Exit")
 
     choice = input("Choose an option: ")
 
@@ -224,6 +226,15 @@ while True:
             print("-", format_memory(memory))
 
     elif choice == "11":
+        sorted_memories = rank_memories(memories)
+
+        print()
+        print("--- Memories Ranked ---")
+
+        for memory in sorted_memories:
+            print("-", format_memory(memory))
+
+    elif choice == "12":
         print("Goodbye!")
         break
 
