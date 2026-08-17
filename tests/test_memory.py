@@ -11,6 +11,7 @@ from src.solitude_kaizen.memory import (
     filter_memories_by_category,
     sort_memories_by_importance,
     sort_memories_by_recency,
+    rank_memories,
 )
 
 
@@ -252,3 +253,31 @@ def test_sort_memories_by_recency():
     assert sorted_memories[0]["text"] == "Newest memory"
     assert sorted_memories[1]["text"] == "Older memory"
     assert sorted_memories[2]["text"] == "Old legacy memory"
+
+def test_rank_memories():
+    memories = [
+        {
+            "text": "Old important memory",
+            "category": "project",
+            "importance": 5,
+            "created_at": "2026-08-15T10:00:00"
+        },
+        {
+            "text": "New important memory",
+            "category": "project",
+            "importance": 5,
+            "created_at": "2026-08-17T17:00:00"
+        },
+        {
+            "text": "Recent lower-priority memory",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "2026-08-17T18:00:00"
+        }
+    ]
+
+    ranked = rank_memories(memories)
+
+    assert ranked[0]["text"] == "New important memory"
+    assert ranked[1]["text"] == "Old important memory"
+    assert ranked[2]["text"] == "Recent lower-priority memory"
