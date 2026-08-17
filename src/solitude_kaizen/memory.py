@@ -39,18 +39,14 @@ def search_memories(memories, search_term):
     search_term = search_term.lower()
 
     for memory in memories:
-        if isinstance(memory, dict):
-            memory_text = memory["text"]
-            memory_category = memory["category"]
+        memory_text = memory["text"]
+        memory_category = memory["category"]
 
-            if (
-                search_term in memory_text.lower()
-                or search_term in memory_category.lower()
-            ):
-                matches.append(memory)
-        else:
-            if search_term in memory.lower():
-                matches.append(memory)
+        if (
+            search_term in memory_text.lower()
+            or search_term in memory_category.lower()
+        ):
+            matches.append(memory)
 
     return matches
 
@@ -61,18 +57,15 @@ def forget_memory(memories, memory_index):
     return None
 
 def format_memory(memory):
-    if isinstance(memory, dict):
-        importance = memory.get("importance", "not set")
-        created_at = memory.get("created_at", "unknown")
+    importance = memory.get("importance", "not set")
+    created_at = memory.get("created_at", "unknown")
 
-        return (
-            f"{memory['text']} "
-            f"[Category: {memory['category']} "
-            f"| Importance: {importance} "
-            f"| Created At: {created_at}]"
-        )
-
-    return memory
+    return (
+        f"{memory['text']} "
+        f"[Category: {memory['category']} "
+        f"| Importance: {importance} "
+        f"| Created At: {created_at}]"
+    )
 
 def validate_importance(value):
     if value.isdigit():
