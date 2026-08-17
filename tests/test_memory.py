@@ -1,4 +1,5 @@
-from src.solitude_kaizen.memory import (validate_importance, validate_category, normalize_memory,)
+from src.solitude_kaizen.memory import (create_memory, search_memories, forget_memory, 
+validate_importance, validate_category, normalize_memory,)
 
 
 def test_validate_importance():
@@ -40,3 +41,78 @@ def test_normalize_memory_from_dict():
     assert memory["category"] == "project"
     assert memory["importance"] == 5
     assert memory["created_at"] == "unknown"
+
+def test_create_memory():
+    memory = create_memory(
+        "Study Python",
+        "learning",
+        4
+    )
+
+    assert memory["text"] == "Study Python"
+    assert memory["category"] == "learning"
+    assert memory["importance"] == 4
+    assert "created_at" in memory
+
+def test_search_memories():
+    memories = [
+        {
+            "text": "Study Python",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "unknown"
+        },
+        {
+            "text": "Build HR career",
+            "category": "career",
+            "importance": 5,
+            "created_at": "unknown"
+        }
+    ]
+
+    matches = search_memories(memories, "python")
+
+    assert len(matches) == 1
+    assert matches[0]["text"] == "Study Python"
+
+    matches = search_memories(memories, "career")
+
+    assert len(matches) == 1
+    assert matches[0]["text"] == "Build HR career"
+
+def test_forget_memory():
+    memories = [
+        {
+            "text": "Study Python",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "unknown"
+        },
+        {
+            "text": "Build HR career",
+            "category": "career",
+            "importance": 5,
+            "created_at": "unknown"
+        }
+    ]
+
+    forgotten = forget_memory(memories, 0)
+
+    assert forgotten["text"] == "Study Python"
+    assert len(memories) == 1
+    assert memories[0]["text"] == "Build HR career"
+
+def test_forget_memory_invalid_index():
+    memories = [
+        {
+            "text": "Study Python",
+            "category": "learning",
+            "importance": 4,
+            "created_at": "unknown"
+        }
+    ]
+
+    forgotten = forget_memory(memories, 5)
+
+    assert forgotten is None
+    assert len(memories) == 1
