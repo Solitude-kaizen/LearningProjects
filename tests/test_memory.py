@@ -15,6 +15,7 @@ from src.solitude_kaizen.memory import (
     select_memories_for_context,
     build_memory_context,
 )
+from src.solitude_kaizen.ai_service import generate_response
 
 
 def test_validate_importance():
@@ -361,3 +362,12 @@ def test_build_system_prompt():
     assert "Relevant memories:" in prompt
     assert "Finish Solitude-Kaizen V1" in prompt
     assert "Do not force memories" in prompt
+
+def test_generate_response_placeholder():
+    response = generate_response(
+        "System prompt",
+        "Hello"
+    )
+
+    assert "AI service not connected yet." in response
+    assert "Hello" in response
