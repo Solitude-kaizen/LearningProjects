@@ -17,7 +17,7 @@ from memory import (
     build_memory_context,
 )
 from prompt import build_system_prompt
-from ai_service import generate_response, get_last_provider_used
+from ai_service import generate_response, get_active_provider, get_last_provider_used
 
 name = "Solitude-Kaizen"
 version = "0.1"
@@ -61,7 +61,8 @@ while True:
     print("10. View memories by recency")
     print("11. View memories by rank")
     print("12. Talk to Solitude-Kaizen")
-    print("13. Exit")
+    print("13. View Ai provider")
+    print("14. Exit")
 
     choice = input("Choose an option: ")
 
@@ -261,11 +262,15 @@ while True:
         provider_used = get_last_provider_used()
 
         if provider_used:
-           print("[Provider:", provider_used + "]")
+            print("[Provider:", provider_used + "]")
 
     elif choice == "13":
+        active_provider = get_active_provider()
+
+        print()
+        print("--- AI Provider ---")
+        print("Active provider:", active_provider)
+
+    elif choice == "14":
         print("Goodbye!")
         break
-
-    else:
-        print("Invalid option. Please choose again.")
