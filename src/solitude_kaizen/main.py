@@ -17,7 +17,12 @@ from memory import (
     build_memory_context,
 )
 from prompt import build_system_prompt
-from ai_service import generate_response, get_active_provider, get_last_provider_used
+from ai_service import (
+    generate_response,
+    get_active_provider,
+    get_last_provider_used,
+    get_provider_info,
+)
 
 name = "Solitude-Kaizen"
 version = "0.1"
@@ -264,12 +269,15 @@ while True:
         if provider_used:
             print("[Provider:", provider_used + "]")
 
+
     elif choice == "13":
-        active_provider = get_active_provider()
+        provider_info = get_provider_info()
 
         print()
         print("--- AI Provider ---")
-        print("Active provider:", active_provider)
+        print("Active provider:", provider_info["provider"])
+        print("Model:", provider_info["model"])
+        print("Type:", provider_info["type"])
 
     elif choice == "14":
         print("Goodbye!")

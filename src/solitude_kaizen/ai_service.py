@@ -5,6 +5,11 @@ from dotenv import load_dotenv
 from groq import Groq
 from openai import OpenAI
 
+last_provider_used = None
+GROQ_MODEL = "openai/gpt-oss-20b"
+OLLAMA_MODEL = "qwen3:4b"
+OPENAI_MODEL = "gpt-5.6"
+
 last_provider_used = None 
 load_dotenv()
 
@@ -19,7 +24,7 @@ def generate_ollama_response(system_prompt, user_message):
         response = requests.post(
             "http://localhost:11434/api/generate",
             json={
-                "model": "qwen3:4b",
+                "model": OLLAMA_MODEL,
                 "prompt": prompt,
                 "stream": False,
             },
@@ -58,7 +63,7 @@ def generate_groq_response(system_prompt, user_message):
         client = Groq(api_key=api_key)
 
         response = client.chat.completions.create(
-            model="openai/gpt-oss-20b",
+            model=GROQ_MODEL,
             messages=[
                 {
                     "role": "system",
@@ -90,7 +95,7 @@ def generate_openai_response(system_prompt, user_message):
     client = OpenAI(api_key=api_key)
 
     response = client.responses.create(
-        model="gpt-5.6",
+        model=OPENAI_MODEL,
         instructions=system_prompt,
         input=user_message,
     )
@@ -159,3 +164,33 @@ def test_get_active_provider_from_env(monkeypatch):
     provider = get_active_provider()
 
     assert provider == "ollama"
+
+def get_provider_info():
+    provider = get_active_provider()
+
+    if provider == "groq":
+        return {
+            "provider": "groq",
+            "model": GROQ_MODEL,
+            "type": "cloud",
+        }
+
+    if provider == "ollama":
+        return {
+            "provider": "ollama",
+            "model": OLLAMA_MODEL,
+            "type": "local",
+        }
+
+    if provider == "openai":
+        return {
+            "provider": "openai",
+            "model": OPENAI_MODEL,
+            "type": "cloud",
+        }
+
+    return {
+        "provider": provider,
+        "model": "unknown",
+        "type": "unknown",
+    }
