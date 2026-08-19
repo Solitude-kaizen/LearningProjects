@@ -20,7 +20,7 @@ from memory import (
 from conversation import (
     build_conversation_context,
     trim_conversation_history,
-    create_conversation_message,
+    add_message_to_history,
 )
 from prompt import build_system_prompt
 from ai_service import (
@@ -261,13 +261,11 @@ while True:
             limit=6
         )
 
-        conversation_history.append(
-    create_conversation_message(
-        "assistant",
-        response
-    )
-)
-
+        add_message_to_history(
+            conversation_history,
+            "user",
+            user_message
+        )
 
         memory_context = build_memory_context(
             memories,
@@ -288,11 +286,10 @@ while True:
         print("Solitude-Kaizen:")
         print(response)
 
-        conversation_history.append(
-            {
-                "role": "assistant",
-                "content": response,
-            }
+        add_message_to_history(
+            conversation_history,
+            "assistant",
+            response
         )
 
         trim_conversation_history(
