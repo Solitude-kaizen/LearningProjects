@@ -18,3 +18,9 @@ def trim_conversation_history(conversation_history, limit=20):
         del conversation_history[:-limit]
 
     return conversation_history
+
+def create_conversation_message(role, content):
+    return {
+        "role": role,
+        "content": content,
+    }

@@ -18,6 +18,7 @@ from src.solitude_kaizen.memory import (
 from src.solitude_kaizen.conversation import (
     build_conversation_context,
     trim_conversation_history,
+     create_conversation_message,
 )
 from src.solitude_kaizen.ai_service import (
     generate_response,
@@ -563,3 +564,14 @@ def test_trim_conversation_history():
     assert trimmed[0]["content"] == "Message 3"
     assert trimmed[1]["content"] == "Message 4"
     assert trimmed[2]["content"] == "Message 5"
+
+def test_create_conversation_message():
+    message = create_conversation_message(
+        "user",
+        "Hello"
+    )
+
+    assert message == {
+        "role": "user",
+        "content": "Hello",
+    }
