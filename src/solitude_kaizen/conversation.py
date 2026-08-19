@@ -24,3 +24,17 @@ def create_conversation_message(role, content):
         "role": role,
         "content": content,
     }
+
+def add_message_to_history(
+    conversation_history,
+    role,
+    content
+):
+    message = create_conversation_message(
+        role,
+        content
+    )
+
+    conversation_history.append(message)
+
+    return message

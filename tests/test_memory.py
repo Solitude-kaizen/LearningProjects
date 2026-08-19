@@ -18,7 +18,8 @@ from src.solitude_kaizen.memory import (
 from src.solitude_kaizen.conversation import (
     build_conversation_context,
     trim_conversation_history,
-     create_conversation_message,
+    create_conversation_message,
+    add_message_to_history
 )
 from src.solitude_kaizen.ai_service import (
     generate_response,
@@ -575,3 +576,24 @@ def test_create_conversation_message():
         "role": "user",
         "content": "Hello",
     }
+
+def test_add_message_to_history():
+    conversation_history = []
+
+    message = add_message_to_history(
+        conversation_history,
+        "user",
+        "Hello"
+    )
+
+    assert message == {
+        "role": "user",
+        "content": "Hello",
+    }
+
+    assert conversation_history == [
+        {
+            "role": "user",
+            "content": "Hello",
+        }
+    ]
