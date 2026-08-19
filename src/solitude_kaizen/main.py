@@ -73,7 +73,8 @@ while True:
     print("11. View memories by rank")
     print("12. Talk to Solitude-Kaizen")
     print("13. View Ai provider")
-    print("14. Exit")
+    print("14. clear conversation")
+    print("15. Exit")
 
     choice = input("Choose an option: ")
 
@@ -310,5 +311,12 @@ while True:
         print("Type:", provider_info["type"])
 
     elif choice == "14":
+        conversation_history.clear()
+
+        print()
+        print("Conversation history cleared.")
+    
+
+    elif choice == "15":
         print("Goodbye!")
         break
