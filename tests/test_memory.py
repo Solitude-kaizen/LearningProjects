@@ -19,7 +19,8 @@ from src.solitude_kaizen.conversation import (
     build_conversation_context,
     trim_conversation_history,
     create_conversation_message,
-    add_message_to_history
+    add_message_to_history,
+    record_assistant_response,
 )
 from src.solitude_kaizen.ai_service import (
     generate_response,
@@ -597,3 +598,23 @@ def test_add_message_to_history():
             "content": "Hello",
         }
     ]
+
+def test_record_assistant_response():
+    conversation_history = [
+        {
+            "role": "user",
+            "content": "Hello"
+        }
+    ]
+
+    record_assistant_response(
+        conversation_history,
+        "Hi there",
+        limit=2
+    )
+
+    assert len(conversation_history) == 2
+    assert conversation_history[1] == {
+        "role": "assistant",
+        "content": "Hi there",
+    }
