@@ -74,7 +74,8 @@ while True:
     print("12. Talk to Solitude-Kaizen")
     print("13. View Ai provider")
     print("14. clear conversation")
-    print("15. Exit")
+    print("15. View conversation status")
+    print("16. Exit")
 
     choice = input("Choose an option: ")
 
@@ -316,7 +317,13 @@ while True:
         print()
         print("Conversation history cleared.")
     
-
     elif choice == "15":
+        message_count = len(conversation_history)
+
+        print()
+        print("--- Conversation Status ---")
+        print("Messages in short-term history:", message_count)
+
+    elif choice == "16":
         print("Goodbye!")
         break
