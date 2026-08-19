@@ -20,6 +20,7 @@ from memory import (
 from conversation import (
     build_conversation_context,
     trim_conversation_history,
+    create_conversation_message,
 )
 from prompt import build_system_prompt
 from ai_service import (
@@ -261,11 +262,12 @@ while True:
         )
 
         conversation_history.append(
-            {
-                "role": "user",
-                "content": user_message,
-            }
-        )
+    create_conversation_message(
+        "assistant",
+        response
+    )
+)
+
 
         memory_context = build_memory_context(
             memories,
