@@ -251,19 +251,20 @@ while True:
 
         for memory in sorted_memories:
             print("-", format_memory(memory))
+
     elif choice == "12":
         user_message = input("You: ")
+
+        conversation_context = build_conversation_context(
+            conversation_history,
+            limit=6
+        )
 
         conversation_history.append(
             {
                 "role": "user",
                 "content": user_message,
             }
-        )
-
-        conversation_context = build_conversation_context(
-            conversation_history,
-            limit=6
         )
 
         memory_context = build_memory_context(
