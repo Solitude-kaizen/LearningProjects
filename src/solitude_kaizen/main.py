@@ -17,7 +17,10 @@ from memory import (
     build_memory_context,
 )
 
-from conversation import build_conversation_context
+from conversation import (
+    build_conversation_context,
+    trim_conversation_history,
+)
 from prompt import build_system_prompt
 from ai_service import (
     generate_response,
@@ -250,14 +253,15 @@ while True:
         user_message = input("You: ")
 
         conversation_history.append(
-    {
-        "role": "user",
-        "content": user_message,
-    }
+            {
+                "role": "user",
+                "content": user_message,
+            }
         )
+
         conversation_context = build_conversation_context(
-    conversation_history,
-    limit=6
+            conversation_history,
+            limit=6
         )
 
         memory_context = build_memory_context(
@@ -266,8 +270,8 @@ while True:
         )
 
         system_prompt = build_system_prompt(
-        memory_context,
-        conversation_context
+            memory_context,
+            conversation_context
         )
 
         response = generate_response(
@@ -280,17 +284,21 @@ while True:
         print(response)
 
         conversation_history.append(
-    {
-        "role": "assistant",
-        "content": response,
-    }
+            {
+                "role": "assistant",
+                "content": response,
+            }
+        )
+
+        trim_conversation_history(
+            conversation_history,
+            limit=20
         )
 
         provider_used = get_last_provider_used()
 
         if provider_used:
             print("[Provider:", provider_used + "]")
-
 
     elif choice == "13":
         provider_info = get_provider_info()
