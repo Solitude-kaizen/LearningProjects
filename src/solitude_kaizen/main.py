@@ -16,6 +16,8 @@ from memory import (
     rank_memories,
     build_memory_context,
 )
+
+from conversation import build_conversation_context
 from prompt import build_system_prompt
 from ai_service import (
     generate_response,
@@ -38,6 +40,7 @@ memories = [
     for memory in memory_data["memories"]
 ]
 
+conversation_history = []
 memory_data["memories"] = memories
 save_memories(memory_path, memory_data)
 
@@ -246,13 +249,25 @@ while True:
     elif choice == "12":
         user_message = input("You: ")
 
+        conversation_history.append(
+    {
+        "role": "user",
+        "content": user_message,
+    }
+        )
+        conversation_context = build_conversation_context(
+    conversation_history,
+    limit=6
+        )
+
         memory_context = build_memory_context(
             memories,
             limit=5
         )
 
         system_prompt = build_system_prompt(
-            memory_context
+        memory_context,
+        conversation_context
         )
 
         response = generate_response(
@@ -263,6 +278,13 @@ while True:
         print()
         print("Solitude-Kaizen:")
         print(response)
+
+        conversation_history.append(
+    {
+        "role": "assistant",
+        "content": response,
+    }
+        )
 
         provider_used = get_last_provider_used()
 
