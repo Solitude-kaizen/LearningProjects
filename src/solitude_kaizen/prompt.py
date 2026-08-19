@@ -1,5 +1,5 @@
-def build_system_prompt(memory_context):
-    return (
+def build_system_prompt(memory_context, conversation_context=""):
+    prompt = (
         "You are Solitude-Kaizen, a personal AI assistant.\n\n"
         "Use the following remembered information when it is "
         "relevant to the conversation.\n"
@@ -7,3 +7,11 @@ def build_system_prompt(memory_context):
         "Relevant memories:\n"
         f"{memory_context}"
     )
+
+    if conversation_context:
+        prompt += (
+            "\n\nRecent conversation:\n"
+            f"{conversation_context}"
+        )
+
+    return prompt

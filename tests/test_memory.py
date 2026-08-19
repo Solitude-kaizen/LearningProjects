@@ -15,6 +15,7 @@ from src.solitude_kaizen.memory import (
     select_memories_for_context,
     build_memory_context,
 )
+from src.solitude_kaizen.conversation import build_conversation_context
 from src.solitude_kaizen.ai_service import (
     generate_response,
     generate_groq_response,
@@ -503,3 +504,40 @@ def test_get_active_provider_from_env(monkeypatch):
     provider = get_active_provider()
 
     assert provider == "ollama"
+
+def test_build_conversation_context():
+    conversation_history = [
+        {
+            "role": "user",
+            "content": "Teach me Python loops."
+        },
+        {
+            "role": "assistant",
+            "content": "A loop repeats code."
+        }
+    ]
+
+    context = build_conversation_context(
+        conversation_history,
+        limit=6
+    )
+
+    assert "User: Teach me Python loops." in context
+    assert "Assistant: A loop repeats code." in context
+
+def test_build_system_prompt_with_conversation():
+    memory_context = "- Learn Python"
+    conversation_context = (
+        "User: Teach me loops.\n"
+        "Assistant: A loop repeats code."
+    )
+
+    prompt = build_system_prompt(
+        memory_context,
+        conversation_context
+    )
+
+    assert "Relevant memories:" in prompt
+    assert "Recent conversation:" in prompt
+    assert "User: Teach me loops." in prompt
+    assert "Assistant: A loop repeats code." in prompt
