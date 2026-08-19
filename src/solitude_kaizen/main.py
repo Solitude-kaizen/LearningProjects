@@ -19,8 +19,8 @@ from memory import (
 
 from conversation import (
     build_conversation_context,
-    trim_conversation_history,
     add_message_to_history,
+    record_assistant_response,
 )
 from prompt import build_system_prompt
 from ai_service import (
@@ -292,9 +292,10 @@ while True:
             response
         )
 
-        trim_conversation_history(
-            conversation_history,
-            limit=20
+        record_assistant_response(
+        conversation_history,
+        response,
+        limit=20
         )
 
         provider_used = get_last_provider_used()

@@ -38,3 +38,19 @@ def add_message_to_history(
     conversation_history.append(message)
 
     return message
+
+def record_assistant_response(
+    conversation_history,
+    response,
+    limit=20
+):
+    add_message_to_history(
+        conversation_history,
+        "assistant",
+        response
+    )
+
+    trim_conversation_history(
+        conversation_history,
+        limit=limit
+    )
