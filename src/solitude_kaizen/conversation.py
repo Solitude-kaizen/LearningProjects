@@ -12,3 +12,9 @@ def build_conversation_context(conversation_history, limit=6):
         )
 
     return "\n".join(lines)
+
+def trim_conversation_history(conversation_history, limit=20):
+    if len(conversation_history) > limit:
+        del conversation_history[:-limit]
+
+    return conversation_history

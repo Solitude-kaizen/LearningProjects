@@ -15,7 +15,10 @@ from src.solitude_kaizen.memory import (
     select_memories_for_context,
     build_memory_context,
 )
-from src.solitude_kaizen.conversation import build_conversation_context
+from src.solitude_kaizen.conversation import (
+    build_conversation_context,
+    trim_conversation_history,
+)
 from src.solitude_kaizen.ai_service import (
     generate_response,
     generate_groq_response,
@@ -541,3 +544,22 @@ def test_build_system_prompt_with_conversation():
     assert "Recent conversation:" in prompt
     assert "User: Teach me loops." in prompt
     assert "Assistant: A loop repeats code." in prompt
+
+def test_trim_conversation_history():
+    conversation_history = [
+        {"role": "user", "content": "Message 1"},
+        {"role": "assistant", "content": "Message 2"},
+        {"role": "user", "content": "Message 3"},
+        {"role": "assistant", "content": "Message 4"},
+        {"role": "user", "content": "Message 5"},
+    ]
+
+    trimmed = trim_conversation_history(
+        conversation_history,
+        limit=3
+    )
+
+    assert len(trimmed) == 3
+    assert trimmed[0]["content"] == "Message 3"
+    assert trimmed[1]["content"] == "Message 4"
+    assert trimmed[2]["content"] == "Message 5"
