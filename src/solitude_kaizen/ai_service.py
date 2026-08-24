@@ -2,7 +2,16 @@ import os
 import requests
 
 from dotenv import load_dotenv
-from groq import Groq
+from groq import (
+    Groq,
+    APIConnectionError,
+    APITimeoutError,
+    RateLimitError,
+    InternalServerError,
+    AuthenticationError,
+    PermissionDeniedError,
+    BadRequestError,
+)
 from openai import OpenAI
 
 last_provider_used = None
@@ -10,6 +19,24 @@ last_provider_used = None
 GROQ_MODEL = "openai/gpt-oss-20b"
 OLLAMA_MODEL = "qwen3:4b"
 OPENAI_MODEL = "gpt-5.6"
+
+
+class ProviderError(Exception):
+    def __init__(
+        self,
+        provider,
+        kind,
+        message,
+        retryable=False,
+        fallback_allowed=False,
+    ):
+        super().__init__(message)
+
+        self.provider = provider
+        self.kind = kind
+        self.retryable = retryable
+        self.fallback_allowed = fallback_allowed
+
 
 load_dotenv()
 
@@ -57,7 +84,13 @@ def generate_groq_response(system_prompt, user_message):
     api_key = get_groq_api_key()
 
     if not api_key:
-        return "Groq API key is not configured yet."
+        raise ProviderError(
+            provider="groq",
+            kind="missing_api_key",
+            message="Groq API key is not configured yet.",
+            retryable=False,
+            fallback_allowed=True,
+        )
 
     try:
         client = Groq(api_key=api_key)
@@ -78,13 +111,49 @@ def generate_groq_response(system_prompt, user_message):
 
         return response.choices[0].message.content
 
+    except APITimeoutError as error:
+        raise ProviderError(
+            provider="groq",
+            kind="timeout",
+            message="Groq request timed out.",
+            retryable=True,
+            fallback_allowed=True
+        ) from error
+
+    except APIConnectionError as error:
+        raise ProviderError(
+            provider="groq",
+            kind="connection",
+            message="Could not connect to Groq.",
+            retryable=True,
+            fallback_allowed=True
+        ) from error
+
+    except RateLimitError as error:
+        raise ProviderError(
+            provider="groq",
+            kind="rate_limit",
+            message="Groq rate limit reached.",
+            retryable=True,
+            fallback_allowed=True
+        ) from error
+
+    except InternalServerError as error:
+        raise ProviderError(
+            provider="groq",
+            kind="server_error",
+            message="Groq server error.",
+            retryable=True,
+            fallback_allowed=True
+        ) from error
+
     except Exception as error:
         print("Groq error:", error)
 
-    return (
-        "I am having trouble connecting to my AI service "
-        "right now. Please try again in a moment."
-    )
+        return (
+            "I am having trouble connecting to my AI service "
+            "right now. Please try again in a moment."
+        )
 
 def generate_openai_response(system_prompt, user_message):
     api_key = get_openai_api_key()
@@ -120,13 +189,25 @@ def generate_response(system_prompt, user_message):
     provider = get_active_provider()
 
     if provider == "groq":
-        groq_response = generate_groq_response(
-            system_prompt,
-            user_message,
-        )
+        try:
+            groq_response = generate_groq_response(
+                system_prompt,
+                user_message,
+            )
+
+        except ProviderError as error:
+            if error.fallback_allowed:
+                ollama_response = generate_ollama_response(
+                    system_prompt,
+                    user_message,
+                )
+
+                last_provider_used = "ollama"
+                return ollama_response
+
+            raise
 
         groq_failure_messages = [
-            "Groq API key is not configured yet.",
             (
                 "I am having trouble connecting to my AI service "
                 "right now. Please try again in a moment."

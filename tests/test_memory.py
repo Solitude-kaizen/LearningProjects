@@ -1,3 +1,7 @@
+import pytest
+
+import pytest
+
 from src.solitude_kaizen.memory import (
     load_memories,
     save_memories,
@@ -15,6 +19,7 @@ from src.solitude_kaizen.memory import (
     select_memories_for_context,
     build_memory_context,
 )
+
 from src.solitude_kaizen.conversation import (
     build_conversation_context,
     trim_conversation_history,
@@ -31,7 +36,10 @@ from src.solitude_kaizen.ai_service import (
     generate_openai_response,
     get_last_provider_used,
     get_active_provider,
+    ProviderError,
 )
+
+from src.solitude_kaizen.prompt import build_system_prompt
 
 def test_validate_importance():
     assert validate_importance("1") == 1
@@ -685,3 +693,221 @@ def test_generate_openai_response_handles_error(
     assert "simulated OpenAI failure" in captured.out
 
     assert "simulated OpenAI failure" not in response
+
+def test_provider_error_stores_details():
+    error = ProviderError(
+        provider="groq",
+        kind="rate_limit",
+        message="Too many requests",
+        retryable=True,
+    )
+
+    assert str(error) == "Too many requests"
+    assert error.provider == "groq"
+    assert error.kind == "rate_limit"
+    assert error.retryable is True
+
+def test_provider_error_stores_details():
+    error = ProviderError(
+        provider="groq",
+        kind="rate_limit",
+        message="Too many requests",
+        retryable=True,
+    )
+
+    assert str(error) == "Too many requests"
+    assert error.provider == "groq"
+    assert error.kind == "rate_limit"
+    assert error.retryable is True
+
+
+def test_generate_groq_response_raises_provider_error_without_key(
+    monkeypatch
+):
+    monkeypatch.delenv(
+        "GROQ_API_KEY",
+        raising=False,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_groq_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "groq"
+    assert error.kind == "missing_api_key"
+    assert error.retryable is False
+    assert str(error) == (
+        "Groq API key is not configured yet."
+    )
+
+def test_generate_groq_response_raises_provider_error_on_rate_limit(
+    monkeypatch
+):
+    class FakeRateLimitError(Exception):
+        pass
+
+    class FakeCompletions:
+        def create(self, *args, **kwargs):
+            raise FakeRateLimitError(
+                "Simulated Groq rate limit"
+            )
+
+    class FakeChat:
+        def __init__(self):
+            self.completions = FakeCompletions()
+
+    class FakeGroq:
+        def __init__(self, *args, **kwargs):
+            self.chat = FakeChat()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.RateLimitError",
+        FakeRateLimitError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.Groq",
+        FakeGroq,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_groq_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_groq_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "groq"
+    assert error.kind == "rate_limit"
+    assert error.retryable is True
+    assert str(error) == (
+        "Groq rate limit reached."
+    )
+
+def test_generate_response_falls_back_when_fallback_allowed(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "groq",
+    )
+
+    def fake_groq_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="groq",
+            kind="rate_limit",
+            message="Groq rate limit reached.",
+            retryable=True,
+            fallback_allowed=True,
+        )
+
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        return "Local fallback response"
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_groq_response",
+        fake_groq_response,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    response = generate_response(
+        "System prompt",
+        "Hello",
+    )
+
+    provider = get_last_provider_used()
+
+    assert response == "Local fallback response"
+    assert provider == "ollama"
+
+def test_generate_response_does_not_fallback_on_non_retryable_error(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "groq",
+    )
+
+    ollama_called = False
+
+    def fake_groq_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="groq",
+            kind="bad_request",
+            message="Invalid Groq request.",
+            retryable=False,
+        )
+
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        nonlocal ollama_called
+        ollama_called = True
+
+        return "This should not be used"
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_groq_response",
+        fake_groq_response,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "groq"
+    assert error.kind == "bad_request"
+    assert error.retryable is False
+    assert ollama_called is False
+
+def test_provider_error_stores_fallback_policy():
+    default_error = ProviderError(
+        provider="groq",
+        kind="bad_request",
+        message="Invalid request.",
+        retryable=False,
+    )
+
+    fallback_error = ProviderError(
+        provider="groq",
+        kind="authentication",
+        message="Authentication failed.",
+        retryable=False,
+        fallback_allowed=True,
+    )
+
+    assert default_error.fallback_allowed is False
+    assert fallback_error.fallback_allowed is True
