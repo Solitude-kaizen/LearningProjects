@@ -21,6 +21,7 @@ from conversation import (
     build_conversation_context,
     add_message_to_history,
     record_assistant_response,
+    prepare_user_turn,
 )
 from prompt import build_system_prompt
 from ai_service import (
@@ -256,9 +257,10 @@ while True:
     elif choice == "12":
         user_message = input("You: ")
 
-        conversation_context = build_conversation_context(
+        conversation_context = prepare_user_turn(
             conversation_history,
-            limit=6
+            user_message,
+            context_limit=6
         )
 
         add_message_to_history(

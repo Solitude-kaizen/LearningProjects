@@ -21,6 +21,8 @@ from src.solitude_kaizen.conversation import (
     create_conversation_message,
     add_message_to_history,
     record_assistant_response,
+    prepare_user_turn,
+    build_conversation_context,
 )
 from src.solitude_kaizen.ai_service import (
     generate_response,
@@ -617,4 +619,31 @@ def test_record_assistant_response():
     assert conversation_history[1] == {
         "role": "assistant",
         "content": "Hi there",
+    }
+
+
+def test_prepare_user_turn():
+    conversation_history = [
+        {
+            "role": "user",
+            "content": "What is Python?"
+        },
+        {
+            "role": "assistant",
+            "content": "Python is a programming language."
+        }
+    ]
+
+    conversation_context = prepare_user_turn(
+        conversation_history,
+        "Can you explain that more simply?"
+    )
+
+    assert "What is Python?" in conversation_context
+    assert "Python is a programming language." in conversation_context
+    assert "Can you explain that more simply?" not in conversation_context
+
+    assert conversation_history[-1] == {
+        "role": "user",
+        "content": "Can you explain that more simply?"
     }

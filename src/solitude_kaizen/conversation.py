@@ -54,3 +54,21 @@ def record_assistant_response(
         conversation_history,
         limit=limit
     )
+
+def prepare_user_turn(
+    conversation_history,
+    user_message,
+    context_limit=6
+):
+    conversation_context = build_conversation_context(
+        conversation_history,
+        limit=context_limit
+    )
+
+    add_message_to_history(
+        conversation_history,
+        "user",
+        user_message
+    )
+
+    return conversation_context
