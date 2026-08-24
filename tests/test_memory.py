@@ -1,7 +1,5 @@
 import pytest
 
-import pytest
-
 from src.solitude_kaizen.memory import (
     load_memories,
     save_memories,
@@ -309,6 +307,7 @@ def test_rank_memories():
     assert ranked[2]["text"] == "Recent lower-priority memory"
 
 def test_select_memories_for_context():
+
     memories = [
         {
             "text": "Memory A",
@@ -344,6 +343,7 @@ def test_select_memories_for_context():
     assert len(selected) == 2
     assert selected[0]["text"] == "Memory B"
     assert selected[1]["text"] == "Memory C"
+
 def test_build_memory_context():
     memories = [
         {
@@ -369,9 +369,6 @@ def test_build_memory_context():
     assert "Practice Python" in context
     assert "category: project" in context
     assert "importance: 5" in context
-
-from src.solitude_kaizen.prompt import build_system_prompt
-
 
 def test_build_system_prompt():
     memory_context = (
@@ -403,54 +400,6 @@ def test_generate_response_uses_groq(monkeypatch):
     )
 
     assert response == "Mock response to: Hello"
-
-def test_generate_groq_response_raises_provider_error_on_unknown_error(
-    monkeypatch,
-    capsys,
-):
-    class FakeCompletions:
-        def create(self, *args, **kwargs):
-            raise RuntimeError(
-                "Simulated Groq failure"
-            )
-
-    class FakeChat:
-        def __init__(self):
-            self.completions = FakeCompletions()
-
-    class FakeGroq:
-        def __init__(self, *args, **kwargs):
-            self.chat = FakeChat()
-
-    monkeypatch.setattr(
-        "src.solitude_kaizen.ai_service.Groq",
-        FakeGroq,
-    )
-
-    monkeypatch.setattr(
-        "src.solitude_kaizen.ai_service.get_groq_api_key",
-        lambda: "fake-key",
-    )
-
-    with pytest.raises(ProviderError) as error_info:
-        generate_groq_response(
-            "System prompt",
-            "Hello",
-        )
-
-    captured = capsys.readouterr()
-    error = error_info.value
-
-    assert error.provider == "groq"
-    assert error.kind == "unknown"
-    assert error.retryable is False
-    assert error.fallback_allowed is False
-    assert str(error) == "Unexpected Groq error."
-
-    assert "Groq unexpected error:" in captured.out
-    assert "RuntimeError" in captured.out
-    assert "Simulated Groq failure" not in captured.out
-
 def test_generate_ollama_response(monkeypatch):
     class FakeResponse:
         def raise_for_status(self):
@@ -521,25 +470,7 @@ def test_generate_response_falls_back_when_groq_key_is_missing(
 
     assert response == "Local fallback response"
     assert provider == "ollama"
-    def fake_ollama_response(system_prompt, user_message):
-        return "Local fallback response"
-
-    monkeypatch.setattr(
-        "src.solitude_kaizen.ai_service.generate_groq_response",
-        fake_groq_response
-    )
-
-    monkeypatch.setattr(
-        "src.solitude_kaizen.ai_service.generate_ollama_response",
-        fake_ollama_response
-    )
-
-    response = generate_response(
-        "System prompt",
-        "Hello"
-    )
-
-    assert response == "Local fallback response"
+    
 
 def test_provider_tracking_records_groq(monkeypatch):
     monkeypatch.setenv("AI_PROVIDER", "groq")
@@ -704,55 +635,44 @@ def test_prepare_user_turn():
         "content": "Can you explain that more simply?"
     }
 
-def test_generate_openai_response_handles_error(
+def test_generate_openai_response_raises_provider_error_on_unknown_error(
     monkeypatch,
-    capsys
+    capsys,
 ):
     monkeypatch.setenv(
         "OPENAI_API_KEY",
-        "test-key"
+        "test-key",
     )
 
     class FakeOpenAI:
         def __init__(self, api_key):
-            raise Exception(
-                "simulated OpenAI failure"
+            raise RuntimeError(
+                "Simulated OpenAI failure"
             )
 
     monkeypatch.setattr(
         "src.solitude_kaizen.ai_service.OpenAI",
-        FakeOpenAI
+        FakeOpenAI,
     )
 
-    response = generate_openai_response(
-        "System prompt",
-        "Hello"
-    )
+    with pytest.raises(ProviderError) as error_info:
+        generate_openai_response(
+            "System prompt",
+            "Hello",
+        )
 
     captured = capsys.readouterr()
+    error = error_info.value
 
-    assert response == (
-        "I am having trouble connecting to my AI service "
-        "right now. Please try again in a moment."
-    )
+    assert error.provider == "openai"
+    assert error.kind == "unknown"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == "Unexpected OpenAI error."
 
-    assert "OpenAI error:" in captured.out
-    assert "simulated OpenAI failure" in captured.out
-
-    assert "simulated OpenAI failure" not in response
-
-def test_provider_error_stores_details():
-    error = ProviderError(
-        provider="groq",
-        kind="rate_limit",
-        message="Too many requests",
-        retryable=True,
-    )
-
-    assert str(error) == "Too many requests"
-    assert error.provider == "groq"
-    assert error.kind == "rate_limit"
-    assert error.retryable is True
+    assert "OpenAI unexpected error:" in captured.out
+    assert "RuntimeError" in captured.out
+    assert "Simulated OpenAI failure" not in captured.out
 
 def test_provider_error_stores_details():
     error = ProviderError(
@@ -1110,4 +1030,309 @@ def test_generate_groq_response_raises_provider_error_on_bad_request(
     assert error.fallback_allowed is False
     assert str(error) == (
         "Groq rejected the request."
+    )
+
+def test_generate_groq_response_raises_provider_error_on_unknown_error(
+    monkeypatch,
+    capsys,
+):
+    class FakeCompletions:
+        def create(self, *args, **kwargs):
+            raise RuntimeError(
+                "Simulated Groq failure"
+            )
+
+    class FakeChat:
+        def __init__(self):
+            self.completions = FakeCompletions()
+
+    class FakeGroq:
+        def __init__(self, *args, **kwargs):
+            self.chat = FakeChat()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.Groq",
+        FakeGroq,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_groq_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_groq_response(
+            "System prompt",
+            "Hello",
+        )
+
+    captured = capsys.readouterr()
+    error = error_info.value
+
+    assert error.provider == "groq"
+    assert error.kind == "unknown"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == "Unexpected Groq error."
+
+    assert "Groq unexpected error:" in captured.out
+    assert "RuntimeError" in captured.out
+    assert "Simulated Groq failure" not in captured.out
+
+def test_generate_openai_response_raises_provider_error_without_key(
+    monkeypatch
+):
+    monkeypatch.delenv(
+        "OPENAI_API_KEY",
+        raising=False,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_openai_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "openai"
+    assert error.kind == "missing_api_key"
+    assert error.retryable is False
+    assert error.fallback_allowed is True
+    assert str(error) == (
+        "OpenAI API key is not configured yet."
+    )
+
+def test_generate_response_falls_back_from_openai_when_allowed(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "openai",
+    )
+
+    def fake_openai_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="openai",
+            kind="missing_api_key",
+            message="OpenAI API key is not configured yet.",
+            retryable=False,
+            fallback_allowed=True,
+        )
+
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        return "Local fallback response"
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_openai_response",
+        fake_openai_response,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    response = generate_response(
+        "System prompt",
+        "Hello",
+    )
+
+    provider = get_last_provider_used()
+
+    assert response == "Local fallback response"
+    assert provider == "ollama"
+
+def test_generate_openai_response_raises_provider_error_on_rate_limit(
+    monkeypatch
+):
+    class FakeOpenAIRateLimitError(Exception):
+        pass
+
+    class FakeResponses:
+        def create(self, *args, **kwargs):
+            raise FakeOpenAIRateLimitError(
+                "Simulated OpenAI rate limit"
+            )
+
+    class FakeOpenAI:
+        def __init__(self, *args, **kwargs):
+            self.responses = FakeResponses()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAIRateLimitError",
+        FakeOpenAIRateLimitError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAI",
+        FakeOpenAI,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_openai_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_openai_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "openai"
+    assert error.kind == "rate_limit"
+    assert error.retryable is True
+    assert error.fallback_allowed is True
+    assert str(error) == (
+        "OpenAI rate limit reached."
+    )
+
+def test_generate_openai_response_raises_provider_error_on_authentication(
+    monkeypatch
+):
+    class FakeOpenAIAuthenticationError(Exception):
+        pass
+
+    class FakeResponses:
+        def create(self, *args, **kwargs):
+            raise FakeOpenAIAuthenticationError(
+                "Simulated OpenAI authentication failure"
+            )
+
+    class FakeOpenAI:
+        def __init__(self, *args, **kwargs):
+            self.responses = FakeResponses()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAIAuthenticationError",
+        FakeOpenAIAuthenticationError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAI",
+        FakeOpenAI,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_openai_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_openai_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "openai"
+    assert error.kind == "authentication"
+    assert error.retryable is False
+    assert error.fallback_allowed is True
+    assert str(error) == (
+        "OpenAI authentication failed."
+    )
+
+def test_generate_openai_response_raises_provider_error_on_permission_denied(
+    monkeypatch
+):
+    class FakeOpenAIPermissionDeniedError(Exception):
+        pass
+
+    class FakeResponses:
+        def create(self, *args, **kwargs):
+            raise FakeOpenAIPermissionDeniedError(
+                "Simulated OpenAI permission failure"
+            )
+
+    class FakeOpenAI:
+        def __init__(self, *args, **kwargs):
+            self.responses = FakeResponses()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAIPermissionDeniedError",
+        FakeOpenAIPermissionDeniedError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAI",
+        FakeOpenAI,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_openai_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_openai_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "openai"
+    assert error.kind == "permission_denied"
+    assert error.retryable is False
+    assert error.fallback_allowed is True
+    assert str(error) == (
+        "OpenAI permission denied."
+    )
+
+def test_generate_openai_response_raises_provider_error_on_bad_request(
+    monkeypatch
+):
+    class FakeOpenAIBadRequestError(Exception):
+        pass
+
+    class FakeResponses:
+        def create(self, *args, **kwargs):
+            raise FakeOpenAIBadRequestError(
+                "Simulated OpenAI bad request"
+            )
+
+    class FakeOpenAI:
+        def __init__(self, *args, **kwargs):
+            self.responses = FakeResponses()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAIBadRequestError",
+        FakeOpenAIBadRequestError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAI",
+        FakeOpenAI,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_openai_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_openai_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "openai"
+    assert error.kind == "bad_request"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == (
+        "OpenAI rejected the request."
     )

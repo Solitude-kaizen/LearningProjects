@@ -12,7 +12,16 @@ from groq import (
     PermissionDeniedError,
     BadRequestError,
 )
-from openai import OpenAI
+from openai import (
+    OpenAI,
+    APIConnectionError as OpenAIAPIConnectionError,
+    APITimeoutError as OpenAIAPITimeoutError,
+    RateLimitError as OpenAIRateLimitError,
+    InternalServerError as OpenAIInternalServerError,
+    AuthenticationError as OpenAIAuthenticationError,
+    PermissionDeniedError as OpenAIPermissionDeniedError,
+    BadRequestError as OpenAIBadRequestError,
+)
 
 last_provider_used = None
 
@@ -192,7 +201,13 @@ def generate_openai_response(system_prompt, user_message):
     api_key = get_openai_api_key()
 
     if not api_key:
-        return "OpenAI API key is not configured yet."
+        raise ProviderError(
+        provider="openai",
+        kind="missing_api_key",
+        message="OpenAI API key is not configured yet.",
+        retryable=False,
+        fallback_allowed=True,
+    )
 
     try:
         client = OpenAI(api_key=api_key)
@@ -205,8 +220,82 @@ def generate_openai_response(system_prompt, user_message):
 
         return response.output_text
 
+    except OpenAIAPITimeoutError as error:
+        raise ProviderError(
+            provider="openai",
+            kind="timeout",
+            message="OpenAI request timed out.",
+            retryable=True,
+            fallback_allowed=True,
+        ) from error
+
+    except OpenAIAPIConnectionError as error:
+        raise ProviderError(
+            provider="openai",
+            kind="connection",
+            message="Could not connect to OpenAI.",
+            retryable=True,
+            fallback_allowed=True,
+        ) from error
+
+    except OpenAIRateLimitError as error:
+        raise ProviderError(
+            provider="openai",
+            kind="rate_limit",
+            message="OpenAI rate limit reached.",
+            retryable=True,
+            fallback_allowed=True,
+        ) from error
+
+    except OpenAIInternalServerError as error:
+        raise ProviderError(
+            provider="openai",
+            kind="server_error",
+            message="OpenAI server error.",
+            retryable=True,
+            fallback_allowed=True,
+        ) from error
+
+    except OpenAIAuthenticationError as error:
+        raise ProviderError(
+            provider="openai",
+            kind="authentication",
+            message="OpenAI authentication failed.",
+            retryable=False,
+            fallback_allowed=True,
+        ) from error
+
+    except OpenAIPermissionDeniedError as error:
+        raise ProviderError(
+            provider="openai",
+            kind="permission_denied",
+            message="OpenAI permission denied.",
+            retryable=False,
+            fallback_allowed=True,
+        ) from error
+
+    except OpenAIBadRequestError as error:
+        raise ProviderError(
+            provider="openai",
+            kind="bad_request",
+            message="OpenAI rejected the request.",
+            retryable=False,
+            fallback_allowed=False,
+        ) from error
+
     except Exception as error:
-        print("OpenAI error:", error)
+        print(
+            "OpenAI unexpected error:",
+            type(error).__name__,
+        )
+
+        raise ProviderError(
+            provider="openai",
+            kind="unknown",
+            message="Unexpected OpenAI error.",
+            retryable=False,
+            fallback_allowed=False,
+        ) from error
 
         return (
             "I am having trouble connecting to my AI service "
@@ -252,12 +341,26 @@ def generate_response(system_prompt, user_message):
         )
 
     if provider == "openai":
-        last_provider_used = "openai"
+        try:
+            openai_response = generate_openai_response(
+                system_prompt,
+                user_message,
+            )
 
-        return generate_openai_response(
-            system_prompt,
-            user_message,
-        )
+        except ProviderError as error:
+            if error.fallback_allowed:
+                ollama_response = generate_ollama_response(
+                    system_prompt,
+                    user_message,
+                )
+
+                last_provider_used = "ollama"
+                return ollama_response
+
+            raise
+
+        last_provider_used = "openai"
+        return openai_response
 
     last_provider_used = None
     return "No AI provider is currently configured."
