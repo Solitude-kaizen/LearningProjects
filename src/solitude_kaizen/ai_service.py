@@ -6,11 +6,11 @@ from groq import Groq
 from openai import OpenAI
 
 last_provider_used = None
+
 GROQ_MODEL = "openai/gpt-oss-20b"
 OLLAMA_MODEL = "qwen3:4b"
 OPENAI_MODEL = "gpt-5.6"
 
-last_provider_used = None 
 load_dotenv()
 
 def generate_ollama_response(system_prompt, user_message):
@@ -92,15 +92,24 @@ def generate_openai_response(system_prompt, user_message):
     if not api_key:
         return "OpenAI API key is not configured yet."
 
-    client = OpenAI(api_key=api_key)
+    try:
+        client = OpenAI(api_key=api_key)
 
-    response = client.responses.create(
-        model=OPENAI_MODEL,
-        instructions=system_prompt,
-        input=user_message,
-    )
+        response = client.responses.create(
+            model=OPENAI_MODEL,
+            instructions=system_prompt,
+            input=user_message,
+        )
 
-    return response.output_text
+        return response.output_text
+
+    except Exception as error:
+        print("OpenAI error:", error)
+
+        return (
+            "I am having trouble connecting to my AI service "
+            "right now. Please try again in a moment."
+        )
 
 def get_active_provider():
     return os.getenv("AI_PROVIDER", "groq").strip().lower()
@@ -157,13 +166,6 @@ def generate_response(system_prompt, user_message):
 
 def get_last_provider_used():
     return last_provider_used
-
-def test_get_active_provider_from_env(monkeypatch):
-    monkeypatch.setenv("AI_PROVIDER", "ollama")
-
-    provider = get_active_provider()
-
-    assert provider == "ollama"
 
 def get_provider_info():
     provider = get_active_provider()

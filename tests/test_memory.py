@@ -22,12 +22,13 @@ from src.solitude_kaizen.conversation import (
     add_message_to_history,
     record_assistant_response,
     prepare_user_turn,
-    build_conversation_context,
 )
+
 from src.solitude_kaizen.ai_service import (
     generate_response,
     generate_groq_response,
     generate_ollama_response,
+    generate_openai_response,
     get_last_provider_used,
     get_active_provider,
 )
@@ -647,3 +648,40 @@ def test_prepare_user_turn():
         "role": "user",
         "content": "Can you explain that more simply?"
     }
+
+def test_generate_openai_response_handles_error(
+    monkeypatch,
+    capsys
+):
+    monkeypatch.setenv(
+        "OPENAI_API_KEY",
+        "test-key"
+    )
+
+    class FakeOpenAI:
+        def __init__(self, api_key):
+            raise Exception(
+                "simulated OpenAI failure"
+            )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAI",
+        FakeOpenAI
+    )
+
+    response = generate_openai_response(
+        "System prompt",
+        "Hello"
+    )
+
+    captured = capsys.readouterr()
+
+    assert response == (
+        "I am having trouble connecting to my AI service "
+        "right now. Please try again in a moment."
+    )
+
+    assert "OpenAI error:" in captured.out
+    assert "simulated OpenAI failure" in captured.out
+
+    assert "simulated OpenAI failure" not in response
