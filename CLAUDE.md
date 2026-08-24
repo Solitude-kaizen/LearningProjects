@@ -122,4 +122,4 @@ Eventually use this environment to build real projects for:
 - Automation
 - AI applications
 - Portfolio development
-- lifetime assistance 
+- lifetime assistances
