@@ -29,6 +29,10 @@ GROQ_MODEL = "openai/gpt-oss-20b"
 OLLAMA_MODEL = "qwen3:4b"
 OPENAI_MODEL = "gpt-5.6"
 
+AI_UNAVAILABLE_MESSAGE = (
+    "All available AI providers are currently unavailable."
+)
+
 
 class ProviderError(Exception):
     def __init__(
@@ -347,11 +351,6 @@ def generate_openai_response(system_prompt, user_message):
             fallback_allowed=False,
         ) from error
 
-        return (
-            "I am having trouble connecting to my AI service "
-            "right now. Please try again in a moment."
-        )
-
 def get_active_provider():
     return os.getenv("AI_PROVIDER", "groq").strip().lower()
 
@@ -369,10 +368,18 @@ def generate_response(system_prompt, user_message):
 
         except ProviderError as error:
             if error.fallback_allowed:
-                ollama_response = generate_ollama_response(
-                    system_prompt,
-                    user_message,
-                )
+                try:
+                    ollama_response = generate_ollama_response(
+                        system_prompt,
+                        user_message,
+                    )
+
+                except ProviderError as fallback_error:
+                    if fallback_error.retryable:
+                        last_provider_used = None
+                        return AI_UNAVAILABLE_MESSAGE
+
+                    raise
 
                 last_provider_used = "ollama"
                 return ollama_response
@@ -399,10 +406,18 @@ def generate_response(system_prompt, user_message):
 
         except ProviderError as error:
             if error.fallback_allowed:
-                ollama_response = generate_ollama_response(
-                    system_prompt,
-                    user_message,
-                )
+                try:
+                    ollama_response = generate_ollama_response(
+                        system_prompt,
+                        user_message,
+                    )
+
+                except ProviderError as fallback_error:
+                    if fallback_error.retryable:
+                        last_provider_used = None
+                        return AI_UNAVAILABLE_MESSAGE
+
+                    raise
 
                 last_provider_used = "ollama"
                 return ollama_response
@@ -411,9 +426,6 @@ def generate_response(system_prompt, user_message):
 
         last_provider_used = "openai"
         return openai_response
-
-    last_provider_used = None
-    return "No AI provider is currently configured."
 
 def get_last_provider_used():
     return last_provider_used

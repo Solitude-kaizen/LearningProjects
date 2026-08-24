@@ -1516,3 +1516,111 @@ def test_generate_ollama_response_raises_provider_error_on_unknown_error(
 
     assert "Ollama unexpected error:" in captured.out
     assert "KeyError" in captured.out
+
+def test_generate_response_returns_unavailable_when_groq_and_ollama_fail(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "groq",
+    )
+
+    def fake_groq_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="groq",
+            kind="rate_limit",
+            message="Groq rate limit reached.",
+            retryable=True,
+            fallback_allowed=True,
+        )
+
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="ollama",
+            kind="connection",
+            message="Could not connect to Ollama.",
+            retryable=True,
+            fallback_allowed=False,
+        )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_groq_response",
+        fake_groq_response,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    response = generate_response(
+        "System prompt",
+        "Hello",
+    )
+
+    provider = get_last_provider_used()
+
+    assert response == (
+        "All available AI providers are currently unavailable."
+    )
+    assert provider is None
+
+def test_generate_response_returns_unavailable_when_openai_and_ollama_fail(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "openai",
+    )
+
+    def fake_openai_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="openai",
+            kind="rate_limit",
+            message="OpenAI rate limit reached.",
+            retryable=True,
+            fallback_allowed=True,
+        )
+
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="ollama",
+            kind="connection",
+            message="Could not connect to Ollama.",
+            retryable=True,
+            fallback_allowed=False,
+        )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_openai_response",
+        fake_openai_response,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    response = generate_response(
+        "System prompt",
+        "Hello",
+    )
+
+    provider = get_last_provider_used()
+
+    assert response == (
+        "All available AI providers are currently unavailable."
+    )
+    assert provider is None
