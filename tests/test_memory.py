@@ -1,4 +1,5 @@
 import pytest
+import requests
 
 from src.solitude_kaizen.memory import (
     load_memories,
@@ -470,7 +471,7 @@ def test_generate_response_falls_back_when_groq_key_is_missing(
 
     assert response == "Local fallback response"
     assert provider == "ollama"
-    
+
 
 def test_provider_tracking_records_groq(monkeypatch):
     monkeypatch.setenv("AI_PROVIDER", "groq")
@@ -1336,3 +1337,182 @@ def test_generate_openai_response_raises_provider_error_on_bad_request(
     assert str(error) == (
         "OpenAI rejected the request."
     )
+
+def test_generate_ollama_response_raises_provider_error_on_connection(
+    monkeypatch
+):
+    def fake_post(*args, **kwargs):
+        raise requests.exceptions.ConnectionError(
+            "Simulated Ollama connection failure"
+        )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.requests.post",
+        fake_post,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_ollama_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "ollama"
+    assert error.kind == "connection"
+    assert error.retryable is True
+    assert error.fallback_allowed is False
+    assert str(error) == (
+        "Could not connect to Ollama."
+    )
+
+def test_generate_ollama_response_raises_provider_error_on_timeout(
+    monkeypatch
+):
+    def fake_post(*args, **kwargs):
+        raise requests.exceptions.Timeout(
+            "Simulated Ollama timeout"
+        )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.requests.post",
+        fake_post,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_ollama_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "ollama"
+    assert error.kind == "timeout"
+    assert error.retryable is True
+    assert error.fallback_allowed is False
+    assert str(error) == (
+        "Ollama request timed out."
+    )
+
+def test_generate_ollama_response_raises_provider_error_on_server_error(
+    monkeypatch
+):
+    class FakeResponse:
+        status_code = 500
+
+        def raise_for_status(self):
+            error = requests.exceptions.HTTPError(
+                "Simulated Ollama server error"
+            )
+            error.response = self
+            raise error
+
+        def json(self):
+            return {
+                "response": "Should not be reached"
+            }
+
+    def fake_post(*args, **kwargs):
+        return FakeResponse()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.requests.post",
+        fake_post,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_ollama_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "ollama"
+    assert error.kind == "server_error"
+    assert error.retryable is True
+    assert error.fallback_allowed is False
+    assert str(error) == (
+        "Ollama server error."
+    )
+
+def test_generate_ollama_response_raises_provider_error_on_http_error(
+    monkeypatch
+):
+    class FakeResponse:
+        status_code = 400
+
+        def raise_for_status(self):
+            error = requests.exceptions.HTTPError(
+                "Simulated Ollama bad request"
+            )
+            error.response = self
+            raise error
+
+        def json(self):
+            return {
+                "response": "Should not be reached"
+            }
+
+    def fake_post(*args, **kwargs):
+        return FakeResponse()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.requests.post",
+        fake_post,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_ollama_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "ollama"
+    assert error.kind == "http_error"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == (
+        "Ollama rejected the request."
+    )
+
+def test_generate_ollama_response_raises_provider_error_on_unknown_error(
+    monkeypatch,
+    capsys,
+):
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {}
+
+    def fake_post(*args, **kwargs):
+        return FakeResponse()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.requests.post",
+        fake_post,
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_ollama_response(
+            "System prompt",
+            "Hello",
+        )
+
+    captured = capsys.readouterr()
+    error = error_info.value
+
+    assert error.provider == "ollama"
+    assert error.kind == "unknown"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == "Unexpected Ollama error."
+
+    assert "Ollama unexpected error:" in captured.out
+    assert "KeyError" in captured.out

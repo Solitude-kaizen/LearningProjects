@@ -73,13 +73,63 @@ def generate_ollama_response(system_prompt, user_message):
 
         return data["response"]
 
-    except Exception as error:
-        print("Ollama error:", error)
+    except requests.exceptions.Timeout as error:
+        raise ProviderError(
+            provider="ollama",
+            kind="timeout",
+            message="Ollama request timed out.",
+            retryable=True,
+            fallback_allowed=False,
+        ) from error
 
-        return (
-            "My local AI service is unavailable right now."
+    except requests.exceptions.ConnectionError as error:
+        raise ProviderError(
+            provider="ollama",
+            kind="connection",
+            message="Could not connect to Ollama.",
+            retryable=True,
+            fallback_allowed=False,
+        ) from error
+
+    except requests.exceptions.HTTPError as error:
+        status_code = None
+
+        if error.response is not None:
+            status_code = error.response.status_code
+
+        if (
+            status_code is not None
+            and 500 <= status_code < 600
+        ):
+            raise ProviderError(
+                provider="ollama",
+                kind="server_error",
+                message="Ollama server error.",
+                retryable=True,
+                fallback_allowed=False,
+            ) from error
+
+        raise ProviderError(
+            provider="ollama",
+            kind="http_error",
+            message="Ollama rejected the request.",
+            retryable=False,
+            fallback_allowed=False,
+        ) from error
+
+    except Exception as error:
+        print(
+            "Ollama unexpected error:",
+            type(error).__name__,
         )
 
+        raise ProviderError(
+            provider="ollama",
+            kind="unknown",
+            message="Unexpected Ollama error.",
+            retryable=False,
+            fallback_allowed=False,
+        ) from error
 
 def get_groq_api_key():
     return os.getenv("GROQ_API_KEY")
