@@ -404,10 +404,15 @@ def test_generate_response_uses_groq(monkeypatch):
 
     assert response == "Mock response to: Hello"
 
-def test_generate_groq_response_handles_error(monkeypatch):
+def test_generate_groq_response_raises_provider_error_on_unknown_error(
+    monkeypatch,
+    capsys,
+):
     class FakeCompletions:
         def create(self, *args, **kwargs):
-            raise RuntimeError("Simulated Groq failure")
+            raise RuntimeError(
+                "Simulated Groq failure"
+            )
 
     class FakeChat:
         def __init__(self):
@@ -419,26 +424,32 @@ def test_generate_groq_response_handles_error(monkeypatch):
 
     monkeypatch.setattr(
         "src.solitude_kaizen.ai_service.Groq",
-        FakeGroq
+        FakeGroq,
     )
 
     monkeypatch.setattr(
         "src.solitude_kaizen.ai_service.get_groq_api_key",
-        lambda: "fake-key"
+        lambda: "fake-key",
     )
 
-    response = generate_groq_response(
-        "System prompt",
-        "Hello"
-    )
+    with pytest.raises(ProviderError) as error_info:
+        generate_groq_response(
+            "System prompt",
+            "Hello",
+        )
 
-    assert (
-        response
-        == "I am having trouble connecting to my AI service "
-        "right now. Please try again in a moment."
-    )
+    captured = capsys.readouterr()
+    error = error_info.value
 
-    assert "Simulated Groq failure" not in response
+    assert error.provider == "groq"
+    assert error.kind == "unknown"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == "Unexpected Groq error."
+
+    assert "Groq unexpected error:" in captured.out
+    assert "RuntimeError" in captured.out
+    assert "Simulated Groq failure" not in captured.out
 
 def test_generate_ollama_response(monkeypatch):
     class FakeResponse:
@@ -465,15 +476,51 @@ def test_generate_ollama_response(monkeypatch):
 
     assert response == "Mock local response"
 
-def test_generate_response_falls_back_to_ollama(monkeypatch):
-    monkeypatch.setenv("AI_PROVIDER", "groq")
+def test_generate_response_falls_back_when_groq_key_is_missing(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "groq",
+    )
 
-    def fake_groq_response(system_prompt, user_message):
-        return (
-            "I am having trouble connecting to my AI service "
-            "right now. Please try again in a moment."
+    def fake_groq_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="groq",
+            kind="missing_api_key",
+            message="Groq API key is not configured yet.",
+            retryable=False,
+            fallback_allowed=True,
         )
 
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        return "Local fallback response"
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_groq_response",
+        fake_groq_response,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    response = generate_response(
+        "System prompt",
+        "Hello",
+    )
+
+    provider = get_last_provider_used()
+
+    assert response == "Local fallback response"
+    assert provider == "ollama"
     def fake_ollama_response(system_prompt, user_message):
         return "Local fallback response"
 
@@ -911,3 +958,156 @@ def test_provider_error_stores_fallback_policy():
 
     assert default_error.fallback_allowed is False
     assert fallback_error.fallback_allowed is True
+
+def test_generate_groq_response_raises_provider_error_on_authentication(
+    monkeypatch
+):
+    class FakeAuthenticationError(Exception):
+        pass
+
+    class FakeCompletions:
+        def create(self, *args, **kwargs):
+            raise FakeAuthenticationError(
+                "Simulated Groq authentication failure"
+            )
+
+    class FakeChat:
+        def __init__(self):
+            self.completions = FakeCompletions()
+
+    class FakeGroq:
+        def __init__(self, *args, **kwargs):
+            self.chat = FakeChat()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.AuthenticationError",
+        FakeAuthenticationError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.Groq",
+        FakeGroq,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_groq_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_groq_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "groq"
+    assert error.kind == "authentication"
+    assert error.retryable is False
+    assert error.fallback_allowed is True
+    assert str(error) == (
+        "Groq authentication failed."
+    )
+
+def test_generate_groq_response_raises_provider_error_on_permission_denied(
+    monkeypatch
+):
+    class FakePermissionDeniedError(Exception):
+        pass
+
+    class FakeCompletions:
+        def create(self, *args, **kwargs):
+            raise FakePermissionDeniedError(
+                "Simulated Groq permission failure"
+            )
+
+    class FakeChat:
+        def __init__(self):
+            self.completions = FakeCompletions()
+
+    class FakeGroq:
+        def __init__(self, *args, **kwargs):
+            self.chat = FakeChat()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.PermissionDeniedError",
+        FakePermissionDeniedError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.Groq",
+        FakeGroq,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_groq_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_groq_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "groq"
+    assert error.kind == "permission_denied"
+    assert error.retryable is False
+    assert error.fallback_allowed is True
+    assert str(error) == (
+        "Groq permission denied."
+    )
+
+def test_generate_groq_response_raises_provider_error_on_bad_request(
+    monkeypatch
+):
+    class FakeBadRequestError(Exception):
+        pass
+
+    class FakeCompletions:
+        def create(self, *args, **kwargs):
+            raise FakeBadRequestError(
+                "Simulated Groq bad request"
+            )
+
+    class FakeChat:
+        def __init__(self):
+            self.completions = FakeCompletions()
+
+    class FakeGroq:
+        def __init__(self, *args, **kwargs):
+            self.chat = FakeChat()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.BadRequestError",
+        FakeBadRequestError,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.Groq",
+        FakeGroq,
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.get_groq_api_key",
+        lambda: "fake-key",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        generate_groq_response(
+            "System prompt",
+            "Hello",
+        )
+
+    error = error_info.value
+
+    assert error.provider == "groq"
+    assert error.kind == "bad_request"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == (
+        "Groq rejected the request."
+    )

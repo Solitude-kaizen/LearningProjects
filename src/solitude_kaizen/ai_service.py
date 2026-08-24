@@ -110,7 +110,7 @@ def generate_groq_response(system_prompt, user_message):
         )
 
         return response.choices[0].message.content
-
+    
     except APITimeoutError as error:
         raise ProviderError(
             provider="groq",
@@ -147,13 +147,46 @@ def generate_groq_response(system_prompt, user_message):
             fallback_allowed=True
         ) from error
 
-    except Exception as error:
-        print("Groq error:", error)
+    except AuthenticationError as error:
+        raise ProviderError(
+            provider="groq",
+            kind="authentication",
+            message="Groq authentication failed.",
+            retryable=False,
+            fallback_allowed=True,
+        ) from error
 
-        return (
-            "I am having trouble connecting to my AI service "
-            "right now. Please try again in a moment."
+    except PermissionDeniedError as error:
+        raise ProviderError(
+            provider="groq",
+            kind="permission_denied",
+            message="Groq permission denied.",
+            retryable=False,
+            fallback_allowed=True,
+        ) from error
+
+    except BadRequestError as error:
+        raise ProviderError(
+            provider="groq",
+            kind="bad_request",
+            message="Groq rejected the request.",
+            retryable=False,
+            fallback_allowed=False,
+        ) from error
+    
+    except Exception as error:
+        print(
+            "Groq unexpected error:",
+            type(error).__name__,
         )
+
+        raise ProviderError(
+            provider="groq",
+            kind="unknown",
+            message="Unexpected Groq error.",
+            retryable=False,
+            fallback_allowed=False,
+        ) from error
 
 def generate_openai_response(system_prompt, user_message):
     api_key = get_openai_api_key()
@@ -207,24 +240,8 @@ def generate_response(system_prompt, user_message):
 
             raise
 
-        groq_failure_messages = [
-            (
-                "I am having trouble connecting to my AI service "
-                "right now. Please try again in a moment."
-            ),
-        ]
-
-        if groq_response not in groq_failure_messages:
-            last_provider_used = "groq"
-            return groq_response
-
-        ollama_response = generate_ollama_response(
-            system_prompt,
-            user_message,
-        )
-
-        last_provider_used = "ollama"
-        return ollama_response
+        last_provider_used = "groq"
+        return groq_response
 
     if provider == "ollama":
         last_provider_used = "ollama"
