@@ -32,6 +32,14 @@ OPENAI_MODEL = "gpt-5.6"
 GROQ_TIMEOUT_SECONDS = 20.0
 OPENAI_TIMEOUT_SECONDS = 20.0
 
+VALID_PROVIDERS = {
+    "groq",
+    "ollama",
+    "openai",
+}
+
+DEFAULT_PROVIDER = "groq"
+
 AI_UNAVAILABLE_MESSAGE = (
     "All available AI providers are currently unavailable."
 )
@@ -361,16 +369,10 @@ def generate_openai_response(system_prompt, user_message):
 def get_active_provider():
     provider = os.getenv(
         "AI_PROVIDER",
-        "groq",
+        DEFAULT_PROVIDER,
     ).strip().lower()
 
-    valid_providers = {
-        "groq",
-        "ollama",
-        "openai",
-    }
-
-    if provider not in valid_providers:
+    if provider not in VALID_PROVIDERS:
         raise ProviderError(
             provider="config",
             kind="invalid_provider",
