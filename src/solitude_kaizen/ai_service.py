@@ -29,6 +29,9 @@ GROQ_MODEL = "openai/gpt-oss-20b"
 OLLAMA_MODEL = "qwen3:4b"
 OPENAI_MODEL = "gpt-5.6"
 
+GROQ_TIMEOUT_SECONDS = 20.0
+OPENAI_TIMEOUT_SECONDS = 20.0
+
 AI_UNAVAILABLE_MESSAGE = (
     "All available AI providers are currently unavailable."
 )
@@ -156,7 +159,8 @@ def generate_groq_response(system_prompt, user_message):
         )
 
     try:
-        client = Groq(api_key=api_key)
+        client = Groq(api_key=api_key, 
+                      timeout=GROQ_TIMEOUT_SECONDS,)
 
         response = client.chat.completions.create(
             model=GROQ_MODEL,
@@ -264,7 +268,10 @@ def generate_openai_response(system_prompt, user_message):
     )
 
     try:
-        client = OpenAI(api_key=api_key)
+        client = OpenAI(
+    api_key=api_key,
+    timeout=OPENAI_TIMEOUT_SECONDS,
+    )
 
         response = client.responses.create(
             model=OPENAI_MODEL,

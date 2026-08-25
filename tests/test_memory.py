@@ -36,6 +36,8 @@ from src.solitude_kaizen.ai_service import (
     get_last_provider_used,
     get_active_provider,
     get_provider_info,
+    OPENAI_TIMEOUT_SECONDS,
+    GROQ_TIMEOUT_SECONDS,
     ProviderError,
 )
 
@@ -647,10 +649,14 @@ def test_generate_openai_response_raises_provider_error_on_unknown_error(
     )
 
     class FakeOpenAI:
-        def __init__(self, api_key):
+        def __init__(
+            self,
+            api_key,
+            timeout=None,
+        ):
             raise RuntimeError(
                 "Simulated OpenAI failure"
-            )
+        )
 
     monkeypatch.setattr(
         "src.solitude_kaizen.ai_service.OpenAI",
@@ -1662,3 +1668,99 @@ def test_get_provider_info_raises_provider_error_on_invalid_provider(
     assert error.kind == "invalid_provider"
     assert error.retryable is False
     assert error.fallback_allowed is False
+
+def test_generate_openai_response_uses_configured_timeout(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "OPENAI_API_KEY",
+        "test-key",
+    )
+
+    captured_timeout = {}
+
+    class FakeResponse:
+        output_text = "Test response"
+
+    class FakeResponses:
+        def create(
+            self,
+            model,
+            instructions,
+            input,
+        ):
+            return FakeResponse()
+
+    class FakeOpenAI:
+        def __init__(
+            self,
+            api_key,
+            timeout=None,
+        ):
+            captured_timeout["value"] = timeout
+            self.responses = FakeResponses()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OpenAI",
+        FakeOpenAI,
+    )
+
+    response = generate_openai_response(
+        "System prompt",
+        "Hello",
+    )
+
+    assert response == "Test response"
+    assert captured_timeout["value"] == OPENAI_TIMEOUT_SECONDS
+
+def test_generate_groq_response_uses_configured_timeout(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "GROQ_API_KEY",
+        "test-key",
+    )
+
+    captured_timeout = {}
+
+    class FakeMessage:
+        content = "Test response"
+
+    class FakeChoice:
+        message = FakeMessage()
+
+    class FakeResponse:
+        choices = [FakeChoice()]
+
+    class FakeCompletions:
+        def create(
+            self,
+            model,
+            messages,
+        ):
+            return FakeResponse()
+
+    class FakeChat:
+        completions = FakeCompletions()
+
+    class FakeGroq:
+        def __init__(
+            self,
+            api_key,
+            timeout=None,
+        ):
+            captured_timeout["value"] = timeout
+            self.chat = FakeChat()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.Groq",
+        FakeGroq,
+    )
+
+    response = generate_groq_response(
+        "System prompt",
+        "Hello",
+    )
+
+    assert response == "Test response"
+    assert captured_timeout["value"] == GROQ_TIMEOUT_SECONDS
