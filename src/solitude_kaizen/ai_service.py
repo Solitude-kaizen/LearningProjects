@@ -352,7 +352,27 @@ def generate_openai_response(system_prompt, user_message):
         ) from error
 
 def get_active_provider():
-    return os.getenv("AI_PROVIDER", "groq").strip().lower()
+    provider = os.getenv(
+        "AI_PROVIDER",
+        "groq",
+    ).strip().lower()
+
+    valid_providers = {
+        "groq",
+        "ollama",
+        "openai",
+    }
+
+    if provider not in valid_providers:
+        raise ProviderError(
+            provider="config",
+            kind="invalid_provider",
+            message="Invalid AI provider configuration.",
+            retryable=False,
+            fallback_allowed=False,
+        )
+
+    return provider
 
 def generate_response(system_prompt, user_message):
     global last_provider_used

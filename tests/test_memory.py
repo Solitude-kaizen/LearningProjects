@@ -35,6 +35,7 @@ from src.solitude_kaizen.ai_service import (
     generate_openai_response,
     get_last_provider_used,
     get_active_provider,
+    get_provider_info,
     ProviderError,
 )
 
@@ -1624,3 +1625,40 @@ def test_generate_response_returns_unavailable_when_openai_and_ollama_fail(
         "All available AI providers are currently unavailable."
     )
     assert provider is None
+
+def test_get_active_provider_raises_provider_error_on_invalid_provider(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "banana",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        get_active_provider()
+
+    error = error_info.value
+
+    assert error.provider == "config"
+    assert error.kind == "invalid_provider"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
+    assert str(error) == "Invalid AI provider configuration."
+
+def test_get_provider_info_raises_provider_error_on_invalid_provider(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "banana",
+    )
+
+    with pytest.raises(ProviderError) as error_info:
+        get_provider_info()
+
+    error = error_info.value
+
+    assert error.provider == "config"
+    assert error.kind == "invalid_provider"
+    assert error.retryable is False
+    assert error.fallback_allowed is False
