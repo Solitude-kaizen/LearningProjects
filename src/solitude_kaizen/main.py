@@ -1,4 +1,4 @@
-from memory import (
+from .memory import (
     load_profile,
     save_profile,
     load_memories,
@@ -17,14 +17,15 @@ from memory import (
     build_memory_context,
 )
 
-from conversation import (
+from .conversation import (
     build_conversation_context,
     add_message_to_history,
     record_assistant_response,
     prepare_user_turn,
 )
-from prompt import build_system_prompt
-from ai_service import (
+from .prompt import build_system_prompt
+
+from .ai_service import (
     generate_response,
     get_active_provider,
     get_last_provider_used,
