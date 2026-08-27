@@ -963,10 +963,14 @@ Return to the last known-good Git checkpoint and diagnose from there.
 
 Solitude-Kaizen development follows these principles:
 
-> Reliability before variety.  
-> Classification before retry.  
-> Fallback before failure.  
-> Independence before convenience.  
+> Reliability before variety.
+>
+> Classification before retry.
+>
+> Fallback before failure.
+>
+> Independence before convenience.
+>
 > Simplicity before infrastructure.
 
 Troubleshooting should preserve those principles.
