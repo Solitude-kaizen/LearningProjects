@@ -641,6 +641,8 @@ def test_prepare_user_turn():
         "content": "Can you explain that more simply?"
     }
 
+    assert len(conversation_history) == 3
+
 def test_generate_openai_response_raises_provider_error_on_unknown_error(
     monkeypatch,
     capsys,

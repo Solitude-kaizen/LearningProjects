@@ -19,7 +19,6 @@ from .memory import (
 
 from .conversation import (
     build_conversation_context,
-    add_message_to_history,
     record_assistant_response,
     prepare_user_turn,
 )
@@ -265,12 +264,6 @@ while True:
             context_limit=6
         )
 
-        add_message_to_history(
-            conversation_history,
-            "user",
-            user_message
-        )
-
         memory_context = build_memory_context(
             memories,
             limit=5
@@ -299,12 +292,6 @@ while True:
         print()
         print("Solitude-Kaizen:")
         print(response)
-
-        add_message_to_history(
-            conversation_history,
-            "assistant",
-            response
-        )
 
         record_assistant_response(
         conversation_history,
