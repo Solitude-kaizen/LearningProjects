@@ -1773,6 +1773,7 @@ def test_generate_ollama_response_uses_configured_timeout(
     monkeypatch
 ):
     captured_timeout = {}
+    test_timeout = 37.0
 
     class FakeResponse:
         def raise_for_status(self):
@@ -1780,16 +1781,17 @@ def test_generate_ollama_response_uses_configured_timeout(
 
         def json(self):
             return {
-                "response": "Test response",
+                "response": "Test response"
             }
 
-    def fake_post(
-        url,
-        json,
-        timeout=None,
-    ):
-        captured_timeout["value"] = timeout
+    def fake_post(*args, **kwargs):
+        captured_timeout["value"] = kwargs["timeout"]
         return FakeResponse()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.OLLAMA_TIMEOUT_SECONDS",
+        test_timeout,
+    )
 
     monkeypatch.setattr(
         "src.solitude_kaizen.ai_service.requests.post",
@@ -1802,7 +1804,7 @@ def test_generate_ollama_response_uses_configured_timeout(
     )
 
     assert response == "Test response"
-    assert captured_timeout["value"] == OLLAMA_TIMEOUT_SECONDS
+    assert captured_timeout["value"] == test_timeout
 
 def test_generate_ollama_response_uses_configured_model(
     monkeypatch

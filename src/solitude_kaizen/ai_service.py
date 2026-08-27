@@ -81,7 +81,7 @@ def generate_ollama_response(system_prompt, user_message):
                 "prompt": prompt,
                 "stream": False,
             },
-            timeout=120,
+            timeout=OLLAMA_TIMEOUT_SECONDS,
         )
 
         response.raise_for_status()
