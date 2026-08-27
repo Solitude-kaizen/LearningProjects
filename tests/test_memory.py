@@ -38,6 +38,7 @@ from src.solitude_kaizen.ai_service import (
     get_provider_info,
     OPENAI_TIMEOUT_SECONDS,
     GROQ_TIMEOUT_SECONDS,
+    OLLAMA_TIMEOUT_SECONDS,
     ProviderError,
 )
 
@@ -1764,3 +1765,39 @@ def test_generate_groq_response_uses_configured_timeout(
 
     assert response == "Test response"
     assert captured_timeout["value"] == GROQ_TIMEOUT_SECONDS
+
+def test_generate_ollama_response_uses_configured_timeout(
+    monkeypatch
+):
+    captured_timeout = {}
+
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {
+                "response": "Test response",
+            }
+
+    def fake_post(
+        url,
+        json,
+        timeout=None,
+    ):
+        captured_timeout["value"] = timeout
+        return FakeResponse()
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.requests.post",
+        fake_post,
+    )
+
+    response = generate_ollama_response(
+        "System prompt",
+        "Hello",
+    )
+
+    assert response == "Test response"
+    assert captured_timeout["value"] == OLLAMA_TIMEOUT_SECONDS
+
