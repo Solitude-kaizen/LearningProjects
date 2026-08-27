@@ -26,8 +26,9 @@ from openai import (
 last_provider_used = None
 
 GROQ_MODEL = "openai/gpt-oss-20b"
-OLLAMA_MODEL = "qwen3:4b"
+OLLAMA_MODEL = "qwen3:4b-instruct"
 OPENAI_MODEL = "gpt-5.6"
+
 
 OLLAMA_TIMEOUT_SECONDS = 120.0
 OPENAI_TIMEOUT_SECONDS = 60.0
@@ -67,10 +68,10 @@ load_dotenv()
 
 def generate_ollama_response(system_prompt, user_message):
     prompt = (
-        f"{system_prompt}\n\n"
-        f"User: {user_message}\n"
-        "Solitude-Kaizen:"
-    )
+    f"{system_prompt}\n\n"
+    f"User: {user_message}\n"
+    "Solitude-Kaizen:"
+)
 
     try:
         response = requests.post(
