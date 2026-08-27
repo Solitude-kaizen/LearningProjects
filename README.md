@@ -1,17 +1,247 @@
-# My First Project
+# Solitude-Kaizen
 
-This is my first project using VS Code and Git.
+Solitude-Kaizen is a personal AI assistant project built as a long-term learning project in Python.
 
-## What I'm Learning
+The project focuses on building an AI companion whose identity, memory, context, and behavior remain independent from any single AI provider.
 
-I am learning professional software development using VS Code, Git, GitHub, and AI-assisted development.
+> One companion, many replaceable brains.
 
-## Next Goal
+## Project Status
 
-Build my programming and AI skills step by step.
+**V1 is currently in development.**
 
-## Development Environment
+The current version is a command-line application with:
+
+- Persistent local memory
+- Short-term conversation history
+- Context-aware prompting
+- Multiple AI providers
+- Automatic cloud-to-local fallback
+- Structured provider error handling
+- Provider status and diagnostics
+- Local Ollama support
+- Automated tests
+
+## AI Providers
+
+Solitude-Kaizen currently supports:
+
+| Provider | Type | Purpose |
+| --- | --- | --- |
+| Groq | Cloud | Default AI provider |
+| Ollama | Local | Local provider and fallback |
+| OpenAI | Cloud | Optional provider |
+
+The current local Ollama model is:
+
+```text
+qwen3:4b-instruct
+
+```
+
+When an eligible Groq or OpenAI failure occurs, Solitude-Kaizen can automatically fall back to Ollama.
+
+## Core Design Principle
+
+Solitude-Kaizen owns:
+
+- Identity
+- Memory
+- Conversation context
+- Behavior
+- Provider routing
+
+AI providers supply replaceable inference.
+
+This keeps the project from becoming permanently dependent on one AI service.
+
+> One companion, many replaceable brains.
+
+## Requirements
 
 Solitude-Kaizen V1 is currently tested with:
 
-- Python 3.14.7
+```text
+Python 3.14.7
+```
+
+Runtime dependencies are pinned in:
+
+```text
+requirements.txt
+```
+
+Development dependencies are stored in:
+
+```text
+requirements-dev.txt
+```
+
+## Installation
+
+Clone the repository and enter the project directory.
+
+Install the development dependencies:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+```
+
+## Environment Configuration
+
+Create your local `.env` file from `.env.example`.
+
+PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Choose the AI provider:
+
+```env
+AI_PROVIDER=groq
+```
+
+Valid values are:
+
+```text
+groq
+ollama
+openai
+```
+
+For Groq:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+For OpenAI:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Ollama runs locally and does not require an API key.
+
+Never commit your real `.env` file or API keys.
+
+## Local Ollama Setup
+
+Install Ollama separately, then download the local model:
+
+```powershell
+ollama pull qwen3:4b-instruct
+```
+
+Verify the model is installed:
+
+```powershell
+ollama list
+```
+
+The Ollama service must be available at:
+
+```text
+http://localhost:11434
+```
+
+## Running Solitude-Kaizen
+
+From the project root:
+
+```powershell
+python -m src.solitude_kaizen.main
+```
+
+The CLI currently provides options for:
+
+- Viewing and changing goals
+- Managing memories
+- Searching memories
+- Filtering and ranking memories
+- Talking with Solitude-Kaizen
+- Viewing the active AI provider
+- Clearing conversation history
+- Viewing conversation status
+
+## Running Tests
+
+Run the automated test suite with:
+
+```powershell
+python -m pytest -q
+```
+
+The project currently has **61 passing tests** covering memory, conversation handling, provider routing, fallback behavior, error handling, configuration, and timeout behavior.
+
+## Memory
+
+Long-term memories are stored locally.
+
+Memories support:
+
+- Categories
+- Importance levels
+- Timestamps
+- Search
+- Filtering
+- Ranking
+- Context selection
+
+Short-term conversation history currently exists only while the program is running.
+
+## Reliability
+
+The current reliability philosophy is:
+
+> Reliability before variety.  
+> Classification before retry.  
+> Fallback before failure.  
+> Independence before convenience.  
+> Simplicity before infrastructure.
+
+Provider failures use structured internal errors rather than user-visible sentences as control signals.
+
+Providers are recorded as successfully used only after they actually return a response.
+
+## Security
+
+- `.env` is ignored by Git.
+- `.env.example` contains placeholders only.
+- API keys should never be stored in the memory system.
+- Dependencies are pinned to tested versions.
+- Real secrets should never be committed to Git history.
+
+## Current V1 Limitations
+
+V1 intentionally remains focused.
+
+Not currently included:
+
+- GUI
+- Voice interaction
+- Web search
+- Autonomous agents
+- Computer control
+- Discord integration
+- Large provider frameworks
+- Persistent conversation history between program launches
+
+These may be considered in future versions after the core system is stable.
+
+## Development Philosophy
+
+Solitude-Kaizen is also a learning project.
+
+Changes are developed incrementally:
+
+1. Understand the problem.
+2. Make a small change.
+3. Test the behavior.
+4. Verify it in the real application when appropriate.
+5. Commit a clean Git checkpoint.
+6. Continue improving.
+
+The goal is not only to build an AI assistant, but to understand the engineering behind it.
