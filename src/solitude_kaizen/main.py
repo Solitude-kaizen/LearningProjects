@@ -30,6 +30,7 @@ from .ai_service import (
     get_active_provider,
     get_last_provider_used,
     get_provider_info,
+    ProviderError,
 )
 
 name = "Solitude-Kaizen"
@@ -280,10 +281,20 @@ while True:
             conversation_context
         )
 
-        response = generate_response(
-            system_prompt,
-            user_message
-        )
+        try:
+            response = generate_response(
+                system_prompt,
+                user_message
+            )
+
+        except ProviderError as error:
+            print()
+            print("Solitude-Kaizen:")
+            print(str(error))
+            print(
+                f"Diagnostic: {error.provider}/{error.kind}"
+            )
+            continue
 
         print()
         print("Solitude-Kaizen:")
