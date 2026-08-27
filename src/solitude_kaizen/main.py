@@ -18,7 +18,6 @@ from .memory import (
 )
 
 from .conversation import (
-    build_conversation_context,
     record_assistant_response,
     prepare_user_turn,
 )
@@ -281,6 +280,8 @@ while True:
             )
 
         except ProviderError as error:
+            conversation_history.pop()
+
             print()
             print("Solitude-Kaizen:")
             print(str(error))
@@ -305,7 +306,16 @@ while True:
             print("[Provider:", provider_used + "]")
 
     elif choice == "13":
-        provider_info = get_provider_info()
+        try:
+            provider_info = get_provider_info()
+
+        except ProviderError as error:
+            print()
+            print("Could not read AI provider configuration.")
+            print(
+                f"Diagnostic: {error.provider}/{error.kind}"
+            )
+            continue
 
         print()
         print("--- AI Provider ---")
