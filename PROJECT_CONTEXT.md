@@ -1,178 +1,611 @@
-# LearningProjects — Project Context
+# Solitude-Kaizen - Project Context
 
-## Project Purpose
+## Purpose
 
-This project is my professional learning and development environment.
+Solitude-Kaizen is the flagship AI project inside the LearningProjects repository.
 
-The goal is to learn how to use:
-- VS Code
-- Git
-- GitHub
-- AI coding assistants
-- AI research tools
-- Python
-- JavaScript/Node.js
-- Project organization
-- Automation
+It is being built as both:
+
+1. A usable personal AI assistant.
+2. A long-term software engineering learning project.
+
+The goal is to understand the technologies behind the system rather than simply assembling tools without understanding them.
+
+## Core Principle
+
+> One companion, many replaceable brains.
+
+Solitude-Kaizen owns:
+
+- Identity
+- Memory
+- Conversation context
+- Behavior
+- Provider routing
+
+AI providers supply replaceable inference.
+
+The system should not become permanently dependent on one AI provider.
 
 ## Current Status
 
-Completed:
-- VS Code installed
-- Git installed
-- Git PATH configured
-- Git user configured
-- Local Git repository created
-- First Git commit created
-- GitHub repository created
-- Local repository connected to GitHub
-- Main branch pushed to GitHub
+Solitude-Kaizen V1 is currently in development.
 
-## Current Project
+Current verified state:
 
-LearningProjects
+- Command-line interface working
+- Persistent local memory working
+- Short-term conversation history working
+- Memory ranking and context selection working
+- Groq cloud provider working
+- OpenAI provider supported
+- Ollama local provider working
+- Automatic cloud-to-local fallback working
+- Structured provider error handling working
+- CLI provider errors handled without raw tracebacks
+- Provider tracking working
+- Configuration validation working
+- Explicit provider timeouts configured
+- Dependencies pinned
+- Secret exposure checks completed
+- Public README updated
+- Architecture documentation completed
+- Roadmap documentation completed
+- Troubleshooting documentation completed
+- Learning notes completed
+- 61 automated tests passing
 
-Local location:
+## Development Environment
 
+Current development environment:
+
+- Windows
+- VS Code
+- Git
+- GitHub
+- Python 3.14.7
+- Ollama
+
+Local repository:
+
+```text
 C:\Dev\Projects\LearniningProjects
 
-GitHub:
+```
 
+GitHub repository:
+
+```text
 https://github.com/Solitude-Kaizen/LearningProjects
+```
 
-## Current Goal
+Primary package:
 
-Build a professional AI-assisted development environment that can eventually be used for:
+```text
+src/solitude_kaizen/
+```
 
-- HR projects
-- Academic research
-- Business projects
-- AI automation
-- Marketing projects
-- Software development
-- Portfolio projects
-- Lifetime Assistance
+## Current AI Providers
 
-## Working Rules
+### Groq
 
-1. Explain technical concepts in simple language.
-2. Teach step-by-step.
-3. Do not skip important setup steps.
-4. Verify each major step before continuing.
-5. Do not install unnecessary software.
+Role:
+
+- Default cloud provider
+
+Current model:
+
+```text
+openai/gpt-oss-20b
+```
+
+Configured timeout:
+
+```text
+20 seconds
+```
+
+### Ollama
+
+Role:
+
+- Local provider
+- Local fallback when an eligible cloud-provider failure occurs
+
+Current model:
+
+```text
+qwen3:4b-instruct
+```
+
+Configured timeout:
+
+```text
+120 seconds
+```
+
+The instruct model is used instead of the Qwen3 thinking variant because it provides faster and more predictable fallback responses.
+
+### OpenAI
+
+Role:
+
+- Optional cloud provider
+
+Current model:
+
+```text
+gpt-5.6
+```
+
+Configured timeout:
+
+```text
+60 seconds
+```
+
+OpenAI is optional and should not be required for Solitude-Kaizen to function.
+
+## Provider Reliability Architecture
+
+Provider-specific functions raise structured:
+
+```text
+ProviderError
+```
+
+Current fields:
+
+```text
+provider
+kind
+message
+retryable
+fallback_allowed
+```
+
+Important rule:
+
+> Never use a user-visible sentence as an internal error signal.
+
+The router decides whether fallback is allowed.
+
+Current cloud fallback paths:
+
+```text
+Groq
+  -> eligible failure
+  -> Ollama
+```
+
+```text
+OpenAI
+  -> eligible failure
+  -> Ollama
+```
+
+Fallback is bounded and intentionally one-way.
+
+Direct Ollama failures do not automatically route back to cloud providers.
+
+## Provider Tracking
+
+`last_provider_used` means:
+
+> The provider that successfully produced the response for the most recent request attempt.
+
+Every new request begins with:
+
+```text
+last_provider_used = None
+```
+
+A provider is recorded only after successful inference.
+
+Failed requests must not retain stale provider state from previous turns.
+
+## Configuration
+
+Valid provider values:
+
+```text
+groq
+ollama
+openai
+```
+
+Default provider:
+
+```text
+groq
+```
+
+Invalid provider configuration raises:
+
+```text
+provider = config
+kind = invalid_provider
+```
+
+Configuration is loaded from environment variables and `.env`.
+
+## Security
+
+Important security rules:
+
+- `.env` must never be committed.
+- `.env.example` contains placeholders only.
+- API keys must never be stored in the memory system.
+- Real secrets must never be included in tracked documentation.
+- Dependencies are pinned to tested versions.
+- Git history has been checked for API-key exposure.
+
+Dependency files:
+
+```text
+requirements.txt
+requirements-dev.txt
+```
+
+## Memory Architecture
+
+Long-term memory is stored locally.
+
+Current capabilities include:
+
+- Creation
+- Loading
+- Saving
+- Legacy normalization
+- Categories
+- Importance
+- Timestamps
+- Search
+- Forgetting
+- Category filtering
+- Importance sorting
+- Recency sorting
+- Ranking
+- Context selection
+- Prompt context construction
+
+Current memory schema:
+
+```json
+{
+  "text": "...",
+  "category": "...",
+  "importance": 3,
+  "created_at": "..."
+}
+```
+
+Never store passwords, API keys, or other secrets as memories.
+
+## Conversation Architecture
+
+Conversation history is currently short-term and exists only while the application is running.
+
+Important behavior:
+
+1. Previous conversation context is built before adding the current user message.
+2. The current user message is recorded once.
+3. The current message is separately sent to the AI provider.
+4. The assistant response is recorded once.
+5. Conversation history is trimmed to a bounded size.
+6. A failed AI turn removes the unanswered user entry.
+
+Current limits:
+
+```text
+Prompt conversation context: 6 recent messages
+Stored short-term history: 20 messages
+```
+
+## Important Modules
+
+### `main.py`
+
+Responsibilities:
+
+- CLI menu
+- User interaction
+- Memory commands
+- Conversation flow
+- CLI error boundary
+- Provider display
+
+### `ai_service.py`
+
+Responsibilities:
+
+- Provider configuration
+- Groq adapter
+- OpenAI adapter
+- Ollama adapter
+- Provider errors
+- Provider routing
+- Cloud-to-local fallback
+- Provider tracking
+- Timeout configuration
+
+### `memory.py`
+
+Responsibilities:
+
+- Persistent memory storage
+- Validation
+- Normalization
+- Search
+- Filtering
+- Ranking
+- Context selection
+
+### `conversation.py`
+
+Responsibilities:
+
+- Conversation message creation
+- Conversation history management
+- Context construction
+- History trimming
+- User-turn preparation
+- Assistant-response recording
+
+### `prompt.py`
+
+Responsibilities:
+
+- Constructing the Solitude-Kaizen system prompt
+- Combining memory context and recent conversation context
+
+## Testing
+
+Run:
+
+```powershell
+python -m pytest -q
+```
+
+Current verified baseline:
+
+```text
+61 passed
+```
+
+Tests cover:
+
+- Memory
+- Conversation handling
+- Prompt construction
+- Provider configuration
+- Provider errors
+- Provider fallback
+- Provider tracking
+- Timeouts
+- Ollama requests
+- Groq behavior
+- OpenAI behavior
+- Failure handling
+
+The number of collected tests should be monitored because duplicate Python test-function names can silently replace earlier definitions.
+
+## Development Workflow
+
+Normal workflow:
+
+```text
+Inspect
+  -> understand
+  -> make one focused change
+  -> test
+  -> live-test when appropriate
+  -> inspect Git diff
+  -> commit
+  -> push
+  -> verify clean
+```
+
+Common Git commands:
+
+```powershell
+git status
+git diff
+git add <intended-files>
+git diff --cached
+git commit -m "Meaningful message"
+git push
+git status
+```
+
+Use:
+
+```powershell
+python -m pytest -q
+```
+
+for the test suite.
+
+## Development Rules
+
+1. Understand changes before adding them.
+2. Prefer small changes over large rewrites.
+3. Test after meaningful code changes.
+4. Use live integration tests when mocks are insufficient.
+5. Diagnose failures before changing configuration.
 6. Prefer safe and reversible changes.
-7. Never disable security features just to bypass an error.
-8. Use Git checkpoints before major changes.
-9. Keep project files organized.
-10. When something fails, diagnose the cause before changing settings.
+7. Do not disable security controls to bypass errors.
+8. Avoid unnecessary dependencies.
+9. Do not multiply retry systems.
+10. Keep provider-specific behavior inside provider adapters.
+11. Keep identity and memory independent from providers.
+12. Reliability is more important than provider variety.
+13. Keep Git commits logically focused.
+14. Verify the working tree is clean after checkpoints.
 
-## Learning Style
+## Reliability Philosophy
 
-I am learning development from the beginning.
+> Reliability before variety.
+>
+> Classification before retry.
+>
+> Fallback before failure.
+>
+> Independence before convenience.
+>
+> Simplicity before infrastructure.
 
-When teaching:
-- Give one step at a time.
-- Explain what each command does.
-- Show what result I should expect.
-- Stop and troubleshoot if the result is different.
-- Avoid assuming I already understand programming terminology.
+## V1 Scope
 
-## Next Steps
+V1 should remain focused on a reliable personal AI assistant foundation.
 
-1. Create professional project structure.
-2. Create AI project instructions.
-3. Learn Git daily workflow.
-4. Set up AI-assisted development.
-5. Learn Python basics.
-6. Learn Node.js basics.
-7. Build the first real project.
-8. Maintain the project using Git and GitHub.
-## Health & Fitness Assistance
+Included in V1:
 
-Help me build an athletic, disciplined, and capable body through safe home training and practical nutrition.
-
-Focus on:
-- Strength
-- Endurance
-- Agility
-- Balance
-- Coordination
-- Mobility
-- Core strength
-- Recovery
-- Healthy nutrition
-- Hydration
-
-Training should primarily use bodyweight and minimal home equipment.
-
-For nutrition:
-- Prioritize balanced meals and adequate protein.
-- Use affordable, ordinary foods when possible.
-- Avoid extreme diets and unsafe supplements.
-
-For training:
-- Explain exercises step-by-step.
-- Progress gradually.
-- Include warm-ups and recovery.
-- Adapt workouts to my available equipment and fitness level.
-- Prioritize proper technique and safety.
-
-The "assassin" concept refers to fictional/athletic qualities such as discipline, agility, speed, balance, and conditioning—not training to harm people.
-
-When health issues, injuries, or symptoms are involved, provide general information and recommend appropriate professional medical advice rather than diagnosing.
-## Solitude-Kaizen G�� Lifetime AI Companion
-
-Solitude-Kaizen is the long-term flagship project of LearningProjects.
-
-### Mission
-
-Build and continuously improve a personal AI companion that grows alongside my learning, career, projects, and personal development.
-
-Solitude-Kaizen should help strengthen my ability to think, learn, build, and make decisions rather than replacing those abilities.
-
-### V1 Target
-
-Target date:
-
-September 16, 2026
-
-The goal for V1 is to create a usable personal AI companion with a clean architecture that can continue evolving after V1.
-
-### Planned V1 Capabilities
-
-- Conversational AI
-- Defined companion identity and personality
 - Persistent local memory
-- Learning progress tracking
-- Project context
-- Career and HR support
-- Health and fitness support
-- Local file and note access
-- Basic tools
-- Safe configuration
-- Model-provider flexibility
-- Graceful behavior when internet or cloud AI is unavailable
-- Git and GitHub version history
-- Documentation and tests
+- Short-term conversation context
+- Provider-independent AI routing
+- Groq as the primary free cloud provider
+- Ollama as the local fallback
+- OpenAI as an optional provider
+- Structured provider failures
+- Safe configuration handling
+- CLI interaction
+- Tests
+- Documentation
+- Release-readiness checks
 
-### Development Strategy
+Explicitly postponed beyond V1:
 
-Build Solitude-Kaizen while continuing to learn the technologies behind it.
+- Voice interaction
+- GUI
+- Discord integration
+- Web search
+- Autonomous agents
+- Computer control
+- Large provider catalogs
+- Complex tool ecosystems
+- Heavy infrastructure
+- Docker-based orchestration
 
-During the V1 sprint, development is the priority, but important concepts and commands should still be explained.
+These ideas may be revisited after the V1 foundation is stable.
 
-After V1, systematically study the technologies used to build Solitude-Kaizen so I can increasingly maintain and improve the project independently.
+## Dependency Policy
 
-### Long-Term Direction
+A new dependency should be added only when it:
 
-Solitude-Kaizen is not intended to be permanently tied to one AI provider.
+- Reduces meaningful implementation complexity
+- Improves reliability
+- Provides a capability that is genuinely needed
 
-The system should eventually be able to use:
+A dependency should not be added merely because it is popular or convenient.
 
-- Cloud AI models when available
-- Local AI models when practical
-- Local memory and knowledge
-- Personal tools and automation
-- Future technologies when they provide meaningful improvements
+Prefer the standard library or existing dependencies when they are sufficient.
 
-Solitude-Kaizen is a lifetime project and should continue evolving as technology and my life change.
+## Current V1 Priorities
+
+The remaining V1 work should focus on release readiness rather than feature expansion.
+
+Current priorities:
+
+1. Finish documentation consistency checks.
+2. Verify live memory persistence.
+3. Verify conversation continuity, status, and clearing.
+4. Verify normal Groq operation.
+5. Verify direct Ollama operation.
+6. Verify eligible cloud failure falls back to Ollama.
+7. Verify invalid provider configuration remains safely handled.
+8. Run the complete automated test suite.
+9. Run dependency integrity checks.
+10. Perform a final repository and secret audit.
+11. Confirm the Git working tree is clean.
+12. Create the V1 release checkpoint when the repository is ready.
+
+OpenAI does not require a paid live test for V1 because it is optional and already covered through mocked tests.
+
+## Documentation Structure
+
+Current project documentation includes:
+
+```text
+README.md
+PROJECT_CONTEXT.md
+ARCHITECTURE.md
+ROADMAP.md
+LEARNING_NOTES.md
+TROUBLESHOOTING.md
+CLAUDE.md
+```
+
+Each document has a different responsibility:
+
+- `README.md` explains the project to repository visitors.
+- `PROJECT_CONTEXT.md` gives another AI or developer the current working context.
+- `ARCHITECTURE.md` explains how the system is structured.
+- `ROADMAP.md` tracks scope and future direction.
+- `LEARNING_NOTES.md` records engineering lessons learned during development.
+- `TROUBLESHOOTING.md` records known problems, diagnostics, and fixes.
+- `CLAUDE.md` provides project-specific guidance for compatible AI coding assistants.
+
+## Learning Approach
+
+Solitude-Kaizen is also a learning system for understanding software engineering through direct practice.
+
+The preferred development rhythm is:
+
+```text
+Inspect
+  -> understand
+  -> change one thing
+  -> test
+  -> explain what happened
+  -> checkpoint
+```
+
+The goal is not to copy code blindly.
+
+Each meaningful change should improve understanding of concepts such as:
+
+- Functions
+- Modules
+- State
+- Persistence
+- APIs
+- Exceptions
+- Testing
+- Git
+- Configuration
+- Security
+- Reliability
+- Architecture
+
+## Long-Term Direction
+
+Solitude-Kaizen is intended to evolve gradually beyond V1.
+
+Possible future capabilities include:
+
+- Richer long-term memory
+- Better context relevance
+- More local inference options
+- Voice
+- Graphical interfaces
+- Tools
+- Web capabilities
+- Personal productivity features
+- Health and routine support
+- Controlled automation
+- More advanced assistant behavior
+
+These capabilities should be added only when the existing foundation is reliable enough to support them.
+
+The system should remain understandable, maintainable, and provider-independent as it grows.
+
+## Project Philosophy
+
+Solitude-Kaizen is not intended to become a collection of every available AI technology.
+
+It should become one coherent companion whose internal identity, memory, behavior, and architecture remain under the project's control.
+
+Models and providers may change.
+
+The companion should remain.
