@@ -388,6 +388,8 @@ def get_active_provider():
 def generate_response(system_prompt, user_message):
     global last_provider_used
 
+    last_provider_used = None
+
     provider = get_active_provider()
 
     if provider == "groq":
@@ -421,12 +423,13 @@ def generate_response(system_prompt, user_message):
         return groq_response
 
     if provider == "ollama":
-        last_provider_used = "ollama"
-
-        return generate_ollama_response(
+        ollama_response = generate_ollama_response(
             system_prompt,
             user_message,
         )
+
+        last_provider_used = "ollama"
+        return ollama_response  
 
     if provider == "openai":
         try:

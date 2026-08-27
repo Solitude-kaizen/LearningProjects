@@ -1836,3 +1836,79 @@ def test_generate_ollama_response_uses_configured_model(
 
     assert captured_request["json"]["model"] == OLLAMA_MODEL
     assert response == "Test response"
+
+def test_generate_response_does_not_mark_ollama_used_when_direct_call_fails(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "ollama",
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.last_provider_used",
+        None,
+    )
+
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="ollama",
+            kind="connection",
+            message="Could not connect to Ollama.",
+            retryable=True,
+            fallback_allowed=False,
+        )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    with pytest.raises(ProviderError):
+        generate_response(
+            "System prompt",
+            "Hello",
+        )
+
+    assert get_last_provider_used() is None
+
+def test_generate_response_clears_previous_provider_when_new_request_fails(
+    monkeypatch
+):
+    monkeypatch.setenv(
+        "AI_PROVIDER",
+        "ollama",
+    )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.last_provider_used",
+        "groq",
+    )
+
+    def fake_ollama_response(
+        system_prompt,
+        user_message,
+    ):
+        raise ProviderError(
+            provider="ollama",
+            kind="connection",
+            message="Could not connect to Ollama.",
+            retryable=True,
+            fallback_allowed=False,
+        )
+
+    monkeypatch.setattr(
+        "src.solitude_kaizen.ai_service.generate_ollama_response",
+        fake_ollama_response,
+    )
+
+    with pytest.raises(ProviderError):
+        generate_response(
+            "System prompt",
+            "Hello",
+        )
+
+    assert get_last_provider_used() is None 
