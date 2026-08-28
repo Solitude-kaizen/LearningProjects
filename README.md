@@ -8,7 +8,7 @@ The project focuses on building an AI companion whose identity, memory, context,
 
 ## Project Status
 
-**V1.0 is release-ready.**
+**V1.0.0 has been released.**
 
 The current version is a command-line application with:
 

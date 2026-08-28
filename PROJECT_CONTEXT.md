@@ -29,7 +29,7 @@ The system should not become permanently dependent on one AI provider.
 
 ## Current Status
 
-Solitude-Kaizen V1.0 is release-ready.
+Solitude-Kaizen V1.0.0 has been released.
 
 Current verified state:
 
