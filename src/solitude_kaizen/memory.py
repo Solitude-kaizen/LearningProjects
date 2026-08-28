@@ -1,5 +1,34 @@
 import json
 from datetime import datetime
+from pathlib import Path
+
+import json
+from datetime import datetime
+from pathlib import Path
+
+
+def ensure_json_file(path, default_data):
+    path = Path(path)
+
+    path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    if path.exists():
+        return False
+
+    with path.open(
+        "w",
+        encoding="utf-8",
+    ) as file:
+        json.dump(
+            default_data,
+            file,
+            indent=4,
+        )
+
+    return True
 
 def load_profile(profile_path):
     with open(profile_path, "r") as file:

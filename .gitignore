@@ -23,3 +23,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.log
+
+# Solitude-Kaizen local runtime data
+src/solitude_kaizen/data/profile.json
+src/solitude_kaizen/data/memories.json

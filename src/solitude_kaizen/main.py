@@ -1,4 +1,5 @@
 from .memory import (
+    ensure_json_file,
     load_profile,
     save_profile,
     load_memories,
@@ -36,6 +37,24 @@ version = "0.1"
 
 profile_path = "src/solitude_kaizen/data/profile.json"
 memory_path = "src/solitude_kaizen/data/memories.json"
+
+ensure_json_file(
+    profile_path,
+    {
+        "user_name": "User",
+        "current_goal": "Build Solitude-Kaizen V1",
+        "learning_goal": "Improve programming and AI skills",
+        "career_goal": "",
+        "health_goal": "",
+    },
+)
+
+ensure_json_file(
+    memory_path,
+    {
+        "memories": [],
+    },
+)
 
 profile = load_profile(profile_path)
 memory_data = load_memories(memory_path)

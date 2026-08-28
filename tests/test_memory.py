@@ -1,7 +1,10 @@
+import json
+
 import pytest
 import requests
 
 from src.solitude_kaizen.memory import (
+    ensure_json_file,
     load_memories,
     save_memories,
     create_memory,
@@ -44,6 +47,66 @@ from src.solitude_kaizen.ai_service import (
 )
 
 from src.solitude_kaizen.prompt import build_system_prompt
+
+def test_ensure_json_file_creates_missing_file(tmp_path):
+    file_path = tmp_path / "data" / "test.json"
+    default_data = {
+        "memories": []
+    }
+
+    created = ensure_json_file(
+        file_path,
+        default_data,
+    )
+
+    assert created is True
+    assert file_path.exists()
+
+    with file_path.open(
+        "r",
+        encoding="utf-8",
+    ) as file:
+        saved_data = json.load(file)
+
+    assert saved_data == default_data
+
+
+def test_ensure_json_file_preserves_existing_file(tmp_path):
+    file_path = tmp_path / "test.json"
+
+    existing_data = {
+        "memories": [
+            {
+                "text": "Keep me"
+            }
+        ]
+    }
+
+    with file_path.open(
+        "w",
+        encoding="utf-8",
+    ) as file:
+        json.dump(
+            existing_data,
+            file,
+        )
+
+    created = ensure_json_file(
+        file_path,
+        {
+            "memories": []
+        },
+    )
+
+    assert created is False
+
+    with file_path.open(
+        "r",
+        encoding="utf-8",
+    ) as file:
+        saved_data = json.load(file)
+
+    assert saved_data == existing_data
 
 def test_validate_importance():
     assert validate_importance("1") == 1
