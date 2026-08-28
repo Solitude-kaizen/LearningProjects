@@ -79,25 +79,25 @@ The target is useful for maintaining focus, but reliability and understanding ta
 | Public README | Complete |
 | Project context documentation | Complete |
 | Architecture documentation | Complete |
-| Automated tests | 61 passing |
+| Automated tests | 63 passing |
 
-## Remaining V1 Work
+## V1 Release Readiness
 
-| Priority | Work | Release purpose |
-| --- | --- | --- |
-| 1 | Finish documentation consistency audit | Remove stale or contradictory project information |
-| 2 | Perform final memory-system live tests | Verify real persistence and CLI behavior |
-| 3 | Perform final conversation live tests | Verify continuity, clear, and status behavior |
-| 4 | Perform final Groq live test | Verify normal cloud inference |
-| 5 | Perform final Ollama live test | Verify direct local inference |
-| 6 | Perform final Groq-to-Ollama fallback regression test | Confirm automatic local fallback still works end-to-end |
-| 7 | Perform final invalid-configuration regression test | Confirm the CLI remains usable without tracebacks |
-| 8 | Review repository structure | Identify accidental or obsolete files |
-| 9 | Run final automated test suite | Establish the release test baseline |
-| 10 | Run dependency integrity check | Confirm installed dependencies are consistent |
-| 11 | Repeat final secret and configuration audit | Confirm no credentials or unsafe configuration entered Git |
-| 12 | Verify clean Git working tree | Ensure the release contains only intended files |
-| 13 | Create V1 release checkpoint | Mark the first stable usable version |
+| Check | Status |
+| --- | --- |
+| Documentation consistency audit | Complete |
+| Final memory-system live tests | Complete |
+| Final conversation live tests | Complete |
+| Final Groq live test | Complete |
+| Final Ollama live test | Complete |
+| Groq-to-Ollama fallback regression test | Complete |
+| Invalid-provider configuration regression test | Complete |
+| Repository structure review | Complete |
+| Final automated test suite | Complete - 63 passing |
+| Dependency integrity check | Complete |
+| Final secret and configuration audit | Complete |
+| Clean Git working tree verification | Complete |
+| V1.0 release checkpoint | Pending |
 
 ## V1 Release Criteria
 

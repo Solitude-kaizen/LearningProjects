@@ -29,7 +29,7 @@ The system should not become permanently dependent on one AI provider.
 
 ## Current Status
 
-Solitude-Kaizen V1 is currently in development.
+Solitude-Kaizen V1.0 is release-ready.
 
 Current verified state:
 
@@ -53,7 +53,7 @@ Current verified state:
 - Roadmap documentation completed
 - Troubleshooting documentation completed
 - Learning notes completed
-- 61 automated tests passing
+- 63 automated tests passing
 
 ## Development Environment
 
@@ -370,7 +370,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-61 passed
+63 passed
 ```
 
 Tests cover:

@@ -33,7 +33,7 @@ from .ai_service import (
 )
 
 name = "Solitude-Kaizen"
-version = "0.1"
+version = "1.0"
 
 profile_path = "src/solitude_kaizen/data/profile.json"
 memory_path = "src/solitude_kaizen/data/memories.json"

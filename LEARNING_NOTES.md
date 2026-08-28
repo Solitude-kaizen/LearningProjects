@@ -818,7 +818,7 @@ Monitoring test count can reveal this kind of mistake.
 The current V1 baseline is:
 
 ```text
-61 passed
+63 passed
 ```
 
 The number itself is not a quality score.

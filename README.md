@@ -8,7 +8,7 @@ The project focuses on building an AI companion whose identity, memory, context,
 
 ## Project Status
 
-**V1 is currently in development.**
+**V1.0 is release-ready.**
 
 The current version is a command-line application with:
 
@@ -21,6 +21,8 @@ The current version is a command-line application with:
 - Provider status and diagnostics
 - Local Ollama support
 - Automated tests
+
+The project currently has **63 passing tests** covering memory, conversation handling, provider routing, fallback behavior, error handling, configuration, and timeout behavior.
 
 ## AI Providers
 
@@ -174,7 +176,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **61 passing tests** covering memory, conversation handling, provider routing, fallback behavior, error handling, configuration, and timeout behavior.
+The project currently has **63 passing tests** covering memory, conversation handling, provider routing, fallback behavior, error handling, configuration, and timeout behavior.
 
 ## Memory
 
