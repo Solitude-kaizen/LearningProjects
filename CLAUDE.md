@@ -29,7 +29,6 @@ Read `PROJECT_CONTEXT.md` when you need information about:
 - Current progress
 - Learning objectives
 - Development environment
-- Health and fitness assistance preferences
 
 Do not invent project history that is not documented.
 
@@ -90,7 +89,7 @@ When helping with fitness or nutrition:
 - Do not diagnose medical conditions.
 - Do not recommend dangerous training or extreme diets.
 - Adapt recommendations to my actual equipment, experience, schedule, and goals.
-- The fictional "assassin" theme refers to athletic qualities such as agility, discipline, balance, coordination, conditioning, and strength—not harming people.
+- The fictional "assassin" theme refers to athletic qualities such as agility, discipline, balance, coordination, conditioning, and strength - not harming people.
 
 ## Communication
 
@@ -102,24 +101,18 @@ If there are several possible solutions, recommend the safest and simplest optio
 
 ## Current Objective
 
-Build a professional AI-assisted development environment using:
+Finish Solitude-Kaizen V1 as a reliable, understandable, and provider-independent personal AI assistant foundation.
 
-- VS Code
-- Git
-- GitHub
-- Claude
-- AI-assisted development
-- Python
-- Node.js
-- Project memory and documentation
+Current priorities are:
 
-Eventually use this environment to build real projects for:
+1. Complete documentation consistency checks.
+2. Perform final live reliability checks.
+3. Run the complete automated test suite.
+4. Verify dependency integrity.
+5. Perform the final repository and secret audit.
+6. Confirm a clean Git working tree.
+7. Create the V1 release checkpoint when ready.
 
-- HR
-- Business
-- Academic research
-- Marketing
-- Automation
-- AI applications
-- Portfolio development
-- lifetime assistances
+Do not expand V1 with postponed features such as voice, GUI, web search, autonomous agents, computer control, or unnecessary provider integrations.
+
+Reliability and understanding take priority over feature count.
