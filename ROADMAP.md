@@ -85,20 +85,19 @@ The target is useful for maintaining focus, but reliability and understanding ta
 
 | Priority | Work | Release purpose |
 | --- | --- | --- |
-| 1 | Finish continuity documentation | Make the project resumable without relying on chat history |
-| 2 | Create troubleshooting documentation | Record common setup and provider failures |
-| 3 | Create learning notes | Preserve important concepts learned during development |
-| 4 | Review existing documentation for consistency | Remove stale or contradictory information |
-| 5 | Perform final memory-system live tests | Verify real persistence and CLI behavior |
-| 6 | Perform final conversation live tests | Verify continuity, clear, and status behavior |
-| 7 | Perform final Groq live test | Verify normal cloud inference |
-| 8 | Perform final Ollama live test | Verify direct local inference |
-| 9 | Verify Groq-to-Ollama fallback | Confirm automatic local fallback end-to-end |
-| 10 | Verify invalid configuration behavior | Confirm CLI remains usable without tracebacks |
-| 11 | Review repository structure | Identify accidental or obsolete files |
-| 12 | Run final automated test suite | Establish release baseline |
-| 13 | Verify clean Git working tree | Ensure release contains only intended files |
-| 14 | Create V1 release checkpoint | Mark the first stable usable version |
+| 1 | Finish documentation consistency audit | Remove stale or contradictory project information |
+| 2 | Perform final memory-system live tests | Verify real persistence and CLI behavior |
+| 3 | Perform final conversation live tests | Verify continuity, clear, and status behavior |
+| 4 | Perform final Groq live test | Verify normal cloud inference |
+| 5 | Perform final Ollama live test | Verify direct local inference |
+| 6 | Perform final Groq-to-Ollama fallback regression test | Confirm automatic local fallback still works end-to-end |
+| 7 | Perform final invalid-configuration regression test | Confirm the CLI remains usable without tracebacks |
+| 8 | Review repository structure | Identify accidental or obsolete files |
+| 9 | Run final automated test suite | Establish the release test baseline |
+| 10 | Run dependency integrity check | Confirm installed dependencies are consistent |
+| 11 | Repeat final secret and configuration audit | Confirm no credentials or unsafe configuration entered Git |
+| 12 | Verify clean Git working tree | Ensure the release contains only intended files |
+| 13 | Create V1 release checkpoint | Mark the first stable usable version |
 
 ## V1 Release Criteria
 
