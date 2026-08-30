@@ -156,7 +156,11 @@ def get_openai_api_key():
     return os.getenv("OPENAI_API_KEY")
 
 
-def generate_groq_response(system_prompt, user_message):
+def generate_groq_response(
+    system_prompt,
+    user_message,
+    model=None,
+):
     api_key = get_groq_api_key()
 
     if not api_key:
@@ -168,12 +172,15 @@ def generate_groq_response(system_prompt, user_message):
             fallback_allowed=True,
         )
 
+    if model is None:
+        model = GROQ_MODEL
+
     try:
         client = Groq(api_key=api_key, 
                       timeout=GROQ_TIMEOUT_SECONDS,)
 
         response = client.chat.completions.create(
-            model=GROQ_MODEL,
+            model=model,
             messages=[
                 {
                     "role": "system",

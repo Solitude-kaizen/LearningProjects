@@ -31,6 +31,16 @@ The system should not become permanently dependent on one AI provider.
 
 Solitude-Kaizen V1.0.0 has been released.
 
+V2 development has started with two incremental foundations:
+
+- SQLite database initialization, memory schema, and safe insertion.
+- An opt-in daily Kaizen discovery loop that performs at most one
+  read-only public research attempt per day, stores the proposal in
+  SQLite, and never changes code automatically.
+
+The daily Kaizen feature is disabled by default until Groq tool billing
+has been reviewed.
+
 Current verified state:
 
 - Command-line interface working
@@ -53,7 +63,7 @@ Current verified state:
 - Roadmap documentation completed
 - Troubleshooting documentation completed
 - Learning notes completed
-- 63 automated tests passing
+- 72 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 

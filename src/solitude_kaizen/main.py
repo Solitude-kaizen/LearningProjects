@@ -24,6 +24,9 @@ from .conversation import (
 )
 from .prompt import build_system_prompt
 
+from .database import get_latest_kaizen_discovery
+from .kaizen import maybe_run_daily_kaizen
+
 from .ai_service import (
     generate_response,
     get_active_provider,
@@ -37,6 +40,7 @@ version = "1.0"
 
 profile_path = "src/solitude_kaizen/data/profile.json"
 memory_path = "src/solitude_kaizen/data/memories.json"
+database_path = "src/solitude_kaizen/data/solitude_kaizen.db"
 
 ensure_json_file(
     profile_path,
@@ -68,6 +72,8 @@ conversation_history = []
 memory_data["memories"] = memories
 save_memories(memory_path, memory_data)
 
+kaizen_result = maybe_run_daily_kaizen(database_path)
+
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")
 learning_goal = profile.get("learning_goal")
@@ -79,6 +85,11 @@ print("Hello,", user_name + ".")
 
 if current_goal:
     print("Your current goal is:", current_goal)
+
+if kaizen_result["status"] == "completed":
+    print("A new daily Kaizen discovery is ready for review.")
+elif kaizen_result["status"] == "failed":
+    print("The daily Kaizen discovery could not run today.")
 
 while True:
     print("1. View current goal")
@@ -96,7 +107,8 @@ while True:
     print("13. View Ai provider")
     print("14. clear conversation")
     print("15. View conversation status")
-    print("16. Exit")
+    print("16. View latest Kaizen discovery")
+    print("17. Exit")
 
     choice = input("Choose an option: ")
 
@@ -356,5 +368,25 @@ while True:
         print("Messages in short-term history:", message_count)
 
     elif choice == "16":
+        discovery = get_latest_kaizen_discovery(database_path)
+
+        print()
+        print("--- Latest Kaizen Discovery ---")
+
+        if discovery is None:
+            print("No Kaizen discovery is available yet.")
+            continue
+
+        print("Date:", discovery["run_date"])
+        print("Status:", discovery["status"])
+        print("Provider:", discovery["provider"])
+
+        if discovery["error_kind"]:
+            print("Diagnostic:", discovery["error_kind"])
+
+        print()
+        print(discovery["report"])
+
+    elif choice == "17":
         print("Goodbye!")
         break
