@@ -166,6 +166,8 @@ Offline Learning Brain with one active lesson
 Local reflections and pending improvement proposals
 Approve, reject, and postpone proposal controls
 Append-only proposal review history
+Provider-independent identity document
+Verified local continuity bundles
 ```
 
 Likely areas for investigation:
@@ -191,6 +193,11 @@ The Learning Brain converts metadata into a small review exercise, not
 trusted knowledge. Its proposals remain pending until a separate human
 review action is recorded. Approval marks an idea for separate planning
 and never implements it automatically.
+
+Lifetime Continuity V1 preserves identity, profile, memories, and the
+SQLite database through a verified local bundle. It verifies recovery
+data without overwriting the live companion. Encrypted off-device copies
+and live restoration require later safety design.
 
 V2 should still preserve the principle:
 

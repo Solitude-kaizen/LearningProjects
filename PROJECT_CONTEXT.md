@@ -31,7 +31,7 @@ The system should not become permanently dependent on one AI provider.
 
 Solitude-Kaizen V1.0.0 has been released.
 
-V2 development has started with five incremental foundations:
+V2 development has started with six incremental foundations:
 
 - SQLite database initialization, memory schema, and safe insertion.
 - An opt-in daily Kaizen discovery loop that performs at most one
@@ -46,6 +46,9 @@ V2 development has started with five incremental foundations:
 - Proposal Control V1, which lets the creator approve, reject, or
   postpone completed-lesson proposals while keeping a timestamped,
   append-only application history. Approval does not execute code.
+- Lifetime Continuity V1, which creates and verifies an allowlisted local
+  bundle containing SK's identity, profile, memories, and a consistent
+  SQLite snapshot. It excludes `.env` and does not restore live data.
 
 The daily Kaizen feature is disabled by default until Groq tool billing
 has been reviewed.
@@ -76,7 +79,7 @@ Current verified state:
 - Roadmap documentation completed
 - Troubleshooting documentation completed
 - Learning notes completed
-- 98 automated tests passing, including the current V2 foundations
+- 104 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -393,7 +396,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-98 passed
+104 passed
 ```
 
 Tests cover:
@@ -413,6 +416,7 @@ Tests cover:
 - Public research collection and deduplication
 - Learning lesson selection, reflection, and proposal safety
 - Proposal approval, rejection, postponement, and review history
+- Continuity bundle allowlisting, tamper detection, and recovery checks
 
 The number of collected tests should be monitored because duplicate Python test-function names can silently replace earlier definitions.
 

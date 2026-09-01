@@ -16,7 +16,8 @@ storage, a human-reviewed Daily Kaizen proposal, and a zero-cost public
 research inbox. Learning Brain V1 turns one inbox item at a time into
 an offline baby-step lesson and a pending improvement proposal. Proposal
 Control V1 lets the creator approve, reject, or postpone that proposal
-without executing it.
+without executing it. Lifetime Continuity V1 creates verified local
+bundles of SK's identity and runtime data.
 
 The current version is a command-line application with:
 
@@ -34,12 +35,13 @@ The current version is a command-line application with:
 - Offline Learning Brain with one active baby-step lesson at a time
 - Local reflection history and human-reviewed improvement proposals
 - Append-only proposal review history with reasons and timestamps
+- Allowlisted continuity backups with hash and SQLite integrity checks
 - Automated tests
 
-The project currently has **98 passing tests** covering memory,
+The project currently has **104 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
-the offline learning loop, and proposal controls.
+the offline learning loop, proposal controls, and continuity backups.
 
 ## AI Providers
 
@@ -201,6 +203,13 @@ The CLI currently provides options for:
 - Recording a local reflection and viewing learning progress
 - Approving, rejecting, or postponing completed lesson proposals
 - Viewing proposal review history
+- Creating and verifying a local continuity backup
+- Rechecking the latest continuity backup
+
+Continuity bundles are stored under the ignored local `data/backups`
+directory. They contain SK's identity, profile, memories, and a
+consistent SQLite snapshot. They never include `.env` or arbitrary
+project files. The ZIP is not encrypted, so it must be kept private.
 
 ## Running Tests
 
@@ -210,10 +219,10 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **98 passing tests** covering memory,
+The project currently has **104 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
-the offline learning loop, and proposal controls.
+the offline learning loop, proposal controls, and continuity backups.
 
 ## Memory
 

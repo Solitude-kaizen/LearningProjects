@@ -141,3 +141,24 @@ changes proposal state; it does not edit code, execute commands, install
 software, or start an implementation. Approved and rejected states are
 terminal in V1, while postponed proposals remain available for later
 review.
+
+## Lifetime Continuity V1
+
+SK can create a portable local continuity bundle containing exactly:
+
+- `SK_IDENTITY.md`
+- The local profile JSON
+- The local memories JSON
+- A consistent SQLite backup snapshot
+- A manifest containing file sizes and SHA-256 hashes
+
+Bundle verification checks the exact allowlist, manifest, hashes, JSON
+readability, identity marker, and SQLite integrity. The database is
+opened and checked in memory as a safe recovery rehearsal. Verification
+does not overwrite live companion data.
+
+The bundle excludes `.env`, credentials, source code, and arbitrary
+directories. Bundles are ignored by Git and remain local. They are not
+encrypted in V1, so the creator must keep them private. Live restoration
+is postponed until a separate preview, confirmation, and rollback flow
+can be implemented safely.

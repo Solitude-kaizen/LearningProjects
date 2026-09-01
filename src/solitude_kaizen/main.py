@@ -43,6 +43,12 @@ from .learning import (
     read_proposal_review_history,
     review_learning_proposal,
 )
+from .continuity import (
+    ContinuityError,
+    create_continuity_bundle,
+    get_latest_continuity_bundle,
+    verify_continuity_bundle,
+)
 
 from .ai_service import (
     generate_response,
@@ -100,6 +106,8 @@ version = "1.0"
 profile_path = "src/solitude_kaizen/data/profile.json"
 memory_path = "src/solitude_kaizen/data/memories.json"
 database_path = "src/solitude_kaizen/data/solitude_kaizen.db"
+identity_path = "SK_IDENTITY.md"
+backup_directory = "src/solitude_kaizen/data/backups"
 
 ensure_json_file(
     profile_path,
@@ -182,7 +190,9 @@ while True:
     print("21. View learning progress")
     print("22. Review pending improvement proposals")
     print("23. View proposal review history")
-    print("24. Exit")
+    print("24. Create and verify continuity backup")
+    print("25. Verify latest continuity backup")
+    print("26. Exit")
 
     choice = input("Choose an option: ")
 
@@ -675,5 +685,52 @@ while True:
             print("Current status:", review["proposal_status"])
 
     elif choice == "24":
+        print()
+        print("Creating a private local continuity backup...")
+
+        try:
+            result = create_continuity_bundle(
+                backup_directory,
+                database_path,
+                profile_path,
+                memory_path,
+                identity_path,
+            )
+        except ContinuityError as error:
+            print("The continuity backup could not be created.")
+            print("Diagnostic:", str(error))
+            continue
+
+        print("Continuity backup verified successfully.")
+        print("Files verified:", result["verification"]["file_count"])
+        print("Saved locally at:", result["bundle_path"])
+        print(
+            "Keep this unencrypted backup private. "
+            "It does not include .env or credential files."
+        )
+
+    elif choice == "25":
+        latest_bundle = get_latest_continuity_bundle(
+            backup_directory
+        )
+
+        print()
+        print("--- Latest Continuity Backup ---")
+
+        if latest_bundle is None:
+            print("No continuity backup is available yet.")
+            continue
+
+        verification = verify_continuity_bundle(latest_bundle)
+        print("Backup:", latest_bundle)
+        print("Status:", verification["status"])
+
+        if verification["status"] == "valid":
+            print("Created:", verification["created_at"])
+            print("Files verified:", verification["file_count"])
+        else:
+            print("Diagnostic:", verification["error"])
+
+    elif choice == "26":
         print("Goodbye!")
         break

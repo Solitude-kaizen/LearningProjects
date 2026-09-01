@@ -788,6 +788,8 @@ Public research collection history
 Learning lessons and creator reflections
 Pending improvement proposals
 Proposal review history
+Provider-independent identity document
+Local continuity bundles
 ```
 
 ### Non-Persistent
@@ -866,6 +868,30 @@ V1.
 There are no application functions for editing or deleting review
 records. Proposal review never calls an AI provider, the network, a
 command runner, or a source-code editor.
+
+## V2 Lifetime Continuity Boundary
+
+`continuity.py` creates a portable backup through an exact allowlist:
+
+```text
+SK_IDENTITY.md
+profile.json
+memories.json
+consistent SQLite snapshot
+manifest with sizes and SHA-256 hashes
+```
+
+SQLite's online backup API creates a consistent snapshot even when the
+application has an open database. Verification rejects missing, extra,
+duplicated, altered, malformed, or unsupported bundle contents. It
+parses the JSON files, validates the identity marker, and opens the
+database snapshot in memory for `PRAGMA quick_check`.
+
+The continuity module has no path that reads `.env`, credential files,
+source directories, or arbitrary user-selected files. Bundles remain in
+an ignored local directory and are not encrypted. V1 deliberately has no
+live restore operation because safe restoration still needs preview,
+confirmation, automatic pre-restore backup, and rollback behavior.
 
 ## Architectural Invariants
 
