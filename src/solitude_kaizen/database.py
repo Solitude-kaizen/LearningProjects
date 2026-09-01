@@ -496,6 +496,35 @@ def get_current_learning_lesson(database_path):
     return dict(row)
 
 
+def get_learning_lesson_for_date(database_path, run_date):
+    connection = sqlite3.connect(database_path)
+    connection.row_factory = sqlite3.Row
+
+    try:
+        row = connection.execute(
+            """
+            SELECT learning_lessons.*,
+                   research_items.source,
+                   research_items.url AS source_url,
+                   research_items.published_at
+            FROM learning_lessons
+            JOIN research_items
+              ON research_items.id = learning_lessons.research_item_id
+            WHERE substr(learning_lessons.created_at, 1, 10) = ?
+            ORDER BY learning_lessons.id DESC
+            LIMIT 1
+            """,
+            (run_date,),
+        ).fetchone()
+    finally:
+        connection.close()
+
+    if row is None:
+        return None
+
+    return dict(row)
+
+
 def complete_learning_lesson(
     database_path,
     lesson_id,

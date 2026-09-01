@@ -17,7 +17,9 @@ research inbox. Learning Brain V1 turns one inbox item at a time into
 an offline baby-step lesson and a pending improvement proposal. Proposal
 Control V1 lets the creator approve, reject, or postpone that proposal
 without executing it. Lifetime Continuity V1 creates verified local
-bundles of SK's identity and runtime data.
+bundles of SK's identity and runtime data. Controlled Continuous
+Learning V1 connects these parts at startup and can prepare at most one
+offline lesson per day when explicitly enabled.
 
 The current version is a command-line application with:
 
@@ -33,12 +35,13 @@ The current version is a command-line application with:
   arXiv, and a curated YouTube feed
 - SQLite storage for research items and collection history
 - Offline Learning Brain with one active baby-step lesson at a time
+- Opt-in controlled learning cycle with a one-lesson-per-day limit
 - Local reflection history and human-reviewed improvement proposals
 - Append-only proposal review history with reasons and timestamps
 - Allowlisted continuity backups with hash and SQLite integrity checks
 - Automated tests
 
-The project currently has **104 passing tests** covering memory,
+The project currently has **109 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, and continuity backups.
@@ -156,6 +159,20 @@ SK_RESEARCH_ENABLED=false
 The CLI can still run the collector manually. It reads public metadata
 and does not call a paid AI model.
 
+Automatic offline lesson preparation is also optional and disabled by
+default:
+
+```env
+SK_CONTINUOUS_LEARNING_ENABLED=false
+```
+
+When enabled, SK checks the existing research and prepares at most one
+baby-step lesson per local calendar day. This setting does not turn on
+network access, retrain a model, approve a proposal, or change code.
+For a zero-cost bounded cycle, keep `KAIZEN_DISCOVERY_ENABLED=false`,
+and enable the public collector and continuous-learning settings only
+after choosing automatic startup access.
+
 Never commit your real `.env` file or API keys.
 
 ## Local Ollama Setup
@@ -200,6 +217,7 @@ The CLI currently provides options for:
 - Viewing the public research inbox
 - Viewing the latest Daily Kaizen proposal
 - Starting one source-grounded baby-step lesson
+- Preparing at most one daily lesson automatically when opted in
 - Recording a local reflection and viewing learning progress
 - Approving, rejecting, or postponing completed lesson proposals
 - Viewing proposal review history
@@ -219,7 +237,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **104 passing tests** covering memory,
+The project currently has **109 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, and continuity backups.

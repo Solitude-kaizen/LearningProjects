@@ -1231,3 +1231,16 @@ AI accelerates implementation and research
 The objective is not to stop using AI.
 
 The objective is to become capable of understanding, evaluating, and directing the engineering work.
+
+## Controlled Continuous Learning V1
+
+Continuous improvement does not require continuous self-modification.
+A safer first design is a small orchestrator around independently
+bounded steps: collect evidence when explicitly allowed, prepare one
+offline lesson, wait for reflection, and leave every proposal under
+human review.
+
+Separate configuration switches prevent a local learning preference
+from silently enabling network access. A daily creation limit also
+prevents repeated application restarts from producing an uncontrolled
+lesson backlog.

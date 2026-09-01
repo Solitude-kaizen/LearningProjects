@@ -9,6 +9,7 @@ from src.solitude_kaizen.database import (
 from src.solitude_kaizen.learning import (
     LEARNING_PURPOSE,
     build_learning_lesson,
+    create_daily_learning_lesson_if_due,
     create_next_learning_lesson,
     finish_active_learning_lesson,
     read_learning_progress,
@@ -181,3 +182,39 @@ def test_next_lesson_uses_new_research_after_completion(tmp_path):
         "completed": 1,
         "pending_proposals": 1,
     }
+
+
+def test_automatic_lesson_is_limited_to_one_per_day(tmp_path):
+    database_path = tmp_path / "solitude_kaizen.db"
+    initialize_database(database_path)
+    store_research_item(database_path, make_research_item(item_id=1))
+    store_research_item(database_path, make_research_item(item_id=2))
+    first_time = datetime(2026, 9, 2, 9, 0, 0)
+
+    first_result = create_daily_learning_lesson_if_due(
+        database_path,
+        current_time=first_time,
+    )
+    finish_active_learning_lesson(
+        database_path,
+        "I reviewed the source and kept its uncertainty visible.",
+        current_time=datetime(2026, 9, 2, 9, 15, 0),
+    )
+    same_day_result = create_daily_learning_lesson_if_due(
+        database_path,
+        current_time=datetime(2026, 9, 2, 18, 0, 0),
+    )
+    next_day_result = create_daily_learning_lesson_if_due(
+        database_path,
+        current_time=datetime(2026, 9, 3, 9, 0, 0),
+    )
+
+    assert first_result["status"] == "created"
+    assert same_day_result["status"] == "skipped_daily_limit"
+    assert same_day_result["lesson"]["id"] == (
+        first_result["lesson"]["id"]
+    )
+    assert next_day_result["status"] == "created"
+    assert next_day_result["lesson"]["id"] != (
+        first_result["lesson"]["id"]
+    )

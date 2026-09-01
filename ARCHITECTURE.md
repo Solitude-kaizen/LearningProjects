@@ -846,6 +846,30 @@ Improvement proposals are stored with `pending` status. The Learning
 Brain cannot approve a proposal, edit source code, install software, or
 execute instructions retrieved from the internet.
 
+## V2 Controlled Continuous Learning Boundary
+
+`continuous_learning.py` is a small startup orchestrator around the
+existing bounded components:
+
+```text
+Optional daily public research
+  -> optional Daily Kaizen discovery
+  -> optional offline lesson preparation
+  -> creator reflection and proposal review remain manual
+```
+
+Each capability keeps its own configuration boundary. In particular,
+`SK_CONTINUOUS_LEARNING_ENABLED=true` permits at most one automatic
+offline lesson per local calendar day; it does not enable network
+research. `SK_RESEARCH_ENABLED` and `KAIZEN_DISCOVERY_ENABLED` remain
+separate opt-ins.
+
+The cycle runs when SK starts. It does not run while the application is
+closed, train model weights, approve proposals, edit source code,
+install software, or execute retrieved instructions. Existing active
+lessons block new lessons, and completing a lesson does not bypass the
+automatic one-lesson-per-day limit.
+
 ## V2 Proposal Control Boundary
 
 Proposal Control separates learning from implementation:

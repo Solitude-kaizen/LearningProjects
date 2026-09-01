@@ -28,9 +28,7 @@ from .database import (
     get_latest_kaizen_discovery,
     get_latest_research_items,
 )
-from .kaizen import maybe_run_daily_kaizen
 from .research import (
-    maybe_run_research_collection,
     run_research_collection_if_due,
 )
 from .learning import (
@@ -49,6 +47,7 @@ from .continuity import (
     get_latest_continuity_bundle,
     verify_continuity_bundle,
 )
+from .continuous_learning import run_controlled_learning_cycle
 
 from .ai_service import (
     generate_response,
@@ -139,8 +138,10 @@ conversation_history = []
 memory_data["memories"] = memories
 save_memories(memory_path, memory_data)
 
-kaizen_result = maybe_run_daily_kaizen(database_path)
-research_result = maybe_run_research_collection(database_path)
+learning_cycle_result = run_controlled_learning_cycle(database_path)
+kaizen_result = learning_cycle_result["kaizen"]
+research_result = learning_cycle_result["research"]
+automatic_lesson_result = learning_cycle_result["lesson"]
 
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")
@@ -165,6 +166,13 @@ elif research_result["status"] == "partial":
     print("The public research inbox was partly updated.")
 elif research_result["status"] == "failed":
     print("The public research collector could not run today.")
+
+if automatic_lesson_result["status"] == "created":
+    print("SK prepared one new baby-step lesson for review.")
+elif automatic_lesson_result["status"] == "existing":
+    print("Your current baby-step lesson is still waiting.")
+elif automatic_lesson_result["status"] == "no_research":
+    print("SK needs reviewed research before preparing a lesson.")
 
 while True:
     print("1. View current goal")

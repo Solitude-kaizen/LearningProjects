@@ -31,7 +31,7 @@ The system should not become permanently dependent on one AI provider.
 
 Solitude-Kaizen V1.0.0 has been released.
 
-V2 development has started with six incremental foundations:
+V2 development has started with seven incremental foundations:
 
 - SQLite database initialization, memory schema, and safe insertion.
 - An opt-in daily Kaizen discovery loop that performs at most one
@@ -49,6 +49,9 @@ V2 development has started with six incremental foundations:
 - Lifetime Continuity V1, which creates and verifies an allowlisted local
   bundle containing SK's identity, profile, memories, and a consistent
   SQLite snapshot. It excludes `.env` and does not restore live data.
+- Controlled Continuous Learning V1, which orchestrates the existing
+  research, Kaizen, and offline lesson steps at startup. Automatic
+  lesson preparation is opt-in and limited to one lesson per day.
 
 The daily Kaizen feature is disabled by default until Groq tool billing
 has been reviewed.
@@ -56,6 +59,10 @@ has been reviewed.
 Automatic public research collection is also disabled by default to
 avoid surprise network access. Manual collection remains available in
 the CLI.
+
+Automatic lesson preparation is disabled by default. Enabling it does
+not enable either network research source, retrain a model, approve a
+proposal, or modify code.
 
 Current verified state:
 
@@ -79,7 +86,7 @@ Current verified state:
 - Roadmap documentation completed
 - Troubleshooting documentation completed
 - Learning notes completed
-- 104 automated tests passing, including the current V2 foundations
+- 109 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -396,7 +403,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-104 passed
+109 passed
 ```
 
 Tests cover:

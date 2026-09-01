@@ -5,6 +5,7 @@ from .database import (
     complete_learning_lesson,
     get_current_learning_lesson,
     get_learning_lesson_by_id,
+    get_learning_lesson_for_date,
     get_learning_progress,
     get_pending_learning_proposals,
     get_proposal_review_history,
@@ -224,6 +225,40 @@ def create_next_learning_lesson(database_path, current_time=None):
             lesson_id,
         ),
     }
+
+
+def create_daily_learning_lesson_if_due(
+    database_path,
+    current_time=None,
+):
+    initialize_database(database_path)
+
+    if current_time is None:
+        current_time = datetime.now().astimezone()
+
+    current_lesson = get_current_learning_lesson(database_path)
+
+    if current_lesson is not None:
+        return {
+            "status": "existing",
+            "lesson": current_lesson,
+        }
+
+    lesson_today = get_learning_lesson_for_date(
+        database_path,
+        current_time.date().isoformat(),
+    )
+
+    if lesson_today is not None:
+        return {
+            "status": "skipped_daily_limit",
+            "lesson": lesson_today,
+        }
+
+    return create_next_learning_lesson(
+        database_path,
+        current_time=current_time,
+    )
 
 
 def get_active_learning_lesson(database_path):

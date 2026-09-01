@@ -168,6 +168,7 @@ Approve, reject, and postpone proposal controls
 Append-only proposal review history
 Provider-independent identity document
 Verified local continuity bundles
+Controlled startup learning cycle with one automatic lesson per day
 ```
 
 Likely areas for investigation:
@@ -193,6 +194,11 @@ The Learning Brain converts metadata into a small review exercise, not
 trusted knowledge. Its proposals remain pending until a separate human
 review action is recorded. Approval marks an idea for separate planning
 and never implements it automatically.
+
+Controlled Continuous Learning connects the existing components without
+expanding their permissions. Automatic offline lesson preparation is
+opt-in, limited to one lesson per local day, and does not silently turn
+on either network collector.
 
 Lifetime Continuity V1 preserves identity, profile, memories, and the
 SQLite database through a verified local bundle. It verifies recovery
