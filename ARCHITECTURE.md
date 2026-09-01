@@ -781,6 +781,10 @@ Currently persisted to disk:
 ```text
 Profile
 Long-term memories
+SQLite memory foundation
+Daily Kaizen proposals
+Public research items
+Public research collection history
 ```
 
 ### Non-Persistent
@@ -793,6 +797,25 @@ last_provider_used
 ```
 
 These values reset when the application exits.
+
+## V2 Public Research Boundary
+
+`research.py` collects a small amount of public metadata from GitHub,
+Hacker News, arXiv, and a curated YouTube feed.
+
+Its responsibilities are:
+
+- Read public metadata through bounded requests.
+- Normalize and validate identifiers, titles, links, summaries, and
+  dates.
+- Isolate failures by source.
+- Store only valid HTTP or HTTPS references.
+- Leave deduplication and run history in SQLite.
+
+Retrieved content is untrusted data. It is never interpreted as a tool
+instruction, executed, installed, or allowed to change source code.
+Automatic startup collection remains opt-in, and the collection loop
+runs at most once per local calendar day.
 
 ## Architectural Invariants
 

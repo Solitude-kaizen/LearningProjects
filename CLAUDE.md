@@ -101,18 +101,19 @@ If there are several possible solutions, recommend the safest and simplest optio
 
 ## Current Objective
 
-Finish Solitude-Kaizen V1 as a reliable, understandable, and provider-independent personal AI assistant foundation.
+Develop Solitude-Kaizen V2 incrementally on top of the released V1
+foundation.
 
 Current priorities are:
 
-1. Complete documentation consistency checks.
-2. Perform final live reliability checks.
-3. Run the complete automated test suite.
-4. Verify dependency integrity.
-5. Perform the final repository and secret audit.
-6. Confirm a clean Git working tree.
-7. Create the V1 release checkpoint when ready.
+1. Complete the zero-cost public research collector.
+2. Keep automatic network access opt-in.
+3. Store public research metadata in SQLite with deduplication.
+4. Treat retrieved content as untrusted data.
+5. Add tests before expanding the improvement loop.
+6. Keep generated improvements as proposals for human review.
+7. Create small, reversible Git checkpoints.
 
-Do not expand V1 with postponed features such as voice, GUI, web search, autonomous agents, computer control, or unnecessary provider integrations.
-
-Reliability and understanding take priority over feature count.
+Do not add uncontrolled code rewriting, broad computer control, paid
+services, or large agent frameworks. Reliability and understanding
+take priority over feature count.

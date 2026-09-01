@@ -39,6 +39,35 @@ def test_initialize_database_creates_memories_table(tmp_path):
     ]
 
 
+def test_initialize_database_creates_research_tables(tmp_path):
+    database_path = tmp_path / "solitude_kaizen.db"
+
+    initialize_database(database_path)
+
+    connection = sqlite3.connect(database_path)
+
+    try:
+        table_rows = connection.execute(
+            """
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'table'
+              AND name IN (
+                  'research_items',
+                  'research_collection_runs'
+              )
+            ORDER BY name
+            """
+        ).fetchall()
+    finally:
+        connection.close()
+
+    assert table_rows == [
+        ("research_collection_runs",),
+        ("research_items",),
+    ]
+
+
 def test_add_memory_inserts_memory_and_returns_id(tmp_path):
     database_path = tmp_path / "solitude_kaizen.db"
     initialize_database(database_path)

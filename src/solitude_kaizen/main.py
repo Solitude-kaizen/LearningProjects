@@ -24,8 +24,15 @@ from .conversation import (
 )
 from .prompt import build_system_prompt
 
-from .database import get_latest_kaizen_discovery
+from .database import (
+    get_latest_kaizen_discovery,
+    get_latest_research_items,
+)
 from .kaizen import maybe_run_daily_kaizen
+from .research import (
+    maybe_run_research_collection,
+    run_research_collection_if_due,
+)
 
 from .ai_service import (
     generate_response,
@@ -73,6 +80,7 @@ memory_data["memories"] = memories
 save_memories(memory_path, memory_data)
 
 kaizen_result = maybe_run_daily_kaizen(database_path)
+research_result = maybe_run_research_collection(database_path)
 
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")
@@ -91,6 +99,13 @@ if kaizen_result["status"] == "completed":
 elif kaizen_result["status"] == "failed":
     print("The daily Kaizen discovery could not run today.")
 
+if research_result["status"] == "completed":
+    print("The public research inbox was updated.")
+elif research_result["status"] == "partial":
+    print("The public research inbox was partly updated.")
+elif research_result["status"] == "failed":
+    print("The public research collector could not run today.")
+
 while True:
     print("1. View current goal")
     print("2. Change current goal")
@@ -108,7 +123,9 @@ while True:
     print("14. clear conversation")
     print("15. View conversation status")
     print("16. View latest Kaizen discovery")
-    print("17. Exit")
+    print("17. Collect zero-cost public research")
+    print("18. View public research inbox")
+    print("19. Exit")
 
     choice = input("Choose an option: ")
 
@@ -388,5 +405,54 @@ while True:
         print(discovery["report"])
 
     elif choice == "17":
+        print()
+        print("Collecting public research...")
+
+        result = run_research_collection_if_due(
+            database_path,
+        )
+
+        if result["status"] == "skipped":
+            print("Research was already collected today.")
+            continue
+
+        print(
+            "New research items:",
+            result["run"]["new_item_count"],
+        )
+        print("Status:", result["status"])
+
+        if result["run"]["error_summary"]:
+            print(
+                "Source note:",
+                result["run"]["error_summary"],
+            )
+
+    elif choice == "18":
+        research_items = get_latest_research_items(
+            database_path,
+            limit=10,
+        )
+
+        print()
+        print("--- Public Research Inbox ---")
+
+        if not research_items:
+            print("No public research has been collected yet.")
+            continue
+
+        for item in research_items:
+            print()
+            print("Source:", item["source"])
+            print("Title:", item["title"])
+            print("Link:", item["url"])
+
+            if item["published_at"]:
+                print("Published:", item["published_at"])
+
+            if item["summary"]:
+                print("Summary:", item["summary"])
+
+    elif choice == "19":
         print("Goodbye!")
         break

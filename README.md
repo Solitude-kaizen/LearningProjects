@@ -10,6 +10,11 @@ The project focuses on building an AI companion whose identity, memory, context,
 
 **V1.0.0 has been released.**
 
+V2 development is now adding small, tested foundations without
+changing the released V1 behavior. Current V2 work includes SQLite
+storage, a human-reviewed Daily Kaizen proposal, and a zero-cost public
+research inbox.
+
 The current version is a command-line application with:
 
 - Persistent local memory
@@ -20,9 +25,14 @@ The current version is a command-line application with:
 - Structured provider error handling
 - Provider status and diagnostics
 - Local Ollama support
+- Zero-cost public research collection from GitHub, Hacker News,
+  arXiv, and a curated YouTube feed
+- SQLite storage for research items and collection history
 - Automated tests
 
-The project currently has **63 passing tests** covering memory, conversation handling, provider routing, fallback behavior, error handling, configuration, and timeout behavior.
+The project currently has **82 passing tests** covering memory,
+conversation handling, provider routing, fallback behavior, error
+handling, configuration, SQLite storage, and public research collection.
 
 ## AI Providers
 
@@ -127,6 +137,16 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 Ollama runs locally and does not require an API key.
 
+Automatic public research collection is optional and disabled by
+default:
+
+```env
+SK_RESEARCH_ENABLED=false
+```
+
+The CLI can still run the collector manually. It reads public metadata
+and does not call a paid AI model.
+
 Never commit your real `.env` file or API keys.
 
 ## Local Ollama Setup
@@ -167,6 +187,9 @@ The CLI currently provides options for:
 - Viewing the active AI provider
 - Clearing conversation history
 - Viewing conversation status
+- Collecting zero-cost public research
+- Viewing the public research inbox
+- Viewing the latest Daily Kaizen proposal
 
 ## Running Tests
 
@@ -176,7 +199,9 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **63 passing tests** covering memory, conversation handling, provider routing, fallback behavior, error handling, configuration, and timeout behavior.
+The project currently has **82 passing tests** covering memory,
+conversation handling, provider routing, fallback behavior, error
+handling, configuration, SQLite storage, and public research collection.
 
 ## Memory
 

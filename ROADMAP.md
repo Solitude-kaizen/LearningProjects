@@ -152,7 +152,17 @@ These features should not be added before V1 unless one becomes necessary to fix
 
 ## V2 Direction
 
-V2 can begin after V1 is stable.
+V2 began after the V1.0.0 release checkpoint.
+
+Current V2 foundations:
+
+```text
+SQLite database initialization and memory insertion
+Opt-in Daily Kaizen proposal storage
+Zero-cost public research collector
+Research deduplication and daily run history
+Manual research inbox controls in the CLI
+```
 
 Likely areas for investigation:
 
@@ -170,6 +180,9 @@ Better configuration management
 Test organization
 CLI/application separation
 ```
+
+The public research collector is evidence gathering only. It must not
+execute instructions from retrieved content or modify SK automatically.
 
 V2 should still preserve the principle:
 

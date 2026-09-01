@@ -31,15 +31,22 @@ The system should not become permanently dependent on one AI provider.
 
 Solitude-Kaizen V1.0.0 has been released.
 
-V2 development has started with two incremental foundations:
+V2 development has started with three incremental foundations:
 
 - SQLite database initialization, memory schema, and safe insertion.
 - An opt-in daily Kaizen discovery loop that performs at most one
   read-only public research attempt per day, stores the proposal in
   SQLite, and never changes code automatically.
+- A zero-cost public research collector for GitHub, Hacker News, arXiv,
+  and a curated YouTube feed. It stores deduplicated public metadata in
+  SQLite, tolerates partial source failures, and makes no paid AI call.
 
 The daily Kaizen feature is disabled by default until Groq tool billing
 has been reviewed.
+
+Automatic public research collection is also disabled by default to
+avoid surprise network access. Manual collection remains available in
+the CLI.
 
 Current verified state:
 
@@ -63,7 +70,7 @@ Current verified state:
 - Roadmap documentation completed
 - Troubleshooting documentation completed
 - Learning notes completed
-- 72 automated tests passing, including the current V2 foundations
+- 82 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 

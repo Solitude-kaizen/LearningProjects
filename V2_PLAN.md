@@ -71,3 +71,33 @@ the daily discovery.
 
 Future Kaizen work should add evaluation and approval workflows before
 any generated proposal can become an implementation change.
+
+## Zero-Cost Research Collector
+
+The next V2 foundation is a public research inbox that does not require
+a paid AI or search service.
+
+The collector:
+
+- Reads public metadata from GitHub, Hacker News, arXiv, and one
+  curated YouTube channel feed.
+- Uses existing HTTP and standard-library XML support.
+- Stores titles, links, short summaries, source identifiers, and dates
+  in SQLite.
+- Deduplicates items by source and public identifier.
+- Isolates individual source failures so one unavailable platform does
+  not discard successful results from the others.
+- Runs at most once per local calendar day.
+- Treats all retrieved content as untrusted data, never as instructions.
+- Does not execute code, install packages, modify project files, or call
+  a paid AI model.
+
+Automatic startup collection is opt-in:
+
+```text
+SK_RESEARCH_ENABLED=false
+```
+
+Manual collection and inbox viewing are available in the CLI. The
+collector is evidence gathering only. A later local reflection layer
+may turn stored items into one proposal for human review.
