@@ -6,9 +6,12 @@ from .database import (
     get_current_learning_lesson,
     get_learning_lesson_by_id,
     get_learning_progress,
+    get_pending_learning_proposals,
+    get_proposal_review_history,
     get_unstudied_research_items,
     initialize_database,
     record_learning_lesson,
+    record_proposal_review,
 )
 
 
@@ -31,6 +34,15 @@ RELEVANCE_PATTERNS = (
     (r"\bllm\b", 2),
     (r"\blanguage model", 2),
 )
+
+PROPOSAL_ACTIONS = {
+    "approve": "approved",
+    "approved": "approved",
+    "reject": "rejected",
+    "rejected": "rejected",
+    "postpone": "postponed",
+    "postponed": "postponed",
+}
 
 
 def _clean_text(value, limit):
@@ -272,3 +284,68 @@ def read_learning_progress(database_path):
     initialize_database(database_path)
 
     return get_learning_progress(database_path)
+
+
+def list_pending_learning_proposals(database_path, limit=20):
+    initialize_database(database_path)
+
+    return get_pending_learning_proposals(
+        database_path,
+        limit=limit,
+    )
+
+
+def review_learning_proposal(
+    database_path,
+    lesson_id,
+    action,
+    reason,
+    current_time=None,
+):
+    initialize_database(database_path)
+
+    normalized_action = PROPOSAL_ACTIONS.get(
+        _clean_text(action, limit=20).lower()
+    )
+
+    if normalized_action is None:
+        raise ValueError(
+            "Choose approve, reject, or postpone."
+        )
+
+    cleaned_reason = _clean_text(reason, limit=1001)
+
+    if not cleaned_reason:
+        raise ValueError(
+            "A short reason is required for the review history."
+        )
+
+    if len(cleaned_reason) > 1000:
+        raise ValueError(
+            "Please keep the review reason under 1,000 characters."
+        )
+
+    if current_time is None:
+        current_time = datetime.now().astimezone()
+
+    result = record_proposal_review(
+        database_path,
+        lesson_id,
+        normalized_action,
+        cleaned_reason,
+        current_time.isoformat(timespec="seconds"),
+    )
+
+    return {
+        **result,
+        "action": normalized_action,
+    }
+
+
+def read_proposal_review_history(database_path, limit=20):
+    initialize_database(database_path)
+
+    return get_proposal_review_history(
+        database_path,
+        limit=limit,
+    )

@@ -54,6 +54,7 @@ def test_initialize_database_creates_v2_tables(tmp_path):
             WHERE type = 'table'
               AND name IN (
                   'learning_lessons',
+                  'proposal_reviews',
                   'research_items',
                   'research_collection_runs'
               )
@@ -65,6 +66,7 @@ def test_initialize_database_creates_v2_tables(tmp_path):
 
     assert table_rows == [
         ("learning_lessons",),
+        ("proposal_reviews",),
         ("research_collection_runs",),
         ("research_items",),
     ]

@@ -124,3 +124,20 @@ The learning loop does not call a model, access the network, execute
 retrieved instructions, approve proposals, or change code. Completing a
 lesson means the source was reviewed; it does not prove that every claim
 in the source is true.
+
+## Proposal Control V1
+
+Completed lessons can enter a human-controlled proposal review queue.
+The creator can:
+
+- Approve an idea for a separate future implementation plan.
+- Reject and close an unsuitable idea.
+- Postpone an idea while keeping it pending.
+- Give a required reason for every action.
+- View the timestamped review history.
+
+Proposal reviews are appended to a separate SQLite table. Approval only
+changes proposal state; it does not edit code, execute commands, install
+software, or start an implementation. Approved and rejected states are
+terminal in V1, while postponed proposals remain available for later
+review.

@@ -108,12 +108,13 @@ Current priorities are:
 
 1. Preserve the zero-cost public research collector.
 2. Keep automatic network access opt-in.
-3. Develop Learning Brain V1 as an offline, one-lesson-at-a-time loop.
+3. Preserve Learning Brain V1 as an offline, one-lesson-at-a-time loop.
 4. Treat retrieved content as untrusted until the creator reviews it.
 5. Store reflections locally without treating them as model training.
-6. Keep every improvement proposal pending for human review.
-7. Add an explicit approval workflow before any implementation path.
-8. Create small, reversible Git checkpoints.
+6. Preserve approve, reject, and postpone decisions in review history.
+7. Treat approval as permission to plan, never permission to execute.
+8. Design Controlled Curiosity only after resource and permission limits.
+9. Create small, reversible Git checkpoints.
 
 Do not add uncontrolled code rewriting, broad computer control, paid
 services, or large agent frameworks. Reliability and understanding

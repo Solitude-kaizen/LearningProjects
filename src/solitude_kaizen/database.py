@@ -101,6 +101,24 @@ def initialize_database(database_path):
             )
             """
         )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS proposal_reviews (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                learning_lesson_id INTEGER NOT NULL,
+                action TEXT NOT NULL
+                    CHECK (
+                        action IN (
+                            'approved', 'rejected', 'postponed'
+                        )
+                    ),
+                reason TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (learning_lesson_id)
+                    REFERENCES learning_lessons (id)
+            )
+            """
+        )
         connection.commit()
     finally:
         connection.close()
@@ -523,6 +541,7 @@ def get_learning_progress(database_path):
                    SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END)
                        AS completed,
                    SUM(CASE WHEN proposal_status = 'pending'
+                                 AND status = 'completed'
                             THEN 1 ELSE 0 END)
                        AS pending_proposals
             FROM learning_lessons
@@ -537,3 +556,150 @@ def get_learning_progress(database_path):
         "completed": row["completed"] or 0,
         "pending_proposals": row["pending_proposals"] or 0,
     }
+
+
+def get_pending_learning_proposals(database_path, limit=20):
+    connection = sqlite3.connect(database_path)
+    connection.row_factory = sqlite3.Row
+
+    try:
+        rows = connection.execute(
+            """
+            SELECT learning_lessons.*,
+                   research_items.source,
+                   research_items.url AS source_url,
+                   (
+                       SELECT proposal_reviews.action
+                       FROM proposal_reviews
+                       WHERE proposal_reviews.learning_lesson_id =
+                             learning_lessons.id
+                       ORDER BY proposal_reviews.id DESC
+                       LIMIT 1
+                   ) AS latest_review_action
+            FROM learning_lessons
+            JOIN research_items
+              ON research_items.id = learning_lessons.research_item_id
+            WHERE learning_lessons.status = 'completed'
+              AND learning_lessons.proposal_status = 'pending'
+            ORDER BY learning_lessons.completed_at DESC,
+                     learning_lessons.id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+    finally:
+        connection.close()
+
+    return [dict(row) for row in rows]
+
+
+def record_proposal_review(
+    database_path,
+    learning_lesson_id,
+    action,
+    reason,
+    created_at,
+):
+    if action not in {"approved", "rejected", "postponed"}:
+        raise ValueError("Invalid proposal review action.")
+
+    connection = sqlite3.connect(database_path)
+    connection.row_factory = sqlite3.Row
+
+    try:
+        connection.execute("BEGIN IMMEDIATE")
+        proposal = connection.execute(
+            """
+            SELECT status, proposal_status
+            FROM learning_lessons
+            WHERE id = ?
+            """,
+            (learning_lesson_id,),
+        ).fetchone()
+
+        if proposal is None:
+            return {
+                "status": "not_found",
+                "proposal_status": None,
+                "review_id": None,
+            }
+
+        if proposal["status"] != "completed":
+            return {
+                "status": "lesson_incomplete",
+                "proposal_status": proposal["proposal_status"],
+                "review_id": None,
+            }
+
+        if proposal["proposal_status"] != "pending":
+            return {
+                "status": "already_decided",
+                "proposal_status": proposal["proposal_status"],
+                "review_id": None,
+            }
+
+        new_status = "pending"
+
+        if action in {"approved", "rejected"}:
+            new_status = action
+
+        connection.execute(
+            """
+            UPDATE learning_lessons
+            SET proposal_status = ?
+            WHERE id = ?
+            """,
+            (new_status, learning_lesson_id),
+        )
+        cursor = connection.execute(
+            """
+            INSERT INTO proposal_reviews (
+                learning_lesson_id,
+                action,
+                reason,
+                created_at
+            )
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                learning_lesson_id,
+                action,
+                reason,
+                created_at,
+            ),
+        )
+        connection.commit()
+
+        return {
+            "status": "recorded",
+            "proposal_status": new_status,
+            "review_id": cursor.lastrowid,
+        }
+    finally:
+        connection.close()
+
+
+def get_proposal_review_history(database_path, limit=20):
+    connection = sqlite3.connect(database_path)
+    connection.row_factory = sqlite3.Row
+
+    try:
+        rows = connection.execute(
+            """
+            SELECT proposal_reviews.*,
+                   learning_lessons.topic,
+                   learning_lessons.improvement_proposal,
+                   learning_lessons.proposal_status
+            FROM proposal_reviews
+            JOIN learning_lessons
+              ON learning_lessons.id =
+                 proposal_reviews.learning_lesson_id
+            ORDER BY proposal_reviews.id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+    finally:
+        connection.close()
+
+    return [dict(row) for row in rows]

@@ -14,7 +14,9 @@ V2 development is now adding small, tested foundations without
 changing the released V1 behavior. Current V2 work includes SQLite
 storage, a human-reviewed Daily Kaizen proposal, and a zero-cost public
 research inbox. Learning Brain V1 turns one inbox item at a time into
-an offline baby-step lesson and a pending improvement proposal.
+an offline baby-step lesson and a pending improvement proposal. Proposal
+Control V1 lets the creator approve, reject, or postpone that proposal
+without executing it.
 
 The current version is a command-line application with:
 
@@ -31,12 +33,13 @@ The current version is a command-line application with:
 - SQLite storage for research items and collection history
 - Offline Learning Brain with one active baby-step lesson at a time
 - Local reflection history and human-reviewed improvement proposals
+- Append-only proposal review history with reasons and timestamps
 - Automated tests
 
-The project currently has **90 passing tests** covering memory,
+The project currently has **98 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
-and the offline learning loop.
+the offline learning loop, and proposal controls.
 
 ## AI Providers
 
@@ -196,6 +199,8 @@ The CLI currently provides options for:
 - Viewing the latest Daily Kaizen proposal
 - Starting one source-grounded baby-step lesson
 - Recording a local reflection and viewing learning progress
+- Approving, rejecting, or postponing completed lesson proposals
+- Viewing proposal review history
 
 ## Running Tests
 
@@ -205,10 +210,10 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **90 passing tests** covering memory,
+The project currently has **98 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
-and the offline learning loop.
+the offline learning loop, and proposal controls.
 
 ## Memory
 

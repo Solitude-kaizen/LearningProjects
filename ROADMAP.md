@@ -164,6 +164,8 @@ Research deduplication and daily run history
 Manual research inbox controls in the CLI
 Offline Learning Brain with one active lesson
 Local reflections and pending improvement proposals
+Approve, reject, and postpone proposal controls
+Append-only proposal review history
 ```
 
 Likely areas for investigation:
@@ -187,7 +189,8 @@ The public research collector is evidence gathering only. It must not
 execute instructions from retrieved content or modify SK automatically.
 The Learning Brain converts metadata into a small review exercise, not
 trusted knowledge. Its proposals remain pending until a separate human
-approval workflow is implemented.
+review action is recorded. Approval marks an idea for separate planning
+and never implements it automatically.
 
 V2 should still preserve the principle:
 

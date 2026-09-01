@@ -787,6 +787,7 @@ Public research items
 Public research collection history
 Learning lessons and creator reflections
 Pending improvement proposals
+Proposal review history
 ```
 
 ### Non-Persistent
@@ -842,6 +843,29 @@ the source's claims.
 Improvement proposals are stored with `pending` status. The Learning
 Brain cannot approve a proposal, edit source code, install software, or
 execute instructions retrieved from the internet.
+
+## V2 Proposal Control Boundary
+
+Proposal Control separates learning from implementation:
+
+```text
+Completed lesson
+  -> pending proposal
+  -> creator chooses approve, reject, or postpone
+  -> reason and timestamp are appended to review history
+  -> no implementation action
+```
+
+Only proposals from completed lessons appear in the review queue.
+Approving changes the proposal status to `approved`; rejecting changes
+it to `rejected`; postponing records the review but leaves the proposal
+`pending`. Approved and rejected proposals cannot be reviewed again in
+V1.
+
+`proposal_reviews` is append-only through the application workflow.
+There are no application functions for editing or deleting review
+records. Proposal review never calls an AI provider, the network, a
+command runner, or a source-code editor.
 
 ## Architectural Invariants
 

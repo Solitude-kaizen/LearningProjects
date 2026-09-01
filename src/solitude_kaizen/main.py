@@ -38,7 +38,10 @@ from .learning import (
     create_next_learning_lesson,
     finish_active_learning_lesson,
     get_active_learning_lesson,
+    list_pending_learning_proposals,
     read_learning_progress,
+    read_proposal_review_history,
+    review_learning_proposal,
 )
 
 from .ai_service import (
@@ -75,6 +78,21 @@ def print_learning_lesson(lesson):
     print("Pending improvement proposal:")
     print(lesson["improvement_proposal"])
     print("Proposal status:", lesson["proposal_status"])
+
+
+def print_learning_proposal(proposal):
+    print()
+    print("--- Improvement Proposal ---")
+    print("Proposal ID:", proposal["id"])
+    print("Topic:", proposal["topic"])
+    print("Source:", proposal["source"])
+    print("Link:", proposal["source_url"])
+    print()
+    print(proposal["improvement_proposal"])
+    print()
+    print("Your lesson reflection:")
+    print(proposal["user_reflection"])
+    print("Current status:", proposal["proposal_status"])
 
 name = "Solitude-Kaizen"
 version = "1.0"
@@ -162,7 +180,9 @@ while True:
     print("19. Start or view one baby-step lesson")
     print("20. Complete the current lesson")
     print("21. View learning progress")
-    print("22. Exit")
+    print("22. Review pending improvement proposals")
+    print("23. View proposal review history")
+    print("24. Exit")
 
     choice = input("Choose an option: ")
 
@@ -555,5 +575,105 @@ while True:
         )
 
     elif choice == "22":
+        proposals = list_pending_learning_proposals(
+            database_path,
+        )
+
+        print()
+        print("--- Proposals Awaiting Your Review ---")
+
+        if not proposals:
+            print("There are no completed lessons awaiting review.")
+            continue
+
+        for proposal in proposals:
+            print()
+            print(
+                proposal["id"],
+                "-",
+                proposal["topic"],
+            )
+
+            if proposal["latest_review_action"] == "postponed":
+                print("  Previously postponed; still pending.")
+
+        proposal_input = input(
+            "Enter the proposal ID to review: "
+        )
+
+        if not proposal_input.isdigit():
+            print("Please enter a valid proposal ID.")
+            continue
+
+        proposal_id = int(proposal_input)
+        selected_proposal = next(
+            (
+                proposal
+                for proposal in proposals
+                if proposal["id"] == proposal_id
+            ),
+            None,
+        )
+
+        if selected_proposal is None:
+            print("That proposal is not in the pending list.")
+            continue
+
+        print_learning_proposal(selected_proposal)
+        action = input(
+            "Choose approve, reject, or postpone: "
+        )
+        reason = input("Give a short reason for your decision: ")
+
+        try:
+            result = review_learning_proposal(
+                database_path,
+                proposal_id,
+                action,
+                reason,
+            )
+        except ValueError as error:
+            print(str(error))
+            continue
+
+        if result["status"] == "already_decided":
+            print(
+                "This proposal already has a final decision:",
+                result["proposal_status"],
+            )
+            continue
+
+        if result["status"] != "recorded":
+            print("The proposal review could not be recorded.")
+            continue
+
+        if result["action"] == "approved":
+            print(
+                "Approved for separate planning. No code was changed."
+            )
+        elif result["action"] == "rejected":
+            print("Rejected and closed. No code was changed.")
+        else:
+            print("Postponed. The proposal remains pending.")
+
+    elif choice == "23":
+        history = read_proposal_review_history(database_path)
+
+        print()
+        print("--- Proposal Review History ---")
+
+        if not history:
+            print("No proposal reviews have been recorded yet.")
+            continue
+
+        for review in history:
+            print()
+            print("Topic:", review["topic"])
+            print("Action:", review["action"])
+            print("Reason:", review["reason"])
+            print("Recorded:", review["created_at"])
+            print("Current status:", review["proposal_status"])
+
+    elif choice == "24":
         print("Goodbye!")
         break

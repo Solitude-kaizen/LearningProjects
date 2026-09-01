@@ -179,5 +179,5 @@ def test_next_lesson_uses_new_research_after_completion(tmp_path):
         "total": 2,
         "ready": 1,
         "completed": 1,
-        "pending_proposals": 2,
+        "pending_proposals": 1,
     }
