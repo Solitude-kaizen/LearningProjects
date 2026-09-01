@@ -33,6 +33,13 @@ from .research import (
     maybe_run_research_collection,
     run_research_collection_if_due,
 )
+from .learning import (
+    LEARNING_PURPOSE,
+    create_next_learning_lesson,
+    finish_active_learning_lesson,
+    get_active_learning_lesson,
+    read_learning_progress,
+)
 
 from .ai_service import (
     generate_response,
@@ -41,6 +48,33 @@ from .ai_service import (
     get_provider_info,
     ProviderError,
 )
+
+
+def print_learning_lesson(lesson):
+    print()
+    print("--- SK Learning Brain ---")
+    print("Purpose:", LEARNING_PURPOSE)
+    print()
+    print("Topic:", lesson["topic"])
+    print("Source:", lesson["source"])
+    print("Link:", lesson["source_url"])
+    print("Evidence status:", lesson["evidence_status"])
+    print()
+    print("Why it matters:")
+    print(lesson["why_it_matters"])
+    print()
+    print("What the public metadata says:")
+    print(lesson["evidence_summary"])
+    print()
+    print("Your baby step:")
+    print(lesson["baby_step"])
+    print()
+    print("Reflection question:")
+    print(lesson["reflection_question"])
+    print()
+    print("Pending improvement proposal:")
+    print(lesson["improvement_proposal"])
+    print("Proposal status:", lesson["proposal_status"])
 
 name = "Solitude-Kaizen"
 version = "1.0"
@@ -125,7 +159,10 @@ while True:
     print("16. View latest Kaizen discovery")
     print("17. Collect zero-cost public research")
     print("18. View public research inbox")
-    print("19. Exit")
+    print("19. Start or view one baby-step lesson")
+    print("20. Complete the current lesson")
+    print("21. View learning progress")
+    print("22. Exit")
 
     choice = input("Choose an option: ")
 
@@ -454,5 +491,69 @@ while True:
                 print("Summary:", item["summary"])
 
     elif choice == "19":
+        result = create_next_learning_lesson(database_path)
+
+        if result["status"] == "no_research":
+            print()
+            print("SK needs research before creating a lesson.")
+            print("Choose option 17 to collect public research first.")
+            continue
+
+        if result["status"] == "existing":
+            print()
+            print("One lesson is already waiting for you.")
+        else:
+            print()
+            print("SK prepared one new baby-step lesson.")
+
+        print_learning_lesson(result["lesson"])
+
+    elif choice == "20":
+        active_lesson = get_active_learning_lesson(database_path)
+
+        if active_lesson is None:
+            print("There is no active lesson to complete.")
+            continue
+
+        print()
+        print("Reflection question:")
+        print(active_lesson["reflection_question"])
+
+        reflection = input(
+            "What did you learn, and what remains uncertain? "
+        )
+
+        try:
+            result = finish_active_learning_lesson(
+                database_path,
+                reflection,
+            )
+        except ValueError as error:
+            print(str(error))
+            continue
+
+        if result["status"] != "completed":
+            print("The lesson could not be completed.")
+            continue
+
+        print("Your reflection was stored locally.")
+        print(
+            "The improvement proposal still requires human review."
+        )
+
+    elif choice == "21":
+        progress = read_learning_progress(database_path)
+
+        print()
+        print("--- Learning Progress ---")
+        print("Lessons prepared:", progress["total"])
+        print("Ready now:", progress["ready"])
+        print("Completed:", progress["completed"])
+        print(
+            "Proposals awaiting review:",
+            progress["pending_proposals"],
+        )
+
+    elif choice == "22":
         print("Goodbye!")
         break

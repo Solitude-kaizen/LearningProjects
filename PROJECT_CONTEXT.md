@@ -31,7 +31,7 @@ The system should not become permanently dependent on one AI provider.
 
 Solitude-Kaizen V1.0.0 has been released.
 
-V2 development has started with three incremental foundations:
+V2 development has started with four incremental foundations:
 
 - SQLite database initialization, memory schema, and safe insertion.
 - An opt-in daily Kaizen discovery loop that performs at most one
@@ -40,6 +40,9 @@ V2 development has started with three incremental foundations:
 - A zero-cost public research collector for GitHub, Hacker News, arXiv,
   and a curated YouTube feed. It stores deduplicated public metadata in
   SQLite, tolerates partial source failures, and makes no paid AI call.
+- Learning Brain V1, an offline loop that ranks unstudied research,
+  creates one baby-step lesson, stores the creator's reflection, and
+  keeps every improvement proposal pending for human review.
 
 The daily Kaizen feature is disabled by default until Groq tool billing
 has been reviewed.
@@ -70,7 +73,7 @@ Current verified state:
 - Roadmap documentation completed
 - Troubleshooting documentation completed
 - Learning notes completed
-- 82 automated tests passing, including the current V2 foundations
+- 90 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -387,7 +390,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-63 passed
+90 passed
 ```
 
 Tests cover:
@@ -404,6 +407,8 @@ Tests cover:
 - Groq behavior
 - OpenAI behavior
 - Failure handling
+- Public research collection and deduplication
+- Learning lesson selection, reflection, and proposal safety
 
 The number of collected tests should be monitored because duplicate Python test-function names can silently replace earlier definitions.
 

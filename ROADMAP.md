@@ -162,6 +162,8 @@ Opt-in Daily Kaizen proposal storage
 Zero-cost public research collector
 Research deduplication and daily run history
 Manual research inbox controls in the CLI
+Offline Learning Brain with one active lesson
+Local reflections and pending improvement proposals
 ```
 
 Likely areas for investigation:
@@ -183,6 +185,9 @@ CLI/application separation
 
 The public research collector is evidence gathering only. It must not
 execute instructions from retrieved content or modify SK automatically.
+The Learning Brain converts metadata into a small review exercise, not
+trusted knowledge. Its proposals remain pending until a separate human
+approval workflow is implemented.
 
 V2 should still preserve the principle:
 

@@ -39,7 +39,7 @@ def test_initialize_database_creates_memories_table(tmp_path):
     ]
 
 
-def test_initialize_database_creates_research_tables(tmp_path):
+def test_initialize_database_creates_v2_tables(tmp_path):
     database_path = tmp_path / "solitude_kaizen.db"
 
     initialize_database(database_path)
@@ -53,6 +53,7 @@ def test_initialize_database_creates_research_tables(tmp_path):
             FROM sqlite_master
             WHERE type = 'table'
               AND name IN (
+                  'learning_lessons',
                   'research_items',
                   'research_collection_runs'
               )
@@ -63,6 +64,7 @@ def test_initialize_database_creates_research_tables(tmp_path):
         connection.close()
 
     assert table_rows == [
+        ("learning_lessons",),
         ("research_collection_runs",),
         ("research_items",),
     ]

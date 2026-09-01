@@ -785,6 +785,8 @@ SQLite memory foundation
 Daily Kaizen proposals
 Public research items
 Public research collection history
+Learning lessons and creator reflections
+Pending improvement proposals
 ```
 
 ### Non-Persistent
@@ -816,6 +818,30 @@ Retrieved content is untrusted data. It is never interpreted as a tool
 instruction, executed, installed, or allowed to change source code.
 Automatic startup collection remains opt-in, and the collection loop
 runs at most once per local calendar day.
+
+## V2 Learning Brain Boundary
+
+`learning.py` turns stored research into one bounded learning session.
+
+Its flow is:
+
+```text
+Unstudied research metadata
+  -> transparent relevance score
+  -> one active baby-step lesson
+  -> creator reflection
+  -> reviewed lesson with a pending proposal
+```
+
+The module works offline and does not require an AI provider. It treats
+titles and summaries as unreviewed public metadata, uses source-specific
+review steps, and prevents a backlog of unfinished lessons. A completed
+lesson records that the creator reviewed the source; it does not certify
+the source's claims.
+
+Improvement proposals are stored with `pending` status. The Learning
+Brain cannot approve a proposal, edit source code, install software, or
+execute instructions retrieved from the internet.
 
 ## Architectural Invariants
 

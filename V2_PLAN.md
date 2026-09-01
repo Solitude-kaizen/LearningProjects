@@ -99,5 +99,28 @@ SK_RESEARCH_ENABLED=false
 ```
 
 Manual collection and inbox viewing are available in the CLI. The
-collector is evidence gathering only. A later local reflection layer
-may turn stored items into one proposal for human review.
+collector is evidence gathering only.
+
+## Learning Brain V1
+
+The first local reflection layer works without an AI provider after
+research has been collected.
+
+It:
+
+- Ranks unstudied items using small, understandable relevance rules.
+- Prefers topics related to memory, retrieval, local AI, safety,
+  evaluation, and assistant behavior.
+- Creates only one active lesson at a time.
+- Labels public metadata as unreviewed until the creator completes a
+  reflection.
+- Gives the creator one source-specific step designed for about ten
+  minutes of study.
+- Stores the creator's reflection locally in SQLite.
+- Creates a bounded improvement proposal that remains pending for
+  human review.
+
+The learning loop does not call a model, access the network, execute
+retrieved instructions, approve proposals, or change code. Completing a
+lesson means the source was reviewed; it does not prove that every claim
+in the source is true.

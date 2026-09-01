@@ -106,13 +106,14 @@ foundation.
 
 Current priorities are:
 
-1. Complete the zero-cost public research collector.
+1. Preserve the zero-cost public research collector.
 2. Keep automatic network access opt-in.
-3. Store public research metadata in SQLite with deduplication.
-4. Treat retrieved content as untrusted data.
-5. Add tests before expanding the improvement loop.
-6. Keep generated improvements as proposals for human review.
-7. Create small, reversible Git checkpoints.
+3. Develop Learning Brain V1 as an offline, one-lesson-at-a-time loop.
+4. Treat retrieved content as untrusted until the creator reviews it.
+5. Store reflections locally without treating them as model training.
+6. Keep every improvement proposal pending for human review.
+7. Add an explicit approval workflow before any implementation path.
+8. Create small, reversible Git checkpoints.
 
 Do not add uncontrolled code rewriting, broad computer control, paid
 services, or large agent frameworks. Reliability and understanding
