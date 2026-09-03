@@ -31,15 +31,12 @@ from .database import (
 from .research import (
     run_research_collection_if_due,
 )
-from .learning import (
-    LEARNING_PURPOSE,
-    create_next_learning_lesson,
-    finish_active_learning_lesson,
-    get_active_learning_lesson,
-    list_pending_learning_proposals,
-    read_learning_progress,
-    read_proposal_review_history,
-    review_learning_proposal,
+from .learning_cli import (
+    run_complete_current_learning_lesson,
+    run_review_pending_learning_proposal,
+    run_start_or_view_learning_lesson,
+    run_view_learning_progress,
+    run_view_proposal_review_history,
 )
 from .continuity_cli import (
     ContinuityPaths,
@@ -56,49 +53,6 @@ from .ai_service import (
     get_provider_info,
     ProviderError,
 )
-
-
-def print_learning_lesson(lesson):
-    print()
-    print("--- SK Learning Brain ---")
-    print("Purpose:", LEARNING_PURPOSE)
-    print()
-    print("Topic:", lesson["topic"])
-    print("Source:", lesson["source"])
-    print("Link:", lesson["source_url"])
-    print("Evidence status:", lesson["evidence_status"])
-    print()
-    print("Why it matters:")
-    print(lesson["why_it_matters"])
-    print()
-    print("What the public metadata says:")
-    print(lesson["evidence_summary"])
-    print()
-    print("Your baby step:")
-    print(lesson["baby_step"])
-    print()
-    print("Reflection question:")
-    print(lesson["reflection_question"])
-    print()
-    print("Pending improvement proposal:")
-    print(lesson["improvement_proposal"])
-    print("Proposal status:", lesson["proposal_status"])
-
-
-def print_learning_proposal(proposal):
-    print()
-    print("--- Improvement Proposal ---")
-    print("Proposal ID:", proposal["id"])
-    print("Topic:", proposal["topic"])
-    print("Source:", proposal["source"])
-    print("Link:", proposal["source_url"])
-    print()
-    print(proposal["improvement_proposal"])
-    print()
-    print("Your lesson reflection:")
-    print(proposal["user_reflection"])
-    print("Current status:", proposal["proposal_status"])
-
 name = "Solitude-Kaizen"
 version = "1.0"
 
@@ -538,168 +492,19 @@ while True:
                 print("Summary:", item["summary"])
 
     elif choice == "19":
-        result = create_next_learning_lesson(database_path)
-
-        if result["status"] == "no_research":
-            print()
-            print("SK needs research before creating a lesson.")
-            print("Choose option 17 to collect public research first.")
-            continue
-
-        if result["status"] == "existing":
-            print()
-            print("One lesson is already waiting for you.")
-        else:
-            print()
-            print("SK prepared one new baby-step lesson.")
-
-        print_learning_lesson(result["lesson"])
+        run_start_or_view_learning_lesson(database_path)
 
     elif choice == "20":
-        active_lesson = get_active_learning_lesson(database_path)
-
-        if active_lesson is None:
-            print("There is no active lesson to complete.")
-            continue
-
-        print()
-        print("Reflection question:")
-        print(active_lesson["reflection_question"])
-
-        reflection = input(
-            "What did you learn, and what remains uncertain? "
-        )
-
-        try:
-            result = finish_active_learning_lesson(
-                database_path,
-                reflection,
-            )
-        except ValueError as error:
-            print(str(error))
-            continue
-
-        if result["status"] != "completed":
-            print("The lesson could not be completed.")
-            continue
-
-        print("Your reflection was stored locally.")
-        print(
-            "The improvement proposal still requires human review."
-        )
+        run_complete_current_learning_lesson(database_path)
 
     elif choice == "21":
-        progress = read_learning_progress(database_path)
-
-        print()
-        print("--- Learning Progress ---")
-        print("Lessons prepared:", progress["total"])
-        print("Ready now:", progress["ready"])
-        print("Completed:", progress["completed"])
-        print(
-            "Proposals awaiting review:",
-            progress["pending_proposals"],
-        )
+        run_view_learning_progress(database_path)
 
     elif choice == "22":
-        proposals = list_pending_learning_proposals(
-            database_path,
-        )
-
-        print()
-        print("--- Proposals Awaiting Your Review ---")
-
-        if not proposals:
-            print("There are no completed lessons awaiting review.")
-            continue
-
-        for proposal in proposals:
-            print()
-            print(
-                proposal["id"],
-                "-",
-                proposal["topic"],
-            )
-
-            if proposal["latest_review_action"] == "postponed":
-                print("  Previously postponed; still pending.")
-
-        proposal_input = input(
-            "Enter the proposal ID to review: "
-        )
-
-        if not proposal_input.isdigit():
-            print("Please enter a valid proposal ID.")
-            continue
-
-        proposal_id = int(proposal_input)
-        selected_proposal = next(
-            (
-                proposal
-                for proposal in proposals
-                if proposal["id"] == proposal_id
-            ),
-            None,
-        )
-
-        if selected_proposal is None:
-            print("That proposal is not in the pending list.")
-            continue
-
-        print_learning_proposal(selected_proposal)
-        action = input(
-            "Choose approve, reject, or postpone: "
-        )
-        reason = input("Give a short reason for your decision: ")
-
-        try:
-            result = review_learning_proposal(
-                database_path,
-                proposal_id,
-                action,
-                reason,
-            )
-        except ValueError as error:
-            print(str(error))
-            continue
-
-        if result["status"] == "already_decided":
-            print(
-                "This proposal already has a final decision:",
-                result["proposal_status"],
-            )
-            continue
-
-        if result["status"] != "recorded":
-            print("The proposal review could not be recorded.")
-            continue
-
-        if result["action"] == "approved":
-            print(
-                "Approved for separate planning. No code was changed."
-            )
-        elif result["action"] == "rejected":
-            print("Rejected and closed. No code was changed.")
-        else:
-            print("Postponed. The proposal remains pending.")
+        run_review_pending_learning_proposal(database_path)
 
     elif choice == "23":
-        history = read_proposal_review_history(database_path)
-
-        print()
-        print("--- Proposal Review History ---")
-
-        if not history:
-            print("No proposal reviews have been recorded yet.")
-            continue
-
-        for review in history:
-            print()
-            print("Topic:", review["topic"])
-            print("Action:", review["action"])
-            print("Reason:", review["reason"])
-            print("Recorded:", review["created_at"])
-            print("Current status:", review["proposal_status"])
+        run_view_proposal_review_history(database_path)
 
     elif choice == "24":
         run_create_continuity_backup(continuity_paths)

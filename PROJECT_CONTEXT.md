@@ -91,7 +91,7 @@ Current verified state:
 - Troubleshooting documentation completed
 - Learning notes completed
 - Guarded continuity restoration and rollback working
-- 118 automated tests passing, including the current V2 foundations
+- 123 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -352,7 +352,22 @@ Responsibilities:
 - Conversation flow
 - CLI error boundary
 - Provider display
-- Delegation of continuity commands to a separate CLI boundary
+- Delegation of learning and continuity commands to separate CLI
+  boundaries
+
+### `learning_cli.py`
+
+Responsibilities:
+
+- Lesson display and reflection interaction
+- Learning-progress display
+- Pending proposal selection
+- Approve, reject, and postpone interaction
+- Proposal review-history display
+- User-facing learning validation messages
+
+The module has no ability to implement an approved proposal. It records
+the creator's decision through `learning.py` only.
 
 ### `continuity_cli.py`
 
@@ -429,7 +444,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-118 passed
+123 passed
 ```
 
 Tests cover:

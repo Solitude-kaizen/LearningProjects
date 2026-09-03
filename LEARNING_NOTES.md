@@ -1294,3 +1294,10 @@ and `print`, while tests supply predictable functions without changing
 the real terminal or personal data. The main loop now needs to know only
 which continuity command ran and whether a successful restore requires
 a clean restart.
+
+The same pattern now protects the Learning Brain interface. Lesson
+display, reflection input, proposal selection, and review messages live
+in `learning_cli.py`, while `learning.py` remains responsible for state
+rules. This makes the safety promise visible in the module boundary: the
+interface can record approval for planning, but it receives no command
+runner or source-code editor that could execute the proposal.

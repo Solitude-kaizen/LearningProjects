@@ -105,6 +105,8 @@ Important modules:
 ```text
 src/solitude_kaizen/
 ├── main.py
+├── learning_cli.py
+├── learning.py
 ├── continuity_cli.py
 ├── continuity.py
 ├── memory.py
@@ -113,7 +115,6 @@ src/solitude_kaizen/
 ├── ai_service.py
 ├── database.py
 ├── research.py
-├── learning.py
 ├── continuous_learning.py
 └── data/
     ├── profile.json
@@ -148,11 +149,28 @@ Responsibilities include:
 - Requesting AI responses
 - Handling provider errors at the CLI boundary
 - Displaying provider diagnostics
-- Delegating continuity commands to `continuity_cli.py`
+- Delegating learning and continuity commands to focused CLI modules
 
-The continuity extraction is the first incremental CLI cleanup. Other
-menu commands still live in `main.py` and can move behind similarly
-small boundaries only when that change is useful and tested.
+The learning and continuity extractions are the first incremental CLI
+cleanup. Other menu commands still live in `main.py` and can move behind
+similarly small boundaries only when that change is useful and tested.
+
+## `learning_cli.py`
+
+`learning_cli.py` owns Learning Brain and proposal-review interaction:
+
+- Displaying a lesson and its evidence status
+- Asking for and storing the creator's reflection
+- Displaying learning progress
+- Selecting a pending proposal for review
+- Reading the approve, reject, or postpone decision and its reason
+- Displaying the append-only review history
+
+The module delegates every state change to `learning.py`. An approval is
+still a recorded decision for separate planning; this CLI boundary has
+no code-editing, command-execution, provider, or network capability.
+Tests supply predictable input and output functions without starting the
+full application.
 
 ## `continuity_cli.py`
 
