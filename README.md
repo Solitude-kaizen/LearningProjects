@@ -17,9 +17,11 @@ research inbox. Learning Brain V1 turns one inbox item at a time into
 an offline baby-step lesson and a pending improvement proposal. Proposal
 Control V1 lets the creator approve, reject, or postpone that proposal
 without executing it. Lifetime Continuity V1 creates verified local
-bundles of SK's identity and runtime data. Controlled Continuous
-Learning V1 connects these parts at startup and can prepare at most one
-offline lesson per day when explicitly enabled.
+bundles of SK's identity and runtime data. Safe Restore V1 adds a
+previewed recovery path with exact confirmation, an emergency backup,
+post-restore verification, and automatic rollback. Controlled
+Continuous Learning V1 connects the learning parts at startup and can
+prepare at most one offline lesson per day when explicitly enabled.
 
 The current version is a command-line application with:
 
@@ -39,12 +41,14 @@ The current version is a command-line application with:
 - Local reflection history and human-reviewed improvement proposals
 - Append-only proposal review history with reasons and timestamps
 - Allowlisted continuity backups with hash and SQLite integrity checks
+- Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **109 passing tests** covering memory,
+The project currently has **114 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
-the offline learning loop, proposal controls, and continuity backups.
+the offline learning loop, proposal controls, continuity backups, and
+safe restoration rollback.
 
 ## AI Providers
 
@@ -223,11 +227,22 @@ The CLI currently provides options for:
 - Viewing proposal review history
 - Creating and verifying a local continuity backup
 - Rechecking the latest continuity backup
+- Previewing and safely restoring the latest continuity backup
 
 Continuity bundles are stored under the ignored local `data/backups`
 directory. They contain SK's identity, profile, memories, and a
 consistent SQLite snapshot. They never include `.env` or arbitrary
 project files. The ZIP is not encrypted, so it must be kept private.
+
+A restore first verifies the selected bundle and previews every affected
+file. It requires the exact displayed confirmation phrase, creates and
+verifies an emergency backup of the current state, restores through
+temporary files, and verifies the result. If a write or verification
+fails, SK automatically rolls back from the emergency backup. A
+successful restore closes the CLI so the restored state is loaded
+cleanly on the next start. Safe Restore V1 requires all current
+continuity files to be valid enough to protect first; recovery from an
+already missing or corrupted live file remains a guided future step.
 
 ## Running Tests
 
@@ -237,10 +252,11 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **109 passing tests** covering memory,
+The project currently has **114 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
-the offline learning loop, proposal controls, and continuity backups.
+the offline learning loop, proposal controls, continuity backups, and
+safe restoration rollback.
 
 ## Memory
 

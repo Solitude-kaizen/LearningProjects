@@ -45,6 +45,8 @@ from .continuity import (
     ContinuityError,
     create_continuity_bundle,
     get_latest_continuity_bundle,
+    preview_continuity_restore,
+    restore_continuity_bundle,
     verify_continuity_bundle,
 )
 from .continuous_learning import run_controlled_learning_cycle
@@ -200,7 +202,8 @@ while True:
     print("23. View proposal review history")
     print("24. Create and verify continuity backup")
     print("25. Verify latest continuity backup")
-    print("26. Exit")
+    print("26. Preview and restore latest continuity backup")
+    print("27. Exit")
 
     choice = input("Choose an option: ")
 
@@ -740,5 +743,116 @@ while True:
             print("Diagnostic:", verification["error"])
 
     elif choice == "26":
+        latest_bundle = get_latest_continuity_bundle(
+            backup_directory
+        )
+
+        print()
+        print("--- Safe Continuity Restore ---")
+
+        if latest_bundle is None:
+            print("No continuity backup is available yet.")
+            continue
+
+        try:
+            preview = preview_continuity_restore(
+                latest_bundle,
+                database_path,
+                profile_path,
+                memory_path,
+                identity_path,
+            )
+        except ContinuityError as error:
+            print("The latest backup cannot be restored.")
+            print("Diagnostic:", str(error))
+            continue
+
+        print("Verified backup:", preview["bundle_path"])
+        print("Created:", preview["bundle_created_at"])
+        print()
+        print("Proposed file changes:")
+
+        action_labels = {
+            "replace": "restore from backup",
+            "unchanged": "already matches",
+            "blocked": "cannot be safely protected",
+        }
+
+        for change in preview["changes"]:
+            print(
+                "-",
+                change["archive_path"],
+                "->",
+                action_labels[change["action"]],
+            )
+            print("  Live file:", change["target_path"])
+
+        if preview["status"] == "blocked":
+            print()
+            print("Restore is blocked. Nothing was changed.")
+
+            for blocker in preview["blockers"]:
+                print("-", blocker)
+
+            print(
+                "Repair or recover the current files with guidance "
+                "before trying again."
+            )
+            continue
+
+        if preview["change_count"] == 0:
+            print()
+            print("The current SK files already match this backup.")
+            print("Nothing was changed.")
+            continue
+
+        print()
+        print(
+            "Before restoring, SK will create and verify an "
+            "emergency backup of the current files."
+        )
+        print(
+            "If restoration fails, SK will automatically roll back."
+        )
+        print("To continue, type this exact phrase:")
+        print(preview["confirmation_phrase"])
+        confirmation = input("Confirmation: ")
+
+        if confirmation != preview["confirmation_phrase"]:
+            print("Restore canceled. Nothing was changed.")
+            continue
+
+        try:
+            result = restore_continuity_bundle(
+                latest_bundle,
+                backup_directory,
+                database_path,
+                profile_path,
+                memory_path,
+                identity_path,
+                confirmation=confirmation,
+            )
+        except ContinuityError as error:
+            print("The continuity restore did not complete.")
+            print("Diagnostic:", str(error))
+            continue
+
+        print()
+        print(
+            "Continuity restore completed for",
+            result["restored_file_count"],
+            "file(s).",
+        )
+        print(
+            "Emergency backup:",
+            result["emergency_bundle_path"],
+        )
+        print(
+            "SK will close now so the restored identity and data "
+            "can be loaded cleanly on the next start."
+        )
+        break
+
+    elif choice == "27":
         print("Goodbye!")
         break

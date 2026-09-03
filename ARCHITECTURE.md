@@ -913,9 +913,44 @@ database snapshot in memory for `PRAGMA quick_check`.
 
 The continuity module has no path that reads `.env`, credential files,
 source directories, or arbitrary user-selected files. Bundles remain in
-an ignored local directory and are not encrypted. V1 deliberately has no
-live restore operation because safe restoration still needs preview,
-confirmation, automatic pre-restore backup, and rollback behavior.
+an ignored local directory and are not encrypted.
+
+Safe Restore V1 follows a bounded transaction-like sequence:
+
+```text
+verify selected bundle
+        |
+        v
+preview each exact live target and proposed action
+        |
+        v
+require the displayed confirmation phrase
+        |
+        v
+create and verify an emergency backup of current state
+        |
+        v
+stage changed files beside their targets and replace them
+        |
+        v
+verify restored identity, JSON, and logical SQLite contents
+        |
+        +-- failure --> restore and verify the emergency backup
+        |
+        v
+close the CLI and reload cleanly on the next start
+```
+
+The restore allowlist maps the four archive paths to four fixed live
+paths; bundle names cannot choose destinations. SQLite comparisons use
+logical schema and record contents because two valid SQLite snapshots
+can be byte-different while containing the same data. If either the
+selected backup or current state changes after preview, execution is
+stopped. Safe Restore V1 also refuses to proceed when any current live
+continuity file is missing, malformed, or too large because it cannot
+first guarantee a verified emergency rollback point. Guided disaster
+recovery for an already damaged live state remains outside this first
+restore boundary.
 
 ## Architectural Invariants
 

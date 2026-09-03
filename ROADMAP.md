@@ -169,6 +169,7 @@ Append-only proposal review history
 Provider-independent identity document
 Verified local continuity bundles
 Controlled startup learning cycle with one automatic lesson per day
+Previewed continuity restoration with emergency rollback
 ```
 
 Likely areas for investigation:
@@ -201,9 +202,12 @@ opt-in, limited to one lesson per local day, and does not silently turn
 on either network collector.
 
 Lifetime Continuity V1 preserves identity, profile, memories, and the
-SQLite database through a verified local bundle. It verifies recovery
-data without overwriting the live companion. Encrypted off-device copies
-and live restoration require later safety design.
+SQLite database through a verified local bundle. Safe Restore V1 can
+apply the latest bundle only after a read-only preview, exact typed
+confirmation, and a verified emergency backup. It verifies the result,
+rolls back automatically after a failure, and restarts the companion
+after success. Encrypted off-device copies and guided restoration when
+the current live state is already damaged require later safety design.
 
 V2 should still preserve the principle:
 

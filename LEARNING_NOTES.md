@@ -1244,3 +1244,34 @@ Separate configuration switches prevent a local learning preference
 from silently enabling network access. A daily creation limit also
 prevents repeated application restarts from producing an uncontrolled
 lesson backlog.
+
+## Safe Restore V1
+
+A backup is useful only when recovery is both possible and controlled.
+A safe restore is not a simple copy operation because several files
+represent one companion state. A failure after replacing only some of
+them could mix old and new identity, profile, memories, and database
+records.
+
+The first restore design therefore behaves like a small transaction:
+
+```text
+verify -> preview -> confirm -> emergency backup
+       -> staged replacement -> verify -> rollback on failure
+```
+
+The preview is read-only and names every fixed target. Confirmation must
+match the displayed phrase exactly. Temporary files are written and
+flushed before replacement, and the emergency backup remains available
+even after success.
+
+SQLite also teaches an important distinction between bytes and meaning.
+Two consistent snapshots may have different header bytes while storing
+the same schema and records. File hashes remain correct for verifying a
+bundle against its manifest, while restore planning compares logical
+SQLite contents to avoid unnecessary database replacement.
+
+The first version refuses to restore over an already invalid live state.
+That limitation is deliberate: automatic rollback is only honest when
+the system can first create and verify a recovery point for what exists
+now. Damaged-state recovery needs a separate guided procedure.

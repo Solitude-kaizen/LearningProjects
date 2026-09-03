@@ -31,7 +31,7 @@ The system should not become permanently dependent on one AI provider.
 
 Solitude-Kaizen V1.0.0 has been released.
 
-V2 development has started with seven incremental foundations:
+V2 development has started with eight incremental foundations:
 
 - SQLite database initialization, memory schema, and safe insertion.
 - An opt-in daily Kaizen discovery loop that performs at most one
@@ -48,10 +48,14 @@ V2 development has started with seven incremental foundations:
   append-only application history. Approval does not execute code.
 - Lifetime Continuity V1, which creates and verifies an allowlisted local
   bundle containing SK's identity, profile, memories, and a consistent
-  SQLite snapshot. It excludes `.env` and does not restore live data.
+  SQLite snapshot. It excludes `.env` and arbitrary project files.
 - Controlled Continuous Learning V1, which orchestrates the existing
   research, Kaizen, and offline lesson steps at startup. Automatic
   lesson preparation is opt-in and limited to one lesson per day.
+- Safe Restore V1, which previews exact continuity changes, requires an
+  exact confirmation phrase, protects the current state with a verified
+  emergency backup, verifies restored data, and automatically rolls
+  back after a failed restore attempt.
 
 The daily Kaizen feature is disabled by default until Groq tool billing
 has been reviewed.
@@ -86,7 +90,8 @@ Current verified state:
 - Roadmap documentation completed
 - Troubleshooting documentation completed
 - Learning notes completed
-- 109 automated tests passing, including the current V2 foundations
+- Guarded continuity restoration and rollback working
+- 114 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -403,7 +408,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-109 passed
+114 passed
 ```
 
 Tests cover:
@@ -423,7 +428,8 @@ Tests cover:
 - Public research collection and deduplication
 - Learning lesson selection, reflection, and proposal safety
 - Proposal approval, rejection, postponement, and review history
-- Continuity bundle allowlisting, tamper detection, and recovery checks
+- Continuity bundle allowlisting, tamper detection, previewed restore,
+  confirmation, emergency backup, and rollback
 
 The number of collected tests should be monitored because duplicate Python test-function names can silently replace earlier definitions.
 

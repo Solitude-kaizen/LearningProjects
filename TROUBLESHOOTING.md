@@ -35,10 +35,10 @@ Do not assume a file was saved correctly just because it is visible in VS Code.
 python -m pytest -q
 ```
 
-Current V1 baseline:
+Current project baseline:
 
 ```text
-63 passed
+114 passed
 ```
 
 If the number unexpectedly decreases, investigate before continuing.
@@ -668,7 +668,7 @@ If the suite unexpectedly reports fewer tests:
 Current expected baseline:
 
 ```text
-63 passed
+114 passed
 ```
 
 ## A Test Passes but Does Not Prove the Behavior
@@ -958,6 +958,33 @@ Stop making changes if:
 - New dependencies are being introduced without clear need
 
 Return to the last known-good Git checkpoint and diagnose from there.
+
+## Continuity Restore Is Blocked
+
+### Meaning
+
+Safe Restore V1 will not overwrite a current continuity file that is
+missing, malformed, invalid SQLite, or beyond its safety limit. It must
+first be able to create a verified emergency backup for rollback.
+
+### Safe response
+
+Do not delete more files or repeatedly retry. Keep the verified backup
+private, record the diagnostic shown by SK, and inspect the named live
+file. Recovery from an already damaged live state is a guided operation,
+not part of the automatic restore path.
+
+## Continuity Restore Reports Automatic Rollback
+
+SK detected a replacement or verification failure and restored the
+pre-restore state from its emergency backup. Keep the emergency bundle
+at the displayed path, close SK, inspect disk space and file access, and
+verify the backup again before another attempt.
+
+If SK reports that both restore and rollback failed, stop using the live
+data files immediately. Preserve the emergency bundle named in the
+diagnostic and perform guided recovery; do not try to repair the ZIP or
+copy individual files from it casually.
 
 ## Troubleshooting Philosophy
 

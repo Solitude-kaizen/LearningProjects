@@ -115,7 +115,7 @@ Current priorities are:
 7. Treat approval as permission to plan, never permission to execute.
 8. Preserve identity and local data through verified continuity bundles.
 9. Keep continuity backups local, private, allowlisted, and secret-free.
-10. Add live restoration only with preview, backup, confirmation, and rollback.
+10. Preserve live restoration with preview, backup, confirmation, and rollback.
 11. Perform architecture cleanup before expanding Controlled Curiosity.
 12. Create small, reversible Git checkpoints.
 
