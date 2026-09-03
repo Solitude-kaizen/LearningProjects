@@ -1275,3 +1275,22 @@ The first version refuses to restore over an already invalid live state.
 That limitation is deliberate: automatic rollback is only honest when
 the system can first create and verify a recovery point for what exists
 now. Damaged-state recovery needs a separate guided procedure.
+
+## Separate Interaction from Core Operations
+
+A command-line menu has two different jobs: communicating with the user
+and performing the requested operation. When both jobs accumulate in one
+large loop, even a wording change becomes difficult to test without
+starting the whole application.
+
+The first architecture cleanup moves continuity interaction into
+`continuity_cli.py`. The core `continuity.py` module still owns backup
+validation, restoration, and rollback. The new boundary owns prompts,
+display text, and user-facing errors.
+
+Tests can provide small replacement input and output functions. This is
+dependency injection in a simple form: production uses normal `input`
+and `print`, while tests supply predictable functions without changing
+the real terminal or personal data. The main loop now needs to know only
+which continuity command ran and whether a successful restore requires
+a clean restart.

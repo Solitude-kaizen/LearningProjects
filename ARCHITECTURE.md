@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document describes how Solitude-Kaizen V1 is currently structured.
+This document describes how Solitude-Kaizen is currently structured.
 
 It focuses on:
 
@@ -105,24 +105,31 @@ Important modules:
 ```text
 src/solitude_kaizen/
 ├── main.py
+├── continuity_cli.py
+├── continuity.py
 ├── memory.py
 ├── conversation.py
 ├── prompt.py
 ├── ai_service.py
+├── database.py
+├── research.py
+├── learning.py
+├── continuous_learning.py
 └── data/
     ├── profile.json
-    └── memories.json
+    ├── memories.json
+    └── solitude_kaizen.db
 ```
 
-Tests currently live in:
+Tests live in module-focused files under:
 
 ```text
-tests/test_memory.py
+tests/
 ```
 
-Despite the filename, the current test file covers multiple modules.
-
-Splitting tests into module-specific files may be considered later, but it is not required for V1.
+Continuity engine tests and continuity CLI tests remain separate so the
+data-safety rules can be verified independently from user-facing menu
+behavior.
 
 ## `main.py`
 
@@ -141,6 +148,27 @@ Responsibilities include:
 - Requesting AI responses
 - Handling provider errors at the CLI boundary
 - Displaying provider diagnostics
+- Delegating continuity commands to `continuity_cli.py`
+
+The continuity extraction is the first incremental CLI cleanup. Other
+menu commands still live in `main.py` and can move behind similarly
+small boundaries only when that change is useful and tested.
+
+## `continuity_cli.py`
+
+`continuity_cli.py` owns only the interactive continuity workflow:
+
+- Grouping the five fixed continuity paths
+- Printing backup and verification results
+- Displaying the restore preview
+- Reading the exact confirmation phrase
+- Translating continuity errors into user-facing diagnostics
+- Returning a restore status so `main.py` knows when to close
+
+It does not implement archive validation, file replacement, or rollback.
+Those safety rules remain in `continuity.py`. Input and output functions
+can be supplied by tests, so this behavior is verified without starting
+the full application loop.
 
 The application is currently started with:
 

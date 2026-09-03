@@ -91,7 +91,7 @@ Current verified state:
 - Troubleshooting documentation completed
 - Learning notes completed
 - Guarded continuity restoration and rollback working
-- 114 automated tests passing, including the current V2 foundations
+- 118 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -352,6 +352,27 @@ Responsibilities:
 - Conversation flow
 - CLI error boundary
 - Provider display
+- Delegation of continuity commands to a separate CLI boundary
+
+### `continuity_cli.py`
+
+Responsibilities:
+
+- Continuity backup, verification, and restore interaction
+- Fixed continuity path grouping
+- Restore preview display and confirmation input
+- User-facing continuity diagnostics
+- Returning a status to the main application after restore
+
+### `continuity.py`
+
+Responsibilities:
+
+- Allowlisted continuity bundle creation and verification
+- Logical SQLite comparison
+- Read-only restore planning
+- Staged replacement and post-restore verification
+- Emergency backup and automatic rollback
 
 ### `ai_service.py`
 
@@ -408,7 +429,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-114 passed
+118 passed
 ```
 
 Tests cover:

@@ -189,6 +189,12 @@ Test organization
 CLI/application separation
 ```
 
+CLI/application separation has begun with the continuity commands. Their
+interactive wording and confirmation flow now live in a testable
+`continuity_cli.py` boundary, while `continuity.py` retains the recovery
+engine. The remaining menu is still intentionally migrated one coherent
+feature group at a time.
+
 The public research collector is evidence gathering only. It must not
 execute instructions from retrieved content or modify SK automatically.
 The Learning Brain converts metadata into a small review exercise, not

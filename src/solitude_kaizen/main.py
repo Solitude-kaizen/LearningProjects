@@ -41,13 +41,11 @@ from .learning import (
     read_proposal_review_history,
     review_learning_proposal,
 )
-from .continuity import (
-    ContinuityError,
-    create_continuity_bundle,
-    get_latest_continuity_bundle,
-    preview_continuity_restore,
-    restore_continuity_bundle,
-    verify_continuity_bundle,
+from .continuity_cli import (
+    ContinuityPaths,
+    run_create_continuity_backup,
+    run_restore_latest_continuity_backup,
+    run_verify_latest_continuity_backup,
 )
 from .continuous_learning import run_controlled_learning_cycle
 
@@ -109,6 +107,14 @@ memory_path = "src/solitude_kaizen/data/memories.json"
 database_path = "src/solitude_kaizen/data/solitude_kaizen.db"
 identity_path = "SK_IDENTITY.md"
 backup_directory = "src/solitude_kaizen/data/backups"
+
+continuity_paths = ContinuityPaths(
+    backup_directory=backup_directory,
+    database_path=database_path,
+    profile_path=profile_path,
+    memory_path=memory_path,
+    identity_path=identity_path,
+)
 
 ensure_json_file(
     profile_path,
@@ -696,162 +702,18 @@ while True:
             print("Current status:", review["proposal_status"])
 
     elif choice == "24":
-        print()
-        print("Creating a private local continuity backup...")
-
-        try:
-            result = create_continuity_bundle(
-                backup_directory,
-                database_path,
-                profile_path,
-                memory_path,
-                identity_path,
-            )
-        except ContinuityError as error:
-            print("The continuity backup could not be created.")
-            print("Diagnostic:", str(error))
-            continue
-
-        print("Continuity backup verified successfully.")
-        print("Files verified:", result["verification"]["file_count"])
-        print("Saved locally at:", result["bundle_path"])
-        print(
-            "Keep this unencrypted backup private. "
-            "It does not include .env or credential files."
-        )
+        run_create_continuity_backup(continuity_paths)
 
     elif choice == "25":
-        latest_bundle = get_latest_continuity_bundle(
-            backup_directory
-        )
-
-        print()
-        print("--- Latest Continuity Backup ---")
-
-        if latest_bundle is None:
-            print("No continuity backup is available yet.")
-            continue
-
-        verification = verify_continuity_bundle(latest_bundle)
-        print("Backup:", latest_bundle)
-        print("Status:", verification["status"])
-
-        if verification["status"] == "valid":
-            print("Created:", verification["created_at"])
-            print("Files verified:", verification["file_count"])
-        else:
-            print("Diagnostic:", verification["error"])
+        run_verify_latest_continuity_backup(continuity_paths)
 
     elif choice == "26":
-        latest_bundle = get_latest_continuity_bundle(
-            backup_directory
+        restore_result = run_restore_latest_continuity_backup(
+            continuity_paths
         )
 
-        print()
-        print("--- Safe Continuity Restore ---")
-
-        if latest_bundle is None:
-            print("No continuity backup is available yet.")
-            continue
-
-        try:
-            preview = preview_continuity_restore(
-                latest_bundle,
-                database_path,
-                profile_path,
-                memory_path,
-                identity_path,
-            )
-        except ContinuityError as error:
-            print("The latest backup cannot be restored.")
-            print("Diagnostic:", str(error))
-            continue
-
-        print("Verified backup:", preview["bundle_path"])
-        print("Created:", preview["bundle_created_at"])
-        print()
-        print("Proposed file changes:")
-
-        action_labels = {
-            "replace": "restore from backup",
-            "unchanged": "already matches",
-            "blocked": "cannot be safely protected",
-        }
-
-        for change in preview["changes"]:
-            print(
-                "-",
-                change["archive_path"],
-                "->",
-                action_labels[change["action"]],
-            )
-            print("  Live file:", change["target_path"])
-
-        if preview["status"] == "blocked":
-            print()
-            print("Restore is blocked. Nothing was changed.")
-
-            for blocker in preview["blockers"]:
-                print("-", blocker)
-
-            print(
-                "Repair or recover the current files with guidance "
-                "before trying again."
-            )
-            continue
-
-        if preview["change_count"] == 0:
-            print()
-            print("The current SK files already match this backup.")
-            print("Nothing was changed.")
-            continue
-
-        print()
-        print(
-            "Before restoring, SK will create and verify an "
-            "emergency backup of the current files."
-        )
-        print(
-            "If restoration fails, SK will automatically roll back."
-        )
-        print("To continue, type this exact phrase:")
-        print(preview["confirmation_phrase"])
-        confirmation = input("Confirmation: ")
-
-        if confirmation != preview["confirmation_phrase"]:
-            print("Restore canceled. Nothing was changed.")
-            continue
-
-        try:
-            result = restore_continuity_bundle(
-                latest_bundle,
-                backup_directory,
-                database_path,
-                profile_path,
-                memory_path,
-                identity_path,
-                confirmation=confirmation,
-            )
-        except ContinuityError as error:
-            print("The continuity restore did not complete.")
-            print("Diagnostic:", str(error))
-            continue
-
-        print()
-        print(
-            "Continuity restore completed for",
-            result["restored_file_count"],
-            "file(s).",
-        )
-        print(
-            "Emergency backup:",
-            result["emergency_bundle_path"],
-        )
-        print(
-            "SK will close now so the restored identity and data "
-            "can be loaded cleanly on the next start."
-        )
-        break
+        if restore_result["status"] == "restored":
+            break
 
     elif choice == "27":
         print("Goodbye!")
