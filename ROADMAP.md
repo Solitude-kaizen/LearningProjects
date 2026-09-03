@@ -189,12 +189,13 @@ Test organization
 CLI/application separation
 ```
 
-CLI/application separation has begun with the continuity and Learning
-Brain commands. Their interactive wording, reflection, proposal review,
-and restore confirmation flows now live in testable `learning_cli.py`
-and `continuity_cli.py` boundaries. The core modules retain the data and
-safety rules. The remaining menu is still intentionally migrated one
-coherent feature group at a time.
+CLI/application separation has begun with the research, Learning Brain,
+and continuity commands. Their interactive wording, collection status,
+reflection, proposal review, and restore confirmation flows now live in
+testable `research_cli.py`, `learning_cli.py`, and `continuity_cli.py`
+boundaries. The core modules retain the data and safety rules. The
+remaining menu is still intentionally migrated one coherent feature
+group at a time.
 
 The public research collector is evidence gathering only. It must not
 execute instructions from retrieved content or modify SK automatically.

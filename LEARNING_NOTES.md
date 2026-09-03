@@ -1301,3 +1301,10 @@ in `learning_cli.py`, while `learning.py` remains responsible for state
 rules. This makes the safety promise visible in the module boundary: the
 interface can record approval for planning, but it receives no command
 runner or source-code editor that could execute the proposal.
+
+The research interface follows the same separation. `research_cli.py`
+may explicitly request the existing collector and display its result,
+but it does not own automatic scheduling, network requests, or trust
+decisions. This makes permission easier to audit: selecting the manual
+collection command is the user action that starts network research,
+while merely viewing the inbox only reads stored metadata.

@@ -24,12 +24,10 @@ from .conversation import (
 )
 from .prompt import build_system_prompt
 
-from .database import (
-    get_latest_kaizen_discovery,
-    get_latest_research_items,
-)
-from .research import (
-    run_research_collection_if_due,
+from .research_cli import (
+    run_collect_public_research,
+    run_view_latest_kaizen_discovery,
+    run_view_public_research_inbox,
 )
 from .learning_cli import (
     run_complete_current_learning_lesson,
@@ -423,73 +421,13 @@ while True:
         print("Messages in short-term history:", message_count)
 
     elif choice == "16":
-        discovery = get_latest_kaizen_discovery(database_path)
-
-        print()
-        print("--- Latest Kaizen Discovery ---")
-
-        if discovery is None:
-            print("No Kaizen discovery is available yet.")
-            continue
-
-        print("Date:", discovery["run_date"])
-        print("Status:", discovery["status"])
-        print("Provider:", discovery["provider"])
-
-        if discovery["error_kind"]:
-            print("Diagnostic:", discovery["error_kind"])
-
-        print()
-        print(discovery["report"])
+        run_view_latest_kaizen_discovery(database_path)
 
     elif choice == "17":
-        print()
-        print("Collecting public research...")
-
-        result = run_research_collection_if_due(
-            database_path,
-        )
-
-        if result["status"] == "skipped":
-            print("Research was already collected today.")
-            continue
-
-        print(
-            "New research items:",
-            result["run"]["new_item_count"],
-        )
-        print("Status:", result["status"])
-
-        if result["run"]["error_summary"]:
-            print(
-                "Source note:",
-                result["run"]["error_summary"],
-            )
+        run_collect_public_research(database_path)
 
     elif choice == "18":
-        research_items = get_latest_research_items(
-            database_path,
-            limit=10,
-        )
-
-        print()
-        print("--- Public Research Inbox ---")
-
-        if not research_items:
-            print("No public research has been collected yet.")
-            continue
-
-        for item in research_items:
-            print()
-            print("Source:", item["source"])
-            print("Title:", item["title"])
-            print("Link:", item["url"])
-
-            if item["published_at"]:
-                print("Published:", item["published_at"])
-
-            if item["summary"]:
-                print("Summary:", item["summary"])
+        run_view_public_research_inbox(database_path)
 
     elif choice == "19":
         run_start_or_view_learning_lesson(database_path)

@@ -105,6 +105,8 @@ Important modules:
 ```text
 src/solitude_kaizen/
 ├── main.py
+├── research_cli.py
+├── research.py
 ├── learning_cli.py
 ├── learning.py
 ├── continuity_cli.py
@@ -114,7 +116,6 @@ src/solitude_kaizen/
 ├── prompt.py
 ├── ai_service.py
 ├── database.py
-├── research.py
 ├── continuous_learning.py
 └── data/
     ├── profile.json
@@ -149,11 +150,25 @@ Responsibilities include:
 - Requesting AI responses
 - Handling provider errors at the CLI boundary
 - Displaying provider diagnostics
-- Delegating learning and continuity commands to focused CLI modules
+- Delegating research, learning, and continuity commands to focused CLI
+  modules
 
-The learning and continuity extractions are the first incremental CLI
-cleanup. Other menu commands still live in `main.py` and can move behind
-similarly small boundaries only when that change is useful and tested.
+The research, learning, and continuity extractions are the first
+incremental CLI cleanup. Other menu commands still live in `main.py` and
+can move behind similarly small boundaries only when that change is
+useful and tested.
+
+## `research_cli.py`
+
+`research_cli.py` owns the interaction for viewing Daily Kaizen results,
+manually starting public research, and displaying the research inbox.
+It delegates collection limits, source access, deduplication, and storage
+to `research.py` and `database.py`.
+
+This boundary does not enable automatic network access or interpret
+retrieved text as instructions. Manual collection runs only when its CLI
+command is selected. Public titles and summaries are displayed as
+untrusted metadata for later human review.
 
 ## `learning_cli.py`
 

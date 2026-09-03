@@ -91,7 +91,7 @@ Current verified state:
 - Troubleshooting documentation completed
 - Learning notes completed
 - Guarded continuity restoration and rollback working
-- 123 automated tests passing, including the current V2 foundations
+- 128 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -352,8 +352,21 @@ Responsibilities:
 - Conversation flow
 - CLI error boundary
 - Provider display
-- Delegation of learning and continuity commands to separate CLI
-  boundaries
+- Delegation of research, learning, and continuity commands to separate
+  CLI boundaries
+
+### `research_cli.py`
+
+Responsibilities:
+
+- Latest Daily Kaizen result display
+- Explicit manual research-collection interaction
+- Public research inbox display
+- Collection status and partial-source diagnostics
+
+Automatic scheduling, network-source behavior, validation,
+deduplication, and storage remain outside this interface module.
+Retrieved metadata is displayed as untrusted text.
 
 ### `learning_cli.py`
 
@@ -444,7 +457,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-123 passed
+128 passed
 ```
 
 Tests cover:
