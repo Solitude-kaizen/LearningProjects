@@ -105,6 +105,8 @@ Important modules:
 ```text
 src/solitude_kaizen/
 ├── main.py
+├── conversation_cli.py
+├── conversation.py
 ├── research_cli.py
 ├── research.py
 ├── learning_cli.py
@@ -112,7 +114,6 @@ src/solitude_kaizen/
 ├── continuity_cli.py
 ├── continuity.py
 ├── memory.py
-├── conversation.py
 ├── prompt.py
 ├── ai_service.py
 ├── database.py
@@ -129,9 +130,8 @@ Tests live in module-focused files under:
 tests/
 ```
 
-Continuity engine tests and continuity CLI tests remain separate so the
-data-safety rules can be verified independently from user-facing menu
-behavior.
+Core-module tests and CLI-boundary tests remain separate so data and
+safety rules can be verified independently from user-facing behavior.
 
 ## `main.py`
 
@@ -145,18 +145,31 @@ Responsibilities include:
 - Displaying the CLI menu
 - Handling user commands
 - Calling memory functions
-- Building conversation turns
-- Building prompts
-- Requesting AI responses
-- Handling provider errors at the CLI boundary
-- Displaying provider diagnostics
-- Delegating research, learning, and continuity commands to focused CLI
-  modules
+- Delegating conversation, research, learning, and continuity commands
+  to focused CLI modules
 
-The research, learning, and continuity extractions are the first
-incremental CLI cleanup. Other menu commands still live in `main.py` and
-can move behind similarly small boundaries only when that change is
-useful and tested.
+The conversation, research, learning, and continuity extractions form an
+incremental CLI cleanup. Memory and profile commands still live in
+`main.py` and can move behind similarly small boundaries only when that
+change is useful and tested.
+
+## `conversation_cli.py`
+
+`conversation_cli.py` owns the interactive talk and provider-status
+workflow:
+
+- Reading one user message
+- Building memory and prior-conversation context
+- Requesting a response through `ai_service.py`
+- Recording one completed user-and-assistant turn
+- Removing the unanswered user entry after a final provider error
+- Displaying the provider that actually answered
+- Clearing and reporting short-term conversation state
+
+Provider routing, fallback classification, and model configuration stay
+in `ai_service.py`. Conversation storage and trimming stay in
+`conversation.py`. Tests provide fake response and provider functions,
+so this interface can be verified without cloud or local model calls.
 
 ## `research_cli.py`
 

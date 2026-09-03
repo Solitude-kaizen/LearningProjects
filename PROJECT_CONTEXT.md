@@ -91,7 +91,7 @@ Current verified state:
 - Troubleshooting documentation completed
 - Learning notes completed
 - Guarded continuity restoration and rollback working
-- 128 automated tests passing, including the current V2 foundations
+- 133 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -349,11 +349,22 @@ Responsibilities:
 - CLI menu
 - User interaction
 - Memory commands
-- Conversation flow
-- CLI error boundary
-- Provider display
-- Delegation of research, learning, and continuity commands to separate
-  CLI boundaries
+- Creation of shared short-term conversation state
+- Delegation of conversation, research, learning, and continuity
+  commands to separate CLI boundaries
+
+### `conversation_cli.py`
+
+Responsibilities:
+
+- Talk interaction and prompt-context assembly
+- Completed-turn recording
+- Failed-turn cleanup
+- Provider-used and provider-configuration display
+- Short-term conversation clearing and status
+
+Provider selection and fallback remain in `ai_service.py`; message
+construction and history trimming remain in `conversation.py`.
 
 ### `research_cli.py`
 
@@ -457,7 +468,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-128 passed
+133 passed
 ```
 
 Tests cover:

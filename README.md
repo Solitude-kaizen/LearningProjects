@@ -44,7 +44,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **128 passing tests** covering memory,
+The project currently has **133 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -252,7 +252,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **128 passing tests** covering memory,
+The project currently has **133 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

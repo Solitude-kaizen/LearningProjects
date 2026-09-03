@@ -15,15 +15,14 @@ from .memory import (
     sort_memories_by_importance,
     sort_memories_by_recency,
     rank_memories,
-    build_memory_context,
 )
 
-from .conversation import (
-    record_assistant_response,
-    prepare_user_turn,
+from .conversation_cli import (
+    run_clear_conversation,
+    run_talk_to_companion,
+    run_view_ai_provider,
+    run_view_conversation_status,
 )
-from .prompt import build_system_prompt
-
 from .research_cli import (
     run_collect_public_research,
     run_view_latest_kaizen_discovery,
@@ -44,13 +43,7 @@ from .continuity_cli import (
 )
 from .continuous_learning import run_controlled_learning_cycle
 
-from .ai_service import (
-    generate_response,
-    get_active_provider,
-    get_last_provider_used,
-    get_provider_info,
-    ProviderError,
-)
+
 name = "Solitude-Kaizen"
 version = "1.0"
 
@@ -339,86 +332,19 @@ while True:
             print("-", format_memory(memory))
 
     elif choice == "12":
-        user_message = input("You: ")
-
-        conversation_context = prepare_user_turn(
+        run_talk_to_companion(
             conversation_history,
-            user_message,
-            context_limit=6
-        )
-
-        memory_context = build_memory_context(
             memories,
-            limit=5
         )
-
-        system_prompt = build_system_prompt(
-            memory_context,
-            conversation_context
-        )
-
-        try:
-            response = generate_response(
-                system_prompt,
-                user_message
-            )
-
-        except ProviderError as error:
-            conversation_history.pop()
-
-            print()
-            print("Solitude-Kaizen:")
-            print(str(error))
-            print(
-                f"Diagnostic: {error.provider}/{error.kind}"
-            )
-            continue
-
-        print()
-        print("Solitude-Kaizen:")
-        print(response)
-
-        record_assistant_response(
-        conversation_history,
-        response,
-        limit=20
-        )
-
-        provider_used = get_last_provider_used()
-
-        if provider_used:
-            print("[Provider:", provider_used + "]")
 
     elif choice == "13":
-        try:
-            provider_info = get_provider_info()
-
-        except ProviderError as error:
-            print()
-            print("Could not read AI provider configuration.")
-            print(
-                f"Diagnostic: {error.provider}/{error.kind}"
-            )
-            continue
-
-        print()
-        print("--- AI Provider ---")
-        print("Active provider:", provider_info["provider"])
-        print("Model:", provider_info["model"])
-        print("Type:", provider_info["type"])
+        run_view_ai_provider()
 
     elif choice == "14":
-        conversation_history.clear()
+        run_clear_conversation(conversation_history)
 
-        print()
-        print("Conversation history cleared.")
-    
     elif choice == "15":
-        message_count = len(conversation_history)
-
-        print()
-        print("--- Conversation Status ---")
-        print("Messages in short-term history:", message_count)
+        run_view_conversation_status(conversation_history)
 
     elif choice == "16":
         run_view_latest_kaizen_discovery(database_path)

@@ -1283,7 +1283,7 @@ and performing the requested operation. When both jobs accumulate in one
 large loop, even a wording change becomes difficult to test without
 starting the whole application.
 
-The first architecture cleanup moves continuity interaction into
+The architecture cleanup began by moving continuity interaction into
 `continuity_cli.py`. The core `continuity.py` module still owns backup
 validation, restoration, and rollback. The new boundary owns prompts,
 display text, and user-facing errors.
@@ -1308,3 +1308,11 @@ but it does not own automatic scheduling, network requests, or trust
 decisions. This makes permission easier to audit: selecting the manual
 collection command is the user action that starts network research,
 while merely viewing the inbox only reads stored metadata.
+
+Conversation interaction benefits especially from this pattern because
+it crosses several core modules. `conversation_cli.py` coordinates
+memory context, prior turns, prompt construction, and provider calls,
+but each underlying rule remains owned by its focused module. Fake
+responders make the boundary testable without spending API credit or
+starting Ollama. Failure-path tests also prove that an unanswered user
+message is removed while earlier successful history remains intact.
