@@ -47,7 +47,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **154 passing tests** covering memory,
+The project currently has **174 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -251,7 +251,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **154 passing tests** covering memory,
+The project currently has **174 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -274,7 +274,14 @@ Memories support:
 - Search
 - Filtering
 - Ranking
-- Context selection
+- Topic-aware context selection
+
+During chat, SK matches words in the current question against saved
+memory text and categories. When matches exist, only matching memories
+are included, up to five, ordered by distinct keyword overlap and then
+the existing importance/recency ranking. If there is no match, the
+previous ranking is used. This is simple keyword retrieval, not semantic
+understanding or model training, and it does not change stored memories.
 
 Short-term conversation history currently exists only while the program is running.
 

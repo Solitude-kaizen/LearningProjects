@@ -338,7 +338,10 @@ When importance is equal, newer memories rank higher.
 
 ### Memory Context
 
-`build_memory_context()` selects a bounded number of ranked memories.
+`build_memory_context()` accepts an optional `query`; the Talk flow
+passes the current user message, not the accumulated conversation.
+`select_memories_for_context()` compares distinct keywords in that query
+with each memory's text and category.
 
 Current Talk flow uses:
 
@@ -346,13 +349,19 @@ Current Talk flow uses:
 limit = 5
 ```
 
-Important limitation:
+When matches exist, only matching memories are selected. More distinct
+overlapping words rank first; ties preserve the existing importance,
+known-timestamp, recency, and stable input ordering. If the query is
+missing, has no usable keywords, or matches nothing, selection falls
+back to the original global ranking. Existing callers that omit `query`
+keep their previous behavior, and memory-list sorting is unchanged.
 
-The current memory selector ranks memories globally by importance and recency.
-
-It does not yet perform semantic relevance search against the current user message.
-
-That may be considered in a future version.
+Keyword extraction ignores case, punctuation, a small English stop-word
+list, single-character tokens, and purely numeric tokens. Repeating a
+word does not increase its score. This is not semantic retrieval: it
+does not interpret synonyms, word forms, negation, or topic ambiguity.
+No records are changed or saved, and no external service or model
+training is involved in selection.
 
 ## `conversation.py`
 

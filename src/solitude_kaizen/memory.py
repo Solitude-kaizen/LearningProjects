@@ -1,10 +1,20 @@
 import json
+import re
 from datetime import datetime
 from pathlib import Path
 
 import json
 from datetime import datetime
 from pathlib import Path
+
+
+CONTEXT_STOP_WORDS = frozenset(
+    "a about an and any are as at be been but by can could did do does "
+    "explain for from had has have help how i if in is it its me my of "
+    "on or our please should show so some tell than that the their them "
+    "there these they this those to us was we were what when where which "
+    "who why will with would you your".split()
+)
 
 
 def ensure_json_file(path, default_data):
@@ -192,15 +202,44 @@ def rank_memories(memories):
         reverse=True
     )
 
-def select_memories_for_context(memories, limit=5):
+def _context_keywords(text):
+    """Extract simple whole-word keywords without changing stored text."""
+    return {
+        word
+        for word in re.findall(r"[^\W_]+", text.casefold())
+        if len(word) > 1
+        and not word.isdecimal()
+        and word not in CONTEXT_STOP_WORDS
+    }
+
+
+def select_memories_for_context(memories, limit=5, query=None):
+    """Use query matches when available, otherwise keep the existing ranking."""
     ranked_memories = rank_memories(memories)
+    query_keywords = _context_keywords(query or "")
+
+    if query_keywords:
+        matches = []
+        for memory in ranked_memories:
+            keywords = _context_keywords(
+                f"{memory['text']} {memory['category']}"
+            )
+            overlap = len(query_keywords & keywords)
+            if overlap:
+                matches.append((overlap, memory))
+
+        if matches:
+            # Stable sorting preserves importance and recency for equal scores.
+            matches.sort(key=lambda match: match[0], reverse=True)
+            ranked_memories = [memory for _, memory in matches]
 
     return ranked_memories[:limit]
 
-def build_memory_context(memories, limit=5):
+def build_memory_context(memories, limit=5, query=None):
     selected_memories = select_memories_for_context(
         memories,
-        limit=limit
+        limit=limit,
+        query=query,
     )
 
     if not selected_memories:

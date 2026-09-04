@@ -29,6 +29,7 @@ def run_talk_to_companion(
     memory_context = build_memory_context(
         memories,
         limit=5,
+        query=user_message,
     )
     system_prompt = build_system_prompt(
         memory_context,

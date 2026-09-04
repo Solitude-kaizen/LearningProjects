@@ -38,7 +38,7 @@ python -m pytest -q
 Current project baseline:
 
 ```text
-154 passed
+174 passed
 ```
 
 If the number unexpectedly decreases, investigate before continuing.
@@ -610,18 +610,20 @@ This allows old memory data to remain usable.
 
 ## Memory Selection Seems Unrelated
 
-Current V1 context selection is based primarily on ranking:
+The Talk flow now compares words in the current question with memory
+text and categories. Matching records rank by distinct keyword overlap,
+then importance and recency, with at most five records included.
 
-```text
-importance
-then recency
-```
+If no keywords match, SK falls back to its previous importance/recency
+ranking. This also happens for empty or generic queries whose words are
+all filtered out. Older callers that do not supply a query keep that
+original ranking.
 
-It is not yet semantic retrieval.
-
-Therefore, the top-ranked memories are not guaranteed to be the most semantically relevant to every user question.
-
-This is a known V1 trade-off, not necessarily a bug.
+Check whether your question and the intended memory share a whole-word
+topic or category. Matching ignores case, punctuation, common English
+request words, single-character tokens, and purely numeric tokens. It
+does not understand synonyms, word forms, or negation, so a keyword match
+is not proof of genuine relevance. No saved memory is changed by selection.
 
 ## Tests Fail
 
@@ -668,7 +670,7 @@ If the suite unexpectedly reports fewer tests:
 Current expected baseline:
 
 ```text
-154 passed
+174 passed
 ```
 
 ## A Test Passes but Does Not Prove the Behavior

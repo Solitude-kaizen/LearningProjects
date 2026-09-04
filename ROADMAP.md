@@ -181,7 +181,7 @@ Likely areas for investigation:
 
 ```text
 Persistent conversation history
-Improved memory relevance
+Further memory relevance improvements
 Semantic memory retrieval
 Local knowledge retrieval
 File and note access
@@ -200,6 +200,13 @@ lives in testable `conversation_cli.py`, `research_cli.py`,
 `learning_cli.py`, and `continuity_cli.py` boundaries. The core modules
 retain provider routing, data, and safety rules. The remaining menu is
 still intentionally migrated one coherent feature group at a time.
+
+Basic topic-aware memory selection is complete: the current chat question
+is matched against memory text and categories using distinct keywords.
+Only matches are included when available, with importance/recency as
+tie-breakers and the original ranking as a no-match fallback. This keeps
+the five-memory limit and stored records unchanged; semantic retrieval
+remains a separate possible improvement, not an existing capability.
 
 The forget-memory action is now handled in `memory_cli.py` with a
 selection preview and explicit confirmation. Tests verify confirmation,

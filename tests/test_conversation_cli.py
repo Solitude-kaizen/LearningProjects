@@ -1,4 +1,8 @@
+from copy import deepcopy
+
 import pytest
+
+from src.solitude_kaizen.memory import ensure_json_file, load_memories
 
 from src.solitude_kaizen.ai_service import ProviderError
 from src.solitude_kaizen.conversation_cli import (
@@ -78,6 +82,68 @@ def test_talk_flow_builds_context_and_records_one_complete_turn():
         },
     ]
     assert "[Provider: ollama]" in messages
+
+
+def test_talk_selects_memories_for_each_current_question_without_saving(tmp_path):
+    memory_path = tmp_path / "memories.json"
+    memory_data = {
+        "memories": [
+            {
+                "text": f"Unrelated reminder {index}",
+                "category": "personal",
+                "importance": 5,
+                "created_at": "2026-09-04T12:00:00",
+            }
+            for index in range(6)
+        ] + [
+            {
+                "text": "Practice Python loops",
+                "category": "learning",
+                "importance": 1,
+                "created_at": "2026-08-01T09:00:00",
+            },
+            {
+                "text": "Prefer short walks",
+                "category": "health",
+                "importance": 1,
+                "created_at": "2026-08-01T09:00:00",
+            },
+        ]
+    }
+    ensure_json_file(memory_path, memory_data)
+    memories = load_memories(memory_path)["memories"]
+    original = deepcopy(memories)
+    original_bytes = memory_path.read_bytes()
+    conversation_history = []
+    captured_requests = []
+
+    def fake_response(system_prompt, user_message):
+        captured_requests.append((system_prompt, user_message))
+        return "Test reply."
+
+    for question in ["Help with Python", "Any health suggestions?"]:
+        result = run_talk_to_companion(
+            conversation_history,
+            memories,
+            input_function=lambda prompt: question,
+            print_function=lambda *parts: None,
+            response_function=fake_response,
+            provider_used_function=lambda: "ollama",
+        )
+        assert result["status"] == "completed"
+
+    python_prompt, python_question = captured_requests[0]
+    health_prompt, health_question = captured_requests[1]
+    assert python_question == "Help with Python"
+    assert health_question == "Any health suggestions?"
+    assert "Practice Python loops" in python_prompt
+    assert "Prefer short walks" not in python_prompt
+    assert "Prefer short walks" in health_prompt
+    assert "Practice Python loops" not in health_prompt
+    assert all("Unrelated reminder" not in prompt for prompt, _ in captured_requests)
+    assert len(conversation_history) == 4
+    assert memories == original
+    assert memory_path.read_bytes() == original_bytes
 
 
 def test_talk_flow_removes_unanswered_turn_after_provider_error():

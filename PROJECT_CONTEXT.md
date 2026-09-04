@@ -86,7 +86,7 @@ Current verified state:
 - Command-line interface working
 - Persistent local memory working
 - Short-term conversation history working
-- Memory ranking and context selection working
+- Memory ranking and keyword-based, topic-aware context selection working
 - Groq cloud provider working
 - OpenAI provider supported
 - Ollama local provider working
@@ -106,7 +106,7 @@ Current verified state:
 - Guarded continuity restoration and rollback working
 - Preview and explicit confirmation before forgetting a memory; cancellation
   and invalid selections do not delete or save
-- 154 automated tests passing, including the current V2 foundations
+- 174 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -319,8 +319,14 @@ Current capabilities include:
 - Importance sorting
 - Recency sorting
 - Ranking
-- Context selection
+- Topic-aware context selection using the current chat question
 - Prompt context construction
+
+Chat compares distinct keywords with memory text and categories. When
+there are matches, it includes only those records, ordered by overlap
+then importance and recency, with the existing five-memory limit. Missing
+or unmatched queries retain the old ranking. Selection does not modify
+saved records; it does not understand synonyms, negation, or meaning.
 
 Current memory schema:
 
@@ -493,7 +499,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-154 passed
+174 passed
 ```
 
 Tests cover:
