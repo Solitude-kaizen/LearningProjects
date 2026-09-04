@@ -47,7 +47,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **137 passing tests** covering memory,
+The project currently has **154 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -251,7 +251,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **137 passing tests** covering memory,
+The project currently has **154 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -260,6 +260,11 @@ safe restoration rollback.
 ## Memory
 
 Long-term memories are stored locally.
+
+Menu option 6 previews the selected memory before asking for confirmation.
+Only `yes` (ignoring capitalization and surrounding spaces) permits
+deletion and saving. Any other answer cancels without changing the list
+or writing the memory file. Invalid selections also make no changes.
 
 Memories support:
 

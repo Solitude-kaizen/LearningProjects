@@ -113,6 +113,7 @@ src/solitude_kaizen/
 ├── learning.py
 ├── continuity_cli.py
 ├── continuity.py
+├── memory_cli.py
 ├── memory.py
 ├── prompt.py
 ├── ai_service.py
@@ -147,11 +148,27 @@ Responsibilities include:
 - Calling memory functions
 - Delegating conversation, research, learning, and continuity commands
   to focused CLI modules
+- Delegating the forget-memory interaction to `memory_cli.py`
 
 The conversation, research, learning, and continuity extractions form an
-incremental CLI cleanup. Memory and profile commands still live in
-`main.py` and can move behind similarly small boundaries only when that
-change is useful and tested.
+incremental CLI cleanup. The forget-memory action now has its own tested
+interaction boundary; other memory and profile commands remain in
+`main.py`.
+
+## `memory_cli.py`
+
+`run_forget_memory` lists memories, validates a selection, previews it,
+and asks for an explicit `yes` before calling the existing deletion and
+save functions. Any other answer cancels. Invalid selections and empty
+lists also return without deleting or saving. Capitalization and
+surrounding whitespace are ignored in the confirmation answer.
+
+The confirmation belongs to the user interaction, not the low-level
+`forget_memory` operation in `memory.py`, which remains unchanged.
+Tests supply input/output functions and use temporary files to verify
+preview order, unchanged cancellation data, and confirmed persistence.
+Main-menu tests account separately for the existing startup normalization
+save, so it cannot hide an unwanted write from the cancellation path.
 
 ## `conversation_cli.py`
 

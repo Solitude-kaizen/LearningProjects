@@ -104,7 +104,9 @@ Current verified state:
 - Troubleshooting documentation completed
 - Learning notes completed
 - Guarded continuity restoration and rollback working
-- 137 automated tests passing, including the current V2 foundations
+- Preview and explicit confirmation before forgetting a memory; cancellation
+  and invalid selections do not delete or save
+- 154 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -365,6 +367,16 @@ Responsibilities:
 - Creation of shared short-term conversation state
 - Delegation of conversation, research, learning, and continuity
   commands to separate CLI boundaries
+- Delegation of the forget-memory interaction to `memory_cli.py`
+
+### `memory_cli.py`
+
+Owns only the forget-memory interaction: list, select, preview, and
+confirm or cancel. Only an explicit `yes` permits deletion and saving.
+The low-level `forget_memory` and storage functions remain unchanged in
+`memory.py`; other memory and profile menu actions remain in `main.py`.
+Temporary-file tests cover both the interaction and main-menu wiring,
+including cancellation with no extra save and confirmed persistence.
 
 ### `conversation_cli.py`
 
@@ -481,7 +493,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-137 passed
+154 passed
 ```
 
 Tests cover:

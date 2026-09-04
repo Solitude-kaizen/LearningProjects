@@ -6,7 +6,6 @@ from .memory import (
     save_memories,
     create_memory,
     search_memories,
-    forget_memory,
     format_memory,
     validate_importance,
     validate_category,
@@ -42,6 +41,7 @@ from .continuity_cli import (
     run_verify_latest_continuity_backup,
 )
 from .continuous_learning import run_companion_startup
+from .memory_cli import run_forget_memory
 
 
 name = "Solitude-Kaizen"
@@ -230,34 +230,7 @@ while True:
             print("I do not have any memories saved yet.")
 
     elif choice == "6":
-        if memories:
-            print()
-            print("--- Memories ---")
-
-            for index, memory in enumerate(memories, start=1):
-               print(index, "-", format_memory(memory))
-
-            memory_number = input(
-                "Enter the number of the memory to forget: "
-            )
-
-            if memory_number.isdigit():
-                memory_index = int(memory_number) - 1
-
-                forgotten_memory = forget_memory(
-                    memories,
-                    memory_index
-                )
-
-                if forgotten_memory is not None:
-                    save_memories(memory_path, memory_data)
-                    print("I forgot:", forgotten_memory)
-                else:
-                    print("That memory number does not exist.")
-            else:
-                print("Please enter a valid number.")
-        else:
-            print("I do not have any memories to forget.")
+        run_forget_memory(memory_path, memory_data)
 
     elif choice == "7":
         search_term = input("Search memories for: ")

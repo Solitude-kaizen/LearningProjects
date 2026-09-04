@@ -201,6 +201,11 @@ lives in testable `conversation_cli.py`, `research_cli.py`,
 retain provider routing, data, and safety rules. The remaining menu is
 still intentionally migrated one coherent feature group at a time.
 
+The forget-memory action is now handled in `memory_cli.py` with a
+selection preview and explicit confirmation. Tests verify confirmation,
+cancellation, invalid selections, and actual saved-file behavior. Other
+memory and profile actions remain unchanged.
+
 The public research collector is evidence gathering only. It must not
 execute instructions from retrieved content or modify SK automatically.
 The optional Learning Guide converts metadata into a small review exercise, not
