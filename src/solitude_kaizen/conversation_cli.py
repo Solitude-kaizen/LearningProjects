@@ -113,9 +113,35 @@ def run_view_ai_provider(
 def run_clear_conversation(
     conversation_history,
     print_function=print,
+    input_function=None,
 ):
-    conversation_history.clear()
+    if input_function is None:
+        input_function = input
+
+    message_count = len(conversation_history)
     print_function()
+
+    if message_count == 0:
+        print_function("Conversation history is already empty.")
+        return {"status": "empty", "message_count": 0}
+
+    print_function("--- Clear Conversation Preview ---")
+    print_function("Messages to clear:", message_count)
+    print_function("Only this session's chat will be cleared; saved memories stay.")
+    print_function("This cannot be undone within this session.")
+
+    try:
+        confirmation = input_function(
+            "Type 'yes' to confirm, anything else to cancel: "
+        )
+    except (EOFError, KeyboardInterrupt):
+        confirmation = ""
+
+    if confirmation.strip().lower() != "yes":
+        print_function("Cancelled. Conversation history was not changed.")
+        return {"status": "cancelled", "message_count": message_count}
+
+    conversation_history.clear()
     print_function("Conversation history cleared.")
 
     return {

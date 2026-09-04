@@ -1,7 +1,11 @@
 from copy import deepcopy
+from functools import partial
+import runpy
 
 import pytest
 
+from src.solitude_kaizen import conversation_cli, memory
+from src.solitude_kaizen.database import initialize_database
 from src.solitude_kaizen.memory import ensure_json_file, load_memories
 
 from src.solitude_kaizen.ai_service import ProviderError
@@ -224,12 +228,28 @@ def test_provider_flow_reports_invalid_configuration():
     assert "Diagnostic: config/invalid_provider" in messages
 
 
-def test_clear_and_status_flows_share_mutable_conversation_state():
+@pytest.mark.parametrize("confirmation", ["yes", "YES", " yes "])
+def test_clear_and_status_flows_share_mutable_conversation_state(confirmation):
     conversation_history = [
         {"role": "user", "content": "Question"},
         {"role": "assistant", "content": "Answer"},
     ]
     messages, record_output = create_output_recorder()
+    original = deepcopy(conversation_history)
+    shared_history = conversation_history
+    prompts = []
+
+    def confirm_clear(prompt):
+        prompts.append(prompt)
+        assert conversation_history == original
+        assert "--- Clear Conversation Preview ---" in messages
+        assert "Messages to clear: 2" in messages
+        assert (
+            "Only this session's chat will be cleared; saved memories stay."
+            in messages
+        )
+        assert "This cannot be undone within this session." in messages
+        return confirmation
 
     before = run_view_conversation_status(
         conversation_history,
@@ -238,6 +258,7 @@ def test_clear_and_status_flows_share_mutable_conversation_state():
     cleared = run_clear_conversation(
         conversation_history,
         print_function=record_output,
+        input_function=confirm_clear,
     )
     after = run_view_conversation_status(
         conversation_history,
@@ -251,4 +272,155 @@ def test_clear_and_status_flows_share_mutable_conversation_state():
     }
     assert after["message_count"] == 0
     assert conversation_history == []
+    assert shared_history is conversation_history
+    assert len(prompts) == 1
     assert "Conversation history cleared." in messages
+
+
+@pytest.mark.parametrize("confirmation", ["no", "", "y", "yes please"])
+def test_cancel_clear_preserves_conversation_and_status(confirmation):
+    conversation_history = [
+        {"role": "user", "content": "Keep my question"},
+        {"role": "assistant", "content": "Keep this answer"},
+    ]
+    original = deepcopy(conversation_history)
+    messages, record_output = create_output_recorder()
+
+    result = run_clear_conversation(
+        conversation_history,
+        print_function=record_output,
+        input_function=lambda prompt: confirmation,
+    )
+
+    assert result == {"status": "cancelled", "message_count": 2}
+    assert conversation_history == original
+    assert run_view_conversation_status(
+        conversation_history, print_function=record_output
+    )["message_count"] == 2
+    assert "Cancelled. Conversation history was not changed." in messages
+    assert "Conversation history cleared." not in messages
+
+
+@pytest.mark.parametrize("interruption", [EOFError, KeyboardInterrupt])
+def test_interrupted_confirmation_does_not_clear_conversation(interruption):
+    conversation_history = [{"role": "user", "content": "Keep this"}]
+    original = deepcopy(conversation_history)
+    messages, record_output = create_output_recorder()
+
+    def interrupted_input(prompt):
+        raise interruption()
+
+    result = run_clear_conversation(
+        conversation_history,
+        print_function=record_output,
+        input_function=interrupted_input,
+    )
+
+    assert result == {"status": "cancelled", "message_count": 1}
+    assert conversation_history == original
+    assert "Cancelled. Conversation history was not changed." in messages
+
+
+def test_empty_conversation_does_not_ask_for_confirmation():
+    conversation_history = []
+    messages, record_output = create_output_recorder()
+
+    def unexpected_input(prompt):
+        pytest.fail("There is no conversation to clear.")
+
+    result = run_clear_conversation(
+        conversation_history,
+        print_function=record_output,
+        input_function=unexpected_input,
+    )
+
+    assert result == {"status": "empty", "message_count": 0}
+    assert conversation_history == []
+    assert "Conversation history is already empty." in messages
+    assert "--- Clear Conversation Preview ---" not in messages
+
+
+@pytest.mark.parametrize("confirmation", ["yes", "no"])
+def test_main_clear_confirmation_controls_next_chat_without_changing_files(
+    tmp_path,
+    monkeypatch,
+    capsys,
+    confirmation,
+):
+    data_directory = tmp_path / "src" / "solitude_kaizen" / "data"
+    memory_path = data_directory / "memories.json"
+    profile_path = data_directory / "profile.json"
+    database_path = data_directory / "solitude_kaizen.db"
+    memory_data = {"memories": create_memories()}
+    ensure_json_file(memory_path, memory_data)
+    ensure_json_file(profile_path, {"user_name": "Test User"})
+    initialize_database(database_path)
+    original_files = {
+        path: path.read_bytes()
+        for path in (memory_path, profile_path, database_path)
+    }
+    saved = []
+    save_function = memory.save_memories
+
+    def record_save(path, data):
+        saved.append(deepcopy(data))
+        save_function(path, data)
+
+    answers = iter([
+        "12", "First test question", "14", confirmation, "15",
+        "12", "Second test question", "27",
+    ])
+    prompts = []
+
+    def read_input(prompt):
+        prompts.append(prompt)
+        return next(answers)
+
+    requests = []
+
+    def fake_response(system_prompt, user_message):
+        requests.append((system_prompt, user_message))
+        return f"Test reply {len(requests)}"
+
+    monkeypatch.setattr(memory, "save_memories", record_save)
+    monkeypatch.setattr("builtins.input", read_input)
+    monkeypatch.setattr(
+        conversation_cli,
+        "run_talk_to_companion",
+        partial(
+            conversation_cli.run_talk_to_companion,
+            input_function=read_input,
+            response_function=fake_response,
+            provider_used_function=lambda: "test",
+        ),
+    )
+    monkeypatch.setenv("SK_RESEARCH_ENABLED", "false")
+    monkeypatch.setenv("KAIZEN_DISCOVERY_ENABLED", "false")
+    monkeypatch.setenv("SK_CONTINUOUS_LEARNING_ENABLED", "false")
+    monkeypatch.chdir(tmp_path)
+
+    state = runpy.run_module("src.solitude_kaizen.main", run_name="__main__")
+
+    output = capsys.readouterr().out
+    assert len(requests) == 2
+    assert "Messages to clear: 2" in output
+    assert sum("Type 'yes'" in prompt for prompt in prompts) == 1
+    assert "Goodbye!" in output
+    assert state["memories"] == memory_data["memories"]
+    # The existing startup normalization saves once; clearing must not save.
+    assert saved == [memory_data]
+    for path, original_bytes in original_files.items():
+        assert path.read_bytes() == original_bytes
+
+    if confirmation == "yes":
+        assert "Conversation history cleared." in output
+        assert "Messages in short-term history: 0" in output
+        assert "First test question" not in requests[1][0]
+        assert "Test reply 1" not in requests[1][0]
+        assert len(state["conversation_history"]) == 2
+    else:
+        assert "Cancelled. Conversation history was not changed." in output
+        assert "Messages in short-term history: 2" in output
+        assert "First test question" in requests[1][0]
+        assert "Test reply 1" in requests[1][0]
+        assert len(state["conversation_history"]) == 4

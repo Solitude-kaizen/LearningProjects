@@ -47,7 +47,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **208 passing tests** covering memory,
+The project currently has **219 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -221,7 +221,7 @@ The CLI currently provides options for:
 - Filtering and ranking memories
 - Talking with Solitude-Kaizen
 - Viewing the active AI provider
-- Clearing conversation history
+- Clearing conversation history after preview and confirmation
 - Viewing conversation status
 - Collecting zero-cost public research
 - Viewing the public research inbox
@@ -257,7 +257,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **208 passing tests** covering memory,
+The project currently has **219 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -290,6 +290,13 @@ previous ranking is used. This is simple keyword retrieval, not semantic
 understanding or model training, and it does not change stored memories.
 
 Short-term conversation history currently exists only while the program is running.
+
+Menu option 14 previews how many messages will be cleared. Only `yes`
+(ignoring capitalization and surrounding spaces) clears the current
+session's chat; saved memories and other files are untouched. Any other
+answer, or an interruption at the confirmation prompt, cancels without
+changing the conversation. Empty history needs no confirmation. A
+confirmed clear cannot be undone within the session.
 
 ## Reliability
 

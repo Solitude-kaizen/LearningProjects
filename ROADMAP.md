@@ -213,6 +213,12 @@ selection preview and explicit confirmation. Tests verify confirmation,
 cancellation, invalid selections, and actual saved-file behavior. Other
 memory and profile actions remain unchanged.
 
+The clear-conversation action also previews its message count and scope,
+then requires explicit confirmation. Cancellation retains the next chat's
+context; confirmation clears only the current in-memory session. Tests
+cover both paths, interrupted confirmation, empty history, and unchanged
+saved files through the main menu.
+
 The initial source-labeling improvement is complete in
 `research_labels.py`: the inbox shows URL-based source-type hints and
 domains, while explicitly leaving claims unverified. This is a limited,

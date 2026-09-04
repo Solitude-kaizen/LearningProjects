@@ -106,9 +106,11 @@ Current verified state:
 - Guarded continuity restoration and rollback working
 - Preview and explicit confirmation before forgetting a memory; cancellation
   and invalid selections do not delete or save
+- Preview and explicit confirmation before clearing the current conversation;
+  cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 208 automated tests passing, including the current V2 foundations
+- 219 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -394,7 +396,13 @@ Responsibilities:
 - Completed-turn recording
 - Failed-turn cleanup
 - Provider-used and provider-configuration display
-- Short-term conversation clearing and status
+- Short-term conversation clearing with preview/confirmation, and status
+
+Clearing requires an explicit `yes`; other input or an interruption at
+confirmation preserves the shared history. Empty history is reported
+without prompting. Only the current session's chat can be cleared, not
+saved memories, research, or backups. Temporary-data main-menu tests
+verify both the next chat's context and unchanged saved files.
 
 Provider selection and fallback remain in `ai_service.py`; message
 construction and history trimming remain in `conversation.py`.
@@ -511,7 +519,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-208 passed
+219 passed
 ```
 
 Tests cover:

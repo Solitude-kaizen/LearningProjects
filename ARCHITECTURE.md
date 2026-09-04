@@ -182,7 +182,16 @@ workflow:
 - Recording one completed user-and-assistant turn
 - Removing the unanswered user entry after a final provider error
 - Displaying the provider that actually answered
-- Clearing and reporting short-term conversation state
+- Previewing and confirming a clear, and reporting short-term conversation state
+
+`run_clear_conversation` previews the message count and session-only scope
+before accepting `yes` (case-insensitive, surrounding whitespace ignored).
+Other answers, EOF, or a keyboard interruption at confirmation return
+`cancelled` without changing history. An empty history returns `empty`
+without prompting. Confirmation clears the shared list in place and
+returns `cleared`; it never saves or deletes files. Main-menu tests verify
+the next chat receives retained context after cancellation and no prior
+context after a confirmed clear, using temporary data and fake responses.
 
 Provider routing, fallback classification, and model configuration stay
 in `ai_service.py`. Conversation storage and trimming stay in
