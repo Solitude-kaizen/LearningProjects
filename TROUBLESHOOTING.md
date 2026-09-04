@@ -38,7 +38,7 @@ python -m pytest -q
 Current project baseline:
 
 ```text
-174 passed
+208 passed
 ```
 
 If the number unexpectedly decreases, investigate before continuing.
@@ -670,7 +670,7 @@ If the suite unexpectedly reports fewer tests:
 Current expected baseline:
 
 ```text
-174 passed
+208 passed
 ```
 
 ## A Test Passes but Does Not Prove the Behavior

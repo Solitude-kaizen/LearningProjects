@@ -106,7 +106,9 @@ Current verified state:
 - Guarded continuity restoration and rollback working
 - Preview and explicit confirmation before forgetting a memory; cancellation
   and invalid selections do not delete or save
-- 174 automated tests passing, including the current V2 foundations
+- Research inbox source-domain/type hints with explicit unverified-claims
+  notices; viewing does not fetch links or change stored records
+- 208 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -410,6 +412,16 @@ Automatic scheduling, network-source behavior, validation,
 deduplication, and storage remain outside this interface module.
 Retrieved metadata is displayed as untrusted text.
 
+### `research_labels.py`
+
+Derives conservative source-type hints from exact recognized URL hosts.
+The research inbox displays the domain, the hint, and an explicit notice
+that claims have not been verified by SK. Labels are computed at view
+time, so old records need no migration. Titles and feed names cannot
+declare a link trusted, and unknown or malformed URLs receive no
+recognized type. This module does not make network requests, verify
+claims, grant permissions, or implement a sandbox.
+
 ### `learning_cli.py`
 
 Responsibilities:
@@ -499,7 +511,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-174 passed
+208 passed
 ```
 
 Tests cover:

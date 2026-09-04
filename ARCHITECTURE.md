@@ -108,6 +108,7 @@ src/solitude_kaizen/
 ├── conversation_cli.py
 ├── conversation.py
 ├── research_cli.py
+├── research_labels.py
 ├── research.py
 ├── learning_cli.py
 ├── learning.py
@@ -199,6 +200,25 @@ This boundary does not enable automatic network access or interpret
 retrieved text as instructions. Manual collection runs only when its CLI
 command is selected. Public titles and summaries are displayed as
 untrusted metadata for later human review.
+
+## `research_labels.py`
+
+`describe_research_source` derives a link domain and a source-type hint
+from a small exact-host mapping. It does not classify content by titles
+or feed labels, follow links, query DNS, or assign a trust score. For
+example, a Hacker News item pointing at documentation is labeled from
+the destination URL, not assumed to be a forum page.
+
+Unknown hosts stay unknown. Unsupported schemes, embedded credentials,
+unexpected ports, control/whitespace characters, and malformed URLs
+receive no recognized source hint. This conservative parsing is only
+for labeling; it is not a network authorization or SSRF defense.
+
+The inbox displays these hints alongside an unverified-claims notice.
+No schema or stored research item is changed, and a human review or a
+recognized domain does not automatically turn a claim into verified
+knowledge. Temporary-database tests verify that viewing adds no network
+requests, memory promotion, or data writes.
 
 ## `learning_cli.py`
 

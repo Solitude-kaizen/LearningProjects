@@ -47,7 +47,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **174 passing tests** covering memory,
+The project currently has **208 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -166,6 +166,12 @@ SK_RESEARCH_ENABLED=false
 The CLI can still run the collector manually. It reads public metadata
 and does not call a paid AI model.
 
+The inbox shows each link's domain and a conservative URL-based source
+type (for example, code hosting, preprint archive, or documentation site).
+Unknown sites remain unknown. These hints are computed locally when
+viewing the inbox; they do not fetch links, migrate stored records, or
+certify claims. A source type is not a quality rating or a security check.
+
 The Learning Guide is opened manually from the menu. Normal CLI startup
 does not prepare lessons, even if an older `.env` contains
 `SK_CONTINUOUS_LEARNING_ENABLED=true`. That flag is retained only for
@@ -251,7 +257,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **174 passing tests** covering memory,
+The project currently has **208 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

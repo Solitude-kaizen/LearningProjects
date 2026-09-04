@@ -3,6 +3,7 @@ from .database import (
     get_latest_research_items,
 )
 from .research import run_research_collection_if_due
+from .research_labels import describe_research_source
 
 
 def run_view_latest_kaizen_discovery(
@@ -78,9 +79,15 @@ def run_view_public_research_inbox(
 
         return research_items
 
+    print_function("Source labels describe the link, not its reliability.")
+
     for item in research_items:
+        source_info = describe_research_source(item["url"])
         print_function()
         print_function("Source:", item["source"])
+        print_function("Link domain:", source_info["domain"])
+        print_function("Source type (URL-based):", source_info["source_type"])
+        print_function("Evidence: Public metadata; claims not verified by SK.")
         print_function("Title:", item["title"])
         print_function("Link:", item["url"])
 

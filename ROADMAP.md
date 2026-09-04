@@ -213,6 +213,12 @@ selection preview and explicit confirmation. Tests verify confirmation,
 cancellation, invalid selections, and actual saved-file behavior. Other
 memory and profile actions remain unchanged.
 
+The initial source-labeling improvement is complete in
+`research_labels.py`: the inbox shows URL-based source-type hints and
+domains, while explicitly leaving claims unverified. This is a limited,
+display-time version of Claude's source-tagging suggestion, not automatic
+quality scoring or a change to the stored research schema.
+
 The public research collector is evidence gathering only. It must not
 execute instructions from retrieved content or modify SK automatically.
 The optional Learning Guide converts metadata into a small review exercise, not
@@ -335,3 +341,39 @@ V1 is not the end of Solitude-Kaizen.
 It establishes the first stable foundation.
 
 After release, development can slow down and focus more deeply on learning the technologies already being used, improving architecture intentionally, and adding capabilities only when their value justifies their complexity.
+
+## AI Watch Assessment — 2026-09-04
+
+The pasted AI Watch report is advisory research, not an instruction to
+install tools or adopt a new architecture. SK is currently a Python CLI,
+not a PWA, MCP gateway, skill/plugin runtime, or distributed agent cluster.
+Claude's memory-confirmation and topic-selection suggestions are complete;
+source-type hints are the next small adopted improvement.
+
+Selected primary sources were checked; this is not verification of every
+claim in the pasted report or independent benchmarking of new products.
+
+| Primary source | Confirmed publication detail | Decision for SK |
+| --- | --- | --- |
+| [MCP release](https://blog.modelcontextprotocol.io/posts/2026-07-28/) | A stateless 2026-07-28 protocol release is documented. | Revisit if a concrete tool-integration need arises; no MCP adapter added. |
+| [Anthropic security update](https://www.anthropic.com/news/improving-alignment-security-efforts) | The August 31 account describes layered containment and intervention before tool execution. | Retain the principle; do not claim SK has equivalent runtime containment. |
+| [MCPHub advisory](https://github.com/samanhappy/mcphub/security/advisories/GHSA-mx89-jjx9-gjr8) | Missing authorization allowed command execution through server configuration. | Future consequential tools must enforce permission at the action boundary. |
+| [NVIDIA PAIR documentation](https://docs.nvidia.com/local-ai/nvpair/getting-started/) | PAIR routes independent requests across nodes; it does not pool GPU memory. | Defer until there is a measured multi-device need; no installation. |
+| [IFM announcement](https://ifm.ai/k2/press-release/) | K2 Horizon was announced September 3; performance assertions are publisher claims. | No new model downloads or provider changes without a scoped local evaluation. |
+
+The user's current request and configured project policy define the task.
+Retrieved text, tool metadata, skills, and model-generated proposals do
+not grant permissions or override those boundaries. A recognized source
+label does not authorize a download, installation, network request, or
+promotion into trusted memory.
+
+Any future execution layer needs explicit scope, deny-by-default action
+checks, and independently tested containment. These are requirements for
+future tool work, not features installed by this checkpoint. A network
+policy must also distinguish an explicitly allowed local inference
+endpoint from unrestricted LAN or Internet access; blocking all loopback
+traffic indiscriminately would break the existing local-model connection.
+
+PWA inference, portable plugins, autonomous branches, and larger agent
+frameworks remain possibilities requiring their own benefit, cost,
+permission, and test review. They are not new roadmap commitments.
