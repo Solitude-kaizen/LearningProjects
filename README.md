@@ -47,7 +47,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **219 passing tests** covering memory,
+The project currently has **230 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -257,7 +257,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **219 passing tests** covering memory,
+The project currently has **230 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -290,6 +290,13 @@ previous ranking is used. This is simple keyword retrieval, not semantic
 understanding or model training, and it does not change stored memories.
 
 Short-term conversation history currently exists only while the program is running.
+
+In menu option 12, pressing Enter without a message (or entering only
+whitespace) cancels that chat request and returns to the menu. Ctrl+C or
+end-of-input at the `You:` prompt also cancels. No AI request is made and
+the existing conversation is unchanged. Nonblank messages keep their
+original formatting. This safeguard applies before sending a message;
+it does not cancel a provider request already in progress.
 
 Menu option 14 previews how many messages will be cleared. Only `yes`
 (ignoring capitalization and surrounding spaces) clears the current

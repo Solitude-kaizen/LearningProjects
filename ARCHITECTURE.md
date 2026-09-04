@@ -184,6 +184,15 @@ workflow:
 - Displaying the provider that actually answered
 - Previewing and confirming a clear, and reporting short-term conversation state
 
+`run_talk_to_companion` rejects blank or whitespace-only input before
+context construction, history mutation, or provider calls. EOF or a
+keyboard interruption while reading the message follows the same
+`cancelled` return path, with no response, error, or provider. Nonblank
+messages are passed through unchanged, preserving code indentation.
+This guard covers input only, not interruption during an AI request.
+Main-menu tests verify cancellation returns to the menu and the next
+valid chat retains its earlier context, with no extra file saves.
+
 `run_clear_conversation` previews the message count and session-only scope
 before accepting `yes` (case-insensitive, surrounding whitespace ignored).
 Other answers, EOF, or a keyboard interruption at confirmation return

@@ -20,7 +20,21 @@ def run_talk_to_companion(
     response_function=generate_response,
     provider_used_function=get_last_provider_used,
 ):
-    user_message = input_function("You: ")
+    try:
+        user_message = input_function("You: ")
+    except (EOFError, KeyboardInterrupt):
+        user_message = ""
+
+    if not user_message.strip():
+        print_function()
+        print_function("Chat cancelled. No message was sent.")
+        return {
+            "status": "cancelled",
+            "error": None,
+            "response": None,
+            "provider": None,
+        }
+
     conversation_context = prepare_user_turn(
         conversation_history,
         user_message,

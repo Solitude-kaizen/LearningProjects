@@ -88,6 +88,109 @@ def test_talk_flow_builds_context_and_records_one_complete_turn():
     assert "[Provider: ollama]" in messages
 
 
+@pytest.mark.parametrize("user_message", ["", "   ", "\t\n", "\u2003"])
+def test_blank_chat_does_not_call_provider_or_change_history(
+    tmp_path,
+    monkeypatch,
+    user_message,
+):
+    memory_path = tmp_path / "memories.json"
+    ensure_json_file(memory_path, {"memories": create_memories()})
+    memories = load_memories(memory_path)["memories"]
+    original_memories = deepcopy(memories)
+    original_bytes = memory_path.read_bytes()
+    conversation_history = [
+        {"role": "user", "content": "Earlier question"},
+        {"role": "assistant", "content": "Earlier answer"},
+    ]
+    original_history = deepcopy(conversation_history)
+    messages, record_output = create_output_recorder()
+
+    def unexpected_call(*args, **kwargs):
+        pytest.fail("Blank input must not build context or contact a provider.")
+
+    monkeypatch.setattr(conversation_cli, "build_memory_context", unexpected_call)
+    result = run_talk_to_companion(
+        conversation_history,
+        memories,
+        input_function=lambda prompt: user_message,
+        print_function=record_output,
+        response_function=unexpected_call,
+        provider_used_function=unexpected_call,
+    )
+
+    assert result == {
+        "status": "cancelled",
+        "error": None,
+        "response": None,
+        "provider": None,
+    }
+    assert conversation_history == original_history
+    assert memories == original_memories
+    assert memory_path.read_bytes() == original_bytes
+    assert "Chat cancelled. No message was sent." in messages
+
+
+@pytest.mark.parametrize("interruption", [EOFError, KeyboardInterrupt])
+def test_interrupted_chat_input_keeps_history_without_calling_provider(interruption):
+    conversation_history = [
+        {"role": "user", "content": "Earlier question"},
+        {"role": "assistant", "content": "Earlier answer"},
+    ]
+    original_history = deepcopy(conversation_history)
+    messages, record_output = create_output_recorder()
+
+    def interrupted_input(prompt):
+        raise interruption()
+
+    def unexpected_call(*args):
+        pytest.fail("Cancelled input must not contact a provider.")
+
+    result = run_talk_to_companion(
+        conversation_history,
+        create_memories(),
+        input_function=interrupted_input,
+        print_function=record_output,
+        response_function=unexpected_call,
+        provider_used_function=unexpected_call,
+    )
+
+    assert result == {
+        "status": "cancelled",
+        "error": None,
+        "response": None,
+        "provider": None,
+    }
+    assert conversation_history == original_history
+    assert "Chat cancelled. No message was sent." in messages
+
+
+def test_nonblank_chat_preserves_original_message_whitespace():
+    user_message = "  Explain this code:\n    print('hello')\n"
+    conversation_history = []
+    requests = []
+
+    def fake_response(system_prompt, message):
+        requests.append(message)
+        return "A test answer."
+
+    result = run_talk_to_companion(
+        conversation_history,
+        create_memories(),
+        input_function=lambda prompt: user_message,
+        print_function=lambda *parts: None,
+        response_function=fake_response,
+        provider_used_function=lambda: "test",
+    )
+
+    assert result["status"] == "completed"
+    assert requests == [user_message]
+    assert conversation_history == [
+        {"role": "user", "content": user_message},
+        {"role": "assistant", "content": "A test answer."},
+    ]
+
+
 def test_talk_selects_memories_for_each_current_question_without_saving(tmp_path):
     memory_path = tmp_path / "memories.json"
     memory_data = {
@@ -424,3 +527,93 @@ def test_main_clear_confirmation_controls_next_chat_without_changing_files(
         assert "First test question" in requests[1][0]
         assert "Test reply 1" in requests[1][0]
         assert len(state["conversation_history"]) == 4
+
+
+@pytest.mark.parametrize("cancel_input", ["", " \t", EOFError, KeyboardInterrupt])
+def test_main_cancelled_chat_returns_to_menu_and_preserves_next_chat_context(
+    tmp_path,
+    monkeypatch,
+    capsys,
+    cancel_input,
+):
+    data_directory = tmp_path / "src" / "solitude_kaizen" / "data"
+    memory_path = data_directory / "memories.json"
+    profile_path = data_directory / "profile.json"
+    database_path = data_directory / "solitude_kaizen.db"
+    memory_data = {"memories": create_memories()}
+    ensure_json_file(memory_path, memory_data)
+    ensure_json_file(profile_path, {"user_name": "Test User"})
+    initialize_database(database_path)
+    original_files = {
+        path: path.read_bytes()
+        for path in (memory_path, profile_path, database_path)
+    }
+    saved = []
+    save_function = memory.save_memories
+
+    def record_save(path, data):
+        saved.append(deepcopy(data))
+        save_function(path, data)
+
+    answers = iter([
+        "12", "First test question", "12", cancel_input, "15",
+        "12", "Second test question", "27",
+    ])
+
+    def read_input(prompt):
+        answer = next(answers)
+        if answer in (EOFError, KeyboardInterrupt):
+            raise answer()
+        return answer
+
+    requests = []
+    provider_lookups = []
+
+    def fake_response(system_prompt, user_message):
+        requests.append((system_prompt, user_message))
+        return f"Test reply {len(requests)}"
+
+    def fake_provider():
+        provider_lookups.append("test")
+        return "test"
+
+    monkeypatch.setattr(memory, "save_memories", record_save)
+    monkeypatch.setattr("builtins.input", read_input)
+    monkeypatch.setattr(
+        conversation_cli,
+        "run_talk_to_companion",
+        partial(
+            conversation_cli.run_talk_to_companion,
+            input_function=read_input,
+            response_function=fake_response,
+            provider_used_function=fake_provider,
+        ),
+    )
+    monkeypatch.setenv("SK_RESEARCH_ENABLED", "false")
+    monkeypatch.setenv("KAIZEN_DISCOVERY_ENABLED", "false")
+    monkeypatch.setenv("SK_CONTINUOUS_LEARNING_ENABLED", "false")
+    monkeypatch.chdir(tmp_path)
+
+    state = runpy.run_module("src.solitude_kaizen.main", run_name="__main__")
+
+    output = capsys.readouterr().out
+    assert output.count("Chat cancelled. No message was sent.") == 1
+    assert "Messages in short-term history: 2" in output
+    assert "Goodbye!" in output
+    assert [question for _, question in requests] == [
+        "First test question", "Second test question",
+    ]
+    assert provider_lookups == ["test", "test"]
+    assert "First test question" in requests[1][0]
+    assert "Test reply 1" in requests[1][0]
+    assert state["conversation_history"] == [
+        {"role": "user", "content": "First test question"},
+        {"role": "assistant", "content": "Test reply 1"},
+        {"role": "user", "content": "Second test question"},
+        {"role": "assistant", "content": "Test reply 2"},
+    ]
+    assert state["memories"] == memory_data["memories"]
+    # Only the existing startup normalization may save the memories.
+    assert saved == [memory_data]
+    for path, original_bytes in original_files.items():
+        assert path.read_bytes() == original_bytes

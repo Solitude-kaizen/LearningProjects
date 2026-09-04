@@ -86,6 +86,8 @@ Current verified state:
 - Command-line interface working
 - Persistent local memory working
 - Short-term conversation history working
+- Blank or interrupted chat input cancels before any provider call or
+  history change; normal message formatting is preserved
 - Memory ranking and keyword-based, topic-aware context selection working
 - Groq cloud provider working
 - OpenAI provider supported
@@ -110,7 +112,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 219 automated tests passing, including the current V2 foundations
+- 230 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -392,7 +394,7 @@ including cancellation with no extra save and confirmed persistence.
 
 Responsibilities:
 
-- Talk interaction and prompt-context assembly
+- Talk interaction, blank/interrupted-input guard, and prompt-context assembly
 - Completed-turn recording
 - Failed-turn cleanup
 - Provider-used and provider-configuration display
@@ -519,7 +521,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-219 passed
+230 passed
 ```
 
 Tests cover:
