@@ -27,8 +27,9 @@ The current focus is a useful companion: conversation, memory, and
 source-linked AI research. Study activities are optional and never block
 chat or research. Earlier brainstorming is not a feature commitment.
 
-V2 is now in release preparation, not yet released. The proposed scope,
-verified checks, and remaining release steps are recorded in
+V2 work continues from an internal checkpoint, not a public V2 release.
+A public release is optional and requires separate approval. The proposed
+scope, verified checks, and any future public-release steps are recorded in
 [V2_RELEASE_CHECKLIST.md](V2_RELEASE_CHECKLIST.md). HR, business, and research
 workflows are a requested future direction, not installed agent skills.
 

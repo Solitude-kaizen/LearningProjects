@@ -160,13 +160,15 @@ companion with conversation, memory, and source-linked research. Earlier
 exploratory ideas and the possibilities below are not promised features.
 The Learning Guide is optional study support, not SK's self-learning brain.
 
-### V2 Release Preparation
+### V2 Internal Checkpoint and Optional Release
 
 Use [V2_RELEASE_CHECKLIST.md](V2_RELEASE_CHECKLIST.md) as the release
 readiness record. The proposed boundary is the current tested companion
-foundations, not every future idea below. V2 is not released yet: scope
-acceptance, outstanding checks, version alignment, and publication remain
-explicit steps. Keep the V1 release tables above as historical evidence.
+foundations, not every future idea below. Continue from the internal
+checkpoint; a public V2 release is optional and not yet authorized. If
+chosen, scope acceptance, outstanding checks, version alignment, and
+publication remain explicit steps. Keep the V1 release tables above as
+historical evidence.
 
 The creator's requested HR, business, and research direction is recorded
 in that checklist as proposed follow-on work. It does not install agents

@@ -1,9 +1,11 @@
 # SK V2 Release Checklist
 
-Status: release preparation, not a V2 release.
+Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Working scope proposed on 2026-09-04. The creator still needs to approve
-the release boundary and publication. This checklist does not authorize
+Working scope proposed on 2026-09-04. Following the review, the recommended
+path is to continue from the internal checkpoint without requiring a
+public tag. The creator would still need to approve any future public
+release boundary and publication. This checklist does not authorize
 publishing, installing tools, changing provider settings, or restoring
 personal data.
 
@@ -56,6 +58,17 @@ installation or every provider.
   Profile, empty memories, provider/status, empty research, missing-backup
   display, and exit all worked. This uses installed dependencies and does
   not claim a fresh installation, real chat, or live restore was tested.
+
+Follow-up: a three-turn fictional local conversation also completed
+successfully. See [LOCAL_CHAT_EVALUATION.md](LOCAL_CHAT_EVALUATION.md) for
+exact prompts, responses, timings, and limits of that evidence. This does
+not replace the creator's day-to-day usability judgment below.
+
+## Optional Future Public Release Gates
+
+These remain necessary if a public V2 release is chosen. They do not
+prevent using the internal checkpoint or making further reviewed changes.
+
 - [ ] Final documentation/version consistency and release-note review.
 - [ ] Final staged-file privacy review at the actual release commit.
 - [ ] Creator approves the V2 scope and known limitations below.
@@ -67,7 +80,7 @@ Fallback, provider errors, and public-source behavior are covered by
 automated fakes. This audit has not made fresh cloud-provider calls or
 live research requests. Do not label those integrations newly live-tested.
 
-At the start of this check, Git's local tracking comparison showed two
+At the start of the initial readiness check, Git's tracking comparison showed two
 commits ahead of `origin/main`; the only local release tag was `v1.0.0`.
 The remote was not queried. Untracked `src/output/` belongs to the user
 and remains untouched and excluded from this work.
@@ -77,9 +90,11 @@ and remains untouched and excluded from this work.
 These protect the creator's setup; automated tests cannot establish that
 the creator has a usable personal backup.
 
-- [ ] Create and verify a current private continuity backup with menu 24,
-  then recheck it with menu 25. No backup folder existed at the configured
-  location when checked; this does not establish whether backups exist elsewhere.
+- [x] Creator reported menu 24 completed successfully with four verified
+  files, followed by menu 25 reporting `Status: valid`. This is the
+  creator's reported local verification, not an independent inspection
+  of the archive. The earlier missing-folder observation preceded this
+  report and is no longer a reason to request the same backup step again.
 - [ ] Keep a private copy outside the laptop if a suitable destination is
   available. Never publish the bundle or commit it to GitHub.
 - [x] Record process-only local-session instructions in the README. The

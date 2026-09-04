@@ -24,12 +24,21 @@ training or autonomous self-improvement. Normal startup does not prepare
 lessons or request reflections. Chat and research never require homework.
 Existing study records, memories, and proposal history are preserved.
 
-Current work is V2 release preparation, using
+Current work continues from an internal V2 checkpoint, using
 [V2_RELEASE_CHECKLIST.md](V2_RELEASE_CHECKLIST.md) to separate verified
-evidence from unfinished checks. The current feature set is the proposed
-release boundary; the creator still needs to approve the scope and release.
+evidence from unfinished checks. A public release is optional and has not
+been authorized; the current feature set remains its proposed boundary.
+The creator reported a successful four-file continuity backup and a
+separate `Status: valid` verification. Do not treat that as an independently
+inspected archive or ask for the same completed backup step again.
 HR, business, and research are requested areas for later optional
 workflows, not existing skills or autonomous agents inside SK.
+
+A small fictional three-turn local chat check is recorded in
+[LOCAL_CHAT_EVALUATION.md](LOCAL_CHAT_EVALUATION.md). It demonstrated
+fact recall, simple arithmetic, and appropriate uncertainty on those
+prompts only. It is not a general domain-quality benchmark; no production
+model settings or application code were changed by that check.
 
 ## Core Principle
 
@@ -697,6 +706,7 @@ PROJECT_CONTEXT.md
 ARCHITECTURE.md
 ROADMAP.md
 V2_RELEASE_CHECKLIST.md
+LOCAL_CHAT_EVALUATION.md
 LEARNING_NOTES.md
 TROUBLESHOOTING.md
 CLAUDE.md
@@ -710,6 +720,8 @@ Each document has a different responsibility:
 - `ROADMAP.md` tracks scope and future direction.
 - `V2_RELEASE_CHECKLIST.md` records the proposed V2 boundary, check evidence,
   known limitations, personal continuity preparation, and release gates.
+- `LOCAL_CHAT_EVALUATION.md` records a bounded synthetic local-chat trial,
+  including exact prompts, responses, timings, and evaluation limits.
 - `LEARNING_NOTES.md` records engineering lessons learned during development.
 - `TROUBLESHOOTING.md` records known problems, diagnostics, and fixes.
 - `CLAUDE.md` provides project-specific guidance for compatible AI coding assistants.
