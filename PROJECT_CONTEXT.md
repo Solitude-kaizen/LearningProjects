@@ -24,6 +24,13 @@ training or autonomous self-improvement. Normal startup does not prepare
 lessons or request reflections. Chat and research never require homework.
 Existing study records, memories, and proposal history are preserved.
 
+Current work is V2 release preparation, using
+[V2_RELEASE_CHECKLIST.md](V2_RELEASE_CHECKLIST.md) to separate verified
+evidence from unfinished checks. The current feature set is the proposed
+release boundary; the creator still needs to approve the scope and release.
+HR, business, and research are requested areas for later optional
+workflows, not existing skills or autonomous agents inside SK.
+
 ## Core Principle
 
 > One companion, many replaceable brains.
@@ -112,7 +119,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 230 automated tests passing, including the current V2 foundations
+- 231 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -521,7 +528,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-230 passed
+231 passed
 ```
 
 Tests cover:
@@ -657,11 +664,13 @@ A dependency should not be added merely because it is popular or convenient.
 
 Prefer the standard library or existing dependencies when they are sufficient.
 
-## Current V1 Priorities
+## Historical V1 Release Checklist
 
-The remaining V1 work should focus on release readiness rather than feature expansion.
+The following checklist belonged to the completed V1 release. It is kept
+for history, not as current unfinished work. Current V2 readiness is
+tracked in [V2_RELEASE_CHECKLIST.md](V2_RELEASE_CHECKLIST.md).
 
-Current priorities:
+Original V1 checks:
 
 1. Finish documentation consistency checks.
 2. Verify live memory persistence.
@@ -687,6 +696,7 @@ README.md
 PROJECT_CONTEXT.md
 ARCHITECTURE.md
 ROADMAP.md
+V2_RELEASE_CHECKLIST.md
 LEARNING_NOTES.md
 TROUBLESHOOTING.md
 CLAUDE.md
@@ -698,6 +708,8 @@ Each document has a different responsibility:
 - `PROJECT_CONTEXT.md` gives another AI or developer the current working context.
 - `ARCHITECTURE.md` explains how the system is structured.
 - `ROADMAP.md` tracks scope and future direction.
+- `V2_RELEASE_CHECKLIST.md` records the proposed V2 boundary, check evidence,
+  known limitations, personal continuity preparation, and release gates.
 - `LEARNING_NOTES.md` records engineering lessons learned during development.
 - `TROUBLESHOOTING.md` records known problems, diagnostics, and fixes.
 - `CLAUDE.md` provides project-specific guidance for compatible AI coding assistants.

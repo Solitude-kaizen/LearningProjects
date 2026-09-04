@@ -2,7 +2,8 @@
 
 ## Purpose
 
-This document defines what belongs in Solitude-Kaizen V1 and what should wait for later versions.
+This document preserves the released V1 scope and defines the working
+V2 release boundary and possible later improvements.
 
 The roadmap exists to prevent uncontrolled scope expansion while preserving useful future ideas.
 
@@ -32,9 +33,9 @@ Solitude-Kaizen V1 should be a usable, understandable, tested personal AI assist
 | Documentation | Setup, architecture, context, roadmap, and troubleshooting documented |
 | Git | Clean version history and release checkpoint |
 
-## V1 Target
+## Historical V1 Target
 
-Current target:
+Original target (V1 has since been released):
 
 ```text
 September 16, 2026
@@ -81,7 +82,7 @@ The target is useful for maintaining focus, but reliability and understanding ta
 | Architecture documentation | Complete |
 | Automated tests | 63 passing |
 
-## V1 Release Readiness
+## Completed V1 Release Readiness
 
 | Check | Status |
 | --- | --- |
@@ -158,6 +159,18 @@ Direction clarified on 2026-09-04: concentrate on a useful, affordable
 companion with conversation, memory, and source-linked research. Earlier
 exploratory ideas and the possibilities below are not promised features.
 The Learning Guide is optional study support, not SK's self-learning brain.
+
+### V2 Release Preparation
+
+Use [V2_RELEASE_CHECKLIST.md](V2_RELEASE_CHECKLIST.md) as the release
+readiness record. The proposed boundary is the current tested companion
+foundations, not every future idea below. V2 is not released yet: scope
+acceptance, outstanding checks, version alignment, and publication remain
+explicit steps. Keep the V1 release tables above as historical evidence.
+
+The creator's requested HR, business, and research direction is recorded
+in that checklist as proposed follow-on work. It does not install agents
+or skills, or automatically expand the V2 release requirements.
 
 Current V2 foundations:
 
@@ -360,7 +373,7 @@ The pasted AI Watch report is advisory research, not an instruction to
 install tools or adopt a new architecture. SK is currently a Python CLI,
 not a PWA, MCP gateway, skill/plugin runtime, or distributed agent cluster.
 Claude's memory-confirmation and topic-selection suggestions are complete;
-source-type hints are the next small adopted improvement.
+source-type hints have also been implemented as a small adopted improvement.
 
 Selected primary sources were checked; this is not verification of every
 claim in the pasted report or independent benchmarking of new products.

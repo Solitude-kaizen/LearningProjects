@@ -27,6 +27,11 @@ The current focus is a useful companion: conversation, memory, and
 source-linked AI research. Study activities are optional and never block
 chat or research. Earlier brainstorming is not a feature commitment.
 
+V2 is now in release preparation, not yet released. The proposed scope,
+verified checks, and remaining release steps are recorded in
+[V2_RELEASE_CHECKLIST.md](V2_RELEASE_CHECKLIST.md). HR, business, and research
+workflows are a requested future direction, not installed agent skills.
+
 The current version is a command-line application with:
 
 - Persistent local memory
@@ -47,7 +52,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **230 passing tests** covering memory,
+The project currently has **231 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -90,7 +95,7 @@ This keeps the project from becoming permanently dependent on one AI service.
 
 ## Requirements
 
-Solitude-Kaizen V1 is currently tested with:
+The current development checkout is tested with:
 
 ```text
 Python 3.14.7
@@ -120,12 +125,16 @@ python -m pip install -r requirements-dev.txt
 
 ## Environment Configuration
 
-Create your local `.env` file from `.env.example`.
+For a new installation only, create your local `.env` file from
+`.env.example`. Keep an existing `.env`; do not overwrite its credentials
+or preferences when updating SK.
 
 PowerShell:
 
 ```powershell
-Copy-Item .env.example .env
+if (-not (Test-Path -LiteralPath .env)) {
+    Copy-Item -LiteralPath .env.example -Destination .env
+}
 ```
 
 Choose the AI provider:
@@ -207,6 +216,30 @@ http://localhost:11434
 
 ## Running Solitude-Kaizen
 
+### One Local Session Without Changing Saved Settings
+
+Open a new PowerShell window in the project root. With Ollama running and
+the existing model installed, use these process-only settings:
+
+```powershell
+$env:AI_PROVIDER = "ollama"
+$env:SK_RESEARCH_ENABLED = "false"
+$env:KAIZEN_DISCOVERY_ENABLED = "false"
+$env:SK_CONTINUOUS_LEARNING_ENABLED = "false"
+python -m src.solitude_kaizen.main
+```
+
+Choose 13 to check that the provider is Ollama, then 12 to chat. Exit with
+27 and close this new PowerShell window when finished. These settings do
+not edit `.env` or change preferences in other terminal windows. Normal
+startup still creates/normalizes local runtime files as usual.
+
+This disables automatic research; it is not a network sandbox. Do not
+choose manual research collection (17) during a local-only session.
+Local chat does not retrieve current internet information.
+
+### Normal Startup
+
 From the project root:
 
 ```powershell
@@ -257,7 +290,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **230 passing tests** covering memory,
+The project currently has **231 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -327,15 +360,15 @@ Providers are recorded as successfully used only after they actually return a re
 - Dependencies are pinned to tested versions.
 - Real secrets should never be committed to Git history.
 
-## Current V1 Limitations
+## Current Limitations
 
-V1 intentionally remains focused.
+The current V2 development checkout retains these boundaries.
 
 Not currently included:
 
 - GUI
 - Voice interaction
-- Web search
+- General web search (the public AI-metadata collector is available)
 - Autonomous agents
 - Computer control
 - Discord integration
