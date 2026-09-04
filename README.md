@@ -10,18 +10,22 @@ The project focuses on building an AI companion whose identity, memory, context,
 
 **V1.0.0 has been released.**
 
-V2 development is now adding small, tested foundations without
-changing the released V1 behavior. Current V2 work includes SQLite
+V2 development adds small, tested foundations. Current V2 work includes SQLite
 storage, a human-reviewed Daily Kaizen proposal, and a zero-cost public
-research inbox. Learning Brain V1 turns one inbox item at a time into
-an offline baby-step lesson and a pending improvement proposal. Proposal
+research inbox. The optional Learning Guide (formerly Learning Brain V1)
+uses templates around saved metadata to suggest short study activities
+and pending improvement proposals. It is not model training. Proposal
 Control V1 lets the creator approve, reject, or postpone that proposal
 without executing it. Lifetime Continuity V1 creates verified local
 bundles of SK's identity and runtime data. Safe Restore V1 adds a
 previewed recovery path with exact confirmation, an emergency backup,
-post-restore verification, and automatic rollback. Controlled
-Continuous Learning V1 connects the learning parts at startup and can
-prepare at most one offline lesson per day when explicitly enabled.
+post-restore verification, and automatic rollback. Normal startup checks
+only permitted research sources; it does not create lessons or request
+reflections.
+
+The current focus is a useful companion: conversation, memory, and
+source-linked AI research. Study activities are optional and never block
+chat or research. Earlier brainstorming is not a feature commitment.
 
 The current version is a command-line application with:
 
@@ -36,15 +40,14 @@ The current version is a command-line application with:
 - Zero-cost public research collection from GitHub, Hacker News,
   arXiv, and a curated YouTube feed
 - SQLite storage for research items and collection history
-- Offline Learning Brain with one active baby-step lesson at a time
-- Opt-in controlled learning cycle with a one-lesson-per-day limit
+- Optional, on-demand Learning Guide with one active short lesson at a time
 - Local reflection history and human-reviewed improvement proposals
 - Append-only proposal review history with reasons and timestamps
 - Allowlisted continuity backups with hash and SQLite integrity checks
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **133 passing tests** covering memory,
+The project currently has **137 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -163,19 +166,16 @@ SK_RESEARCH_ENABLED=false
 The CLI can still run the collector manually. It reads public metadata
 and does not call a paid AI model.
 
-Automatic offline lesson preparation is also optional and disabled by
-default:
+The Learning Guide is opened manually from the menu. Normal CLI startup
+does not prepare lessons, even if an older `.env` contains
+`SK_CONTINUOUS_LEARNING_ENABLED=true`. That flag is retained only for
+explicit callers of the legacy `run_controlled_learning_cycle` helper;
+it is no longer a normal startup setting. Existing study records remain
+available. No configuration or data migration is required.
 
-```env
-SK_CONTINUOUS_LEARNING_ENABLED=false
-```
-
-When enabled, SK checks the existing research and prepares at most one
-baby-step lesson per local calendar day. This setting does not turn on
-network access, retrain a model, approve a proposal, or change code.
-For a zero-cost bounded cycle, keep `KAIZEN_DISCOVERY_ENABLED=false`,
-and enable the public collector and continuous-learning settings only
-after choosing automatic startup access.
+For a zero-cost research workflow, keep `KAIZEN_DISCOVERY_ENABLED=false`
+and enable automatic public collection only if you want startup network
+access. Chat-provider costs depend on the provider you select.
 
 Never commit your real `.env` file or API keys.
 
@@ -220,8 +220,7 @@ The CLI currently provides options for:
 - Collecting zero-cost public research
 - Viewing the public research inbox
 - Viewing the latest Daily Kaizen proposal
-- Starting one source-grounded baby-step lesson
-- Preparing at most one daily lesson automatically when opted in
+- Optionally starting a short, metadata-based study activity
 - Recording a local reflection and viewing learning progress
 - Approving, rejecting, or postponing completed lesson proposals
 - Viewing proposal review history
@@ -252,7 +251,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **133 passing tests** covering memory,
+The project currently has **137 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

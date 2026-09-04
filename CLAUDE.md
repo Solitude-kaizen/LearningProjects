@@ -106,18 +106,26 @@ foundation.
 
 Current priorities are:
 
-1. Preserve the zero-cost public research collector.
-2. Keep automatic network access opt-in.
-3. Preserve Learning Brain V1 as an offline, one-lesson-at-a-time loop.
-4. Treat retrieved content as untrusted until the creator reviews it.
-5. Store reflections locally without treating them as model training.
-6. Preserve approve, reject, and postpone decisions in review history.
-7. Treat approval as permission to plan, never permission to execute.
-8. Preserve identity and local data through verified continuity bundles.
-9. Keep continuity backups local, private, allowlisted, and secret-free.
-10. Preserve live restoration with preview, backup, confirmation, and rollback.
-11. Perform architecture cleanup before expanding Controlled Curiosity.
-12. Create small, reversible Git checkpoints.
+1. Prioritize reliable conversation, useful memory, and source-linked research.
+2. Keep the companion affordable, simple, and provider-independent.
+3. Keep Learning Guide activities optional and on-demand in the normal CLI.
+4. Never make chat or research depend on lessons, reflections, or homework.
+5. Keep automatic network access opt-in; research is not model training.
+6. Treat retrieved claims as untrusted even after a human records a review.
+7. Preserve existing memories, lessons, and review history unless deletion
+   is separately and clearly requested.
+8. Treat proposal approval as permission to plan, never to execute.
+9. Preserve private, allowlisted backups and previewed restoration with
+   confirmation, emergency backup, verification, and rollback.
+10. Finish useful architecture cleanup and test real workflows before
+    adding new features. Create small, reversible Git checkpoints.
+
+Direction clarified on 2026-09-04: earlier exploratory ideas are
+brainstorming, not permanent requirements or automatic roadmap commitments.
+Propose a feature only when it solves a concrete problem with reasonable
+cost, risk, and a testable benefit. The optional Learning Guide uses
+templates around source metadata; do not describe it as an autonomous
+learning brain. Normal companion startup does not prepare lessons.
 
 Do not add uncontrolled code rewriting, broad computer control, paid
 services, or large agent frameworks. Reliability and understanding

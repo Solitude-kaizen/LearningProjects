@@ -154,6 +154,11 @@ These features should not be added before V1 unless one becomes necessary to fix
 
 V2 began after the V1.0.0 release checkpoint.
 
+Direction clarified on 2026-09-04: concentrate on a useful, affordable
+companion with conversation, memory, and source-linked research. Earlier
+exploratory ideas and the possibilities below are not promised features.
+The Learning Guide is optional study support, not SK's self-learning brain.
+
 Current V2 foundations:
 
 ```text
@@ -162,13 +167,13 @@ Opt-in Daily Kaizen proposal storage
 Zero-cost public research collector
 Research deduplication and daily run history
 Manual research inbox controls in the CLI
-Offline Learning Brain with one active lesson
+Optional on-demand Learning Guide with one active short lesson
 Local reflections and pending improvement proposals
 Approve, reject, and postpone proposal controls
 Append-only proposal review history
 Provider-independent identity document
 Verified local continuity bundles
-Controlled startup learning cycle with one automatic lesson per day
+Companion startup independent of study activities
 Previewed continuity restoration with emergency rollback
 ```
 
@@ -190,7 +195,7 @@ CLI/application separation
 ```
 
 CLI/application separation now covers conversation/provider, research,
-Learning Brain, and continuity commands. Their interactive behavior
+Learning Guide, and continuity commands. Their interactive behavior
 lives in testable `conversation_cli.py`, `research_cli.py`,
 `learning_cli.py`, and `continuity_cli.py` boundaries. The core modules
 retain provider routing, data, and safety rules. The remaining menu is
@@ -198,15 +203,16 @@ still intentionally migrated one coherent feature group at a time.
 
 The public research collector is evidence gathering only. It must not
 execute instructions from retrieved content or modify SK automatically.
-The Learning Brain converts metadata into a small review exercise, not
+The optional Learning Guide converts metadata into a small review exercise, not
 trusted knowledge. Its proposals remain pending until a separate human
 review action is recorded. Approval marks an idea for separate planning
 and never implements it automatically.
 
-Controlled Continuous Learning connects the existing components without
-expanding their permissions. Automatic offline lesson preparation is
-opt-in, limited to one lesson per local day, and does not silently turn
-on either network collector.
+Normal startup checks only permitted research sources; it never prepares
+lessons or asks for reflections. The old controlled-learning helper and
+study history remain available for compatibility, but the main CLI no
+longer invokes the helper. Completing a lesson is not a prerequisite for
+using the companion or improving its code through a separate tested plan.
 
 Lifetime Continuity V1 preserves identity, profile, memories, and the
 SQLite database through a verified local bundle. Safe Restore V1 can

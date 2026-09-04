@@ -12,7 +12,7 @@ from .learning import (
 
 def print_learning_lesson(lesson, print_function=print):
     print_function()
-    print_function("--- SK Learning Brain ---")
+    print_function("--- Learning Guide (Optional) ---")
     print_function("Purpose:", LEARNING_PURPOSE)
     print_function()
     print_function("Topic:", lesson["topic"])
@@ -26,7 +26,7 @@ def print_learning_lesson(lesson, print_function=print):
     print_function("What the public metadata says:")
     print_function(lesson["evidence_summary"])
     print_function()
-    print_function("Your baby step:")
+    print_function("Suggested activity:")
     print_function(lesson["baby_step"])
     print_function()
     print_function("Reflection question:")
@@ -60,7 +60,7 @@ def run_start_or_view_learning_lesson(
 
     if result["status"] == "no_research":
         print_function()
-        print_function("SK needs research before creating a lesson.")
+        print_function("The optional guide needs a saved research item.")
         print_function(
             "Choose option 17 to collect public research first."
         )
@@ -69,10 +69,10 @@ def run_start_or_view_learning_lesson(
 
     if result["status"] == "existing":
         print_function()
-        print_function("One lesson is already waiting for you.")
+        print_function("An optional lesson is already available.")
     else:
         print_function()
-        print_function("SK prepared one new baby-step lesson.")
+        print_function("The optional guide prepared one short lesson.")
 
     print_learning_lesson(
         result["lesson"],
@@ -137,7 +137,7 @@ def run_view_learning_progress(
     progress = read_learning_progress(database_path)
 
     print_function()
-    print_function("--- Learning Progress ---")
+    print_function("--- Optional Learning Guide Progress ---")
     print_function("Lessons prepared:", progress["total"])
     print_function("Ready now:", progress["ready"])
     print_function("Completed:", progress["completed"])

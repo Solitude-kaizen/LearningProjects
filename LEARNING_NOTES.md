@@ -1234,6 +1234,11 @@ The objective is to become capable of understanding, evaluating, and directing t
 
 ## Controlled Continuous Learning V1
 
+Historical design note: as of 2026-09-04, the main CLI no longer runs this
+study cycle at startup. The helper is kept for compatibility; the optional
+Learning Guide is on-demand. The lesson below explains the original design,
+not a current requirement to complete study activities.
+
 Continuous improvement does not require continuous self-modification.
 A safer first design is a small orchestrator around independently
 bounded steps: collect evidence when explicitly allowed, prepare one
@@ -1316,3 +1321,17 @@ but each underlying rule remains owned by its focused module. Fake
 responders make the boundary testable without spending API credit or
 starting Ollama. Failure-path tests also prove that an unanswered user
 message is removed while earlier successful history remains intact.
+
+## Brainstorming Is Not a Product Requirement
+
+An exploratory idea can be useful without becoming a feature commitment.
+SK's current focus is practical companionship: conversation, memory, and
+traceable research. Study activities are optional support for the user.
+Calling a template-based activity generator a "Learning Brain" overstated
+what it does, so its interface now says "Learning Guide" and explains that
+it does not train SK's model. Existing data and APIs are preserved.
+
+The architecture now makes this distinction explicit: normal companion
+startup checks permitted sources without preparing lessons. A saved,
+unfinished lesson cannot block chat or research, and tests exercise that
+complete workflow with temporary data and a fake AI responder.

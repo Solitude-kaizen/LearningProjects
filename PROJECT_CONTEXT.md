@@ -11,6 +11,19 @@ It is being built as both:
 
 The goal is to understand the technologies behind the system rather than simply assembling tools without understanding them.
 
+## Current Direction — 2026-09-04
+
+Earlier exploratory ideas are brainstorming, not permanent requirements.
+Prioritize useful conversation, dependable memory, affordable replaceable
+providers, and source-linked AI research. New features need a concrete
+benefit and a small, testable plan.
+
+The former "Learning Brain" is now honestly labelled an optional
+Learning Guide: template-based study support for the creator, not model
+training or autonomous self-improvement. Normal startup does not prepare
+lessons or request reflections. Chat and research never require homework.
+Existing study records, memories, and proposal history are preserved.
+
 ## Core Principle
 
 > One companion, many replaceable brains.
@@ -40,8 +53,8 @@ V2 development has started with eight incremental foundations:
 - A zero-cost public research collector for GitHub, Hacker News, arXiv,
   and a curated YouTube feed. It stores deduplicated public metadata in
   SQLite, tolerates partial source failures, and makes no paid AI call.
-- Learning Brain V1, an offline loop that ranks unstudied research,
-  creates one baby-step lesson, stores the creator's reflection, and
+- The optional Learning Guide, an offline tool that ranks unstudied
+  metadata, suggests one short lesson, stores the creator's reflection, and
   keeps every improvement proposal pending for human review.
 - Proposal Control V1, which lets the creator approve, reject, or
   postpone completed-lesson proposals while keeping a timestamped,
@@ -49,9 +62,9 @@ V2 development has started with eight incremental foundations:
 - Lifetime Continuity V1, which creates and verifies an allowlisted local
   bundle containing SK's identity, profile, memories, and a consistent
   SQLite snapshot. It excludes `.env` and arbitrary project files.
-- Controlled Continuous Learning V1, which orchestrates the existing
-  research, Kaizen, and offline lesson steps at startup. Automatic
-  lesson preparation is opt-in and limited to one lesson per day.
+- Companion startup, which checks only the existing opt-in research and
+  Kaizen steps. The old controlled-learning helper is retained for
+  explicit callers but is no longer used by the main CLI.
 - Safe Restore V1, which previews exact continuity changes, requires an
   exact confirmation phrase, protects the current state with a verified
   emergency backup, verifies restored data, and automatically rolls
@@ -64,9 +77,9 @@ Automatic public research collection is also disabled by default to
 avoid surprise network access. Manual collection remains available in
 the CLI.
 
-Automatic lesson preparation is disabled by default. Enabling it does
-not enable either network research source, retrain a model, approve a
-proposal, or modify code.
+The Learning Guide is on-demand in the normal CLI. The legacy
+`SK_CONTINUOUS_LEARNING_ENABLED` flag no longer prepares lessons at
+startup. No study record or legacy data field was deleted or migrated.
 
 Current verified state:
 
@@ -91,7 +104,7 @@ Current verified state:
 - Troubleshooting documentation completed
 - Learning notes completed
 - Guarded continuity restoration and rollback working
-- 133 automated tests passing, including the current V2 foundations
+- 137 automated tests passing, including the current V2 foundations
 
 ## Development Environment
 
@@ -468,7 +481,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-133 passed
+137 passed
 ```
 
 Tests cover:

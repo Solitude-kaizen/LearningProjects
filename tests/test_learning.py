@@ -49,9 +49,10 @@ def store_research_item(database_path, item):
     )
 
 
-def test_learning_purpose_keeps_growth_safe_and_shared():
-    assert "grow together" in LEARNING_PURPOSE
+def test_learning_purpose_describes_optional_study_not_model_training():
+    assert "optional study activities" in LEARNING_PURPOSE
     assert "safely" in LEARNING_PURPOSE
+    assert "does not train SK's model" in LEARNING_PURPOSE
 
 
 def test_learning_brain_prefers_relevant_research():

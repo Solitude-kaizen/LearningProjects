@@ -17,8 +17,8 @@ from .database import (
 
 
 LEARNING_PURPOSE = (
-    "Learn continuously so Solitude-Kaizen and its creator can grow "
-    "together, truthfully, safely, and one small step at a time."
+    "Offer optional study activities so the creator can evaluate AI "
+    "sources safely. This guide does not train SK's model."
 )
 
 RELEVANCE_PATTERNS = (
@@ -163,7 +163,7 @@ def build_learning_lesson(item):
     return {
         "topic": title,
         "why_it_matters": (
-            f"This may help SK understand {focus}. The source has not "
+            f"This source may be relevant to SK's {focus}. It has not "
             "been verified, so it is a question to investigate rather "
             "than knowledge to trust."
         ),

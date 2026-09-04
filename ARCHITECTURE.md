@@ -185,7 +185,8 @@ untrusted metadata for later human review.
 
 ## `learning_cli.py`
 
-`learning_cli.py` owns Learning Brain and proposal-review interaction:
+`learning_cli.py` owns the optional Learning Guide and its proposal-review
+interaction. These commands are not prerequisites for chat or research:
 
 - Displaying a lesson and its evidence status
 - Asking for and storing the creator's reflection
@@ -896,16 +897,18 @@ instruction, executed, installed, or allowed to change source code.
 Automatic startup collection remains opt-in, and the collection loop
 runs at most once per local calendar day.
 
-## V2 Learning Brain Boundary
+## V2 Optional Learning Guide Boundary
 
-`learning.py` turns stored research into one bounded learning session.
+`learning.py` turns saved research metadata into one optional study
+activity using templates. It does not read the complete source or train
+a model. "Learning Brain" was the earlier name, not a capability claim.
 
 Its flow is:
 
 ```text
 Unstudied research metadata
   -> transparent relevance score
-  -> one active baby-step lesson
+  -> one optional short lesson
   -> creator reflection
   -> reviewed lesson with a pending proposal
 ```
@@ -916,33 +919,34 @@ review steps, and prevents a backlog of unfinished lessons. A completed
 lesson records that the creator reviewed the source; it does not certify
 the source's claims.
 
-Improvement proposals are stored with `pending` status. The Learning
-Brain cannot approve a proposal, edit source code, install software, or
+Improvement proposals are stored with `pending` status. The guide does
+not automatically approve a proposal, edit source code, install software, or
 execute instructions retrieved from the internet.
 
-## V2 Controlled Continuous Learning Boundary
+The stored `baby_step` field and existing lesson/review APIs remain
+compatible. The rename does not delete history or reinterpret old data.
 
-`continuous_learning.py` is a small startup orchestrator around the
-existing bounded components:
+## Companion Startup and Legacy Study Cycle
+
+`run_companion_startup` in `continuous_learning.py` runs only the existing
+permitted source checks:
 
 ```text
 Optional daily public research
   -> optional Daily Kaizen discovery
-  -> optional offline lesson preparation
-  -> creator reflection and proposal review remain manual
+  -> normal companion menu (no lesson preparation or reflection prompt)
 ```
 
-Each capability keeps its own configuration boundary. In particular,
-`SK_CONTINUOUS_LEARNING_ENABLED=true` permits at most one automatic
-offline lesson per local calendar day; it does not enable network
-research. `SK_RESEARCH_ENABLED` and `KAIZEN_DISCOVERY_ENABLED` remain
-separate opt-ins.
+`SK_RESEARCH_ENABLED` and `KAIZEN_DISCOVERY_ENABLED` remain independent
+opt-ins, disabled by default. The guide is accessed manually from the
+menu; an unfinished lesson cannot block startup, chat, or research.
 
-The cycle runs when SK starts. It does not run while the application is
-closed, train model weights, approve proposals, edit source code,
-install software, or execute retrieved instructions. Existing active
-lessons block new lessons, and completing a lesson does not bypass the
-automatic one-lesson-per-day limit.
+For compatibility, explicit callers may still invoke
+`run_controlled_learning_cycle`, whose optional study step respects the
+legacy `SK_CONTINUOUS_LEARNING_ENABLED` flag and one-lesson-per-day
+limit. The main CLI no longer calls that helper, even if the old flag is
+enabled. Neither workflow runs while SK is closed, trains model weights,
+approves proposals, changes source code, or executes retrieved text.
 
 ## V2 Proposal Control Boundary
 

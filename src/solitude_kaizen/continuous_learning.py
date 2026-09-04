@@ -54,13 +54,13 @@ def _summarize_cycle(research, kaizen, lesson):
     return "idle"
 
 
-def run_controlled_learning_cycle(
+def run_companion_startup(
     database_path,
     current_time=None,
     research_function=None,
     kaizen_function=None,
-    lesson_function=None,
 ):
+    """Run permitted research checks without preparing study lessons."""
     if current_time is None:
         current_time = datetime.now().astimezone()
 
@@ -70,9 +70,6 @@ def run_controlled_learning_cycle(
     if kaizen_function is None:
         kaizen_function = maybe_run_daily_kaizen
 
-    if lesson_function is None:
-        lesson_function = create_daily_learning_lesson_if_due
-
     research = research_function(
         database_path,
         current_time=current_time,
@@ -81,6 +78,39 @@ def run_controlled_learning_cycle(
         database_path,
         current_time=current_time,
     )
+
+    return {
+        "status": _summarize_cycle(
+            research,
+            kaizen,
+            {"status": "disabled"},
+        ),
+        "research": research,
+        "kaizen": kaizen,
+        "ran_at": current_time.isoformat(timespec="seconds"),
+    }
+
+
+def run_controlled_learning_cycle(
+    database_path,
+    current_time=None,
+    research_function=None,
+    kaizen_function=None,
+    lesson_function=None,
+):
+    """Retain the legacy opt-in study cycle for explicit callers only."""
+    if current_time is None:
+        current_time = datetime.now().astimezone()
+
+    startup = run_companion_startup(
+        database_path,
+        current_time=current_time,
+        research_function=research_function,
+        kaizen_function=kaizen_function,
+    )
+
+    if lesson_function is None:
+        lesson_function = create_daily_learning_lesson_if_due
 
     if is_continuous_learning_enabled():
         lesson = lesson_function(
@@ -94,13 +124,11 @@ def run_controlled_learning_cycle(
         }
 
     return {
+        **startup,
         "status": _summarize_cycle(
-            research,
-            kaizen,
+            startup["research"],
+            startup["kaizen"],
             lesson,
         ),
-        "research": research,
-        "kaizen": kaizen,
         "lesson": lesson,
-        "ran_at": current_time.isoformat(timespec="seconds"),
     }

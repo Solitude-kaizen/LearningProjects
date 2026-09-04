@@ -67,7 +67,7 @@ def test_start_lesson_flow_explains_when_research_is_empty(tmp_path):
     )
 
     assert result["status"] == "no_research"
-    assert "SK needs research before creating a lesson." in messages
+    assert "The optional guide needs a saved research item." in messages
 
 
 def test_start_lesson_flow_creates_and_displays_one_lesson(tmp_path):
@@ -80,7 +80,9 @@ def test_start_lesson_flow_creates_and_displays_one_lesson(tmp_path):
     )
 
     assert result["status"] == "created"
-    assert "SK prepared one new baby-step lesson." in messages
+    assert "The optional guide prepared one short lesson." in messages
+    assert "--- Learning Guide (Optional) ---" in messages
+    assert "Suggested activity:" in messages
     assert "Evidence status: unreviewed" in messages
     assert get_active_learning_lesson(database_path)["id"] == (
         result["lesson"]["id"]

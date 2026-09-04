@@ -41,7 +41,7 @@ from .continuity_cli import (
     run_restore_latest_continuity_backup,
     run_verify_latest_continuity_backup,
 )
-from .continuous_learning import run_controlled_learning_cycle
+from .continuous_learning import run_companion_startup
 
 
 name = "Solitude-Kaizen"
@@ -91,10 +91,9 @@ conversation_history = []
 memory_data["memories"] = memories
 save_memories(memory_path, memory_data)
 
-learning_cycle_result = run_controlled_learning_cycle(database_path)
-kaizen_result = learning_cycle_result["kaizen"]
-research_result = learning_cycle_result["research"]
-automatic_lesson_result = learning_cycle_result["lesson"]
+startup_result = run_companion_startup(database_path)
+kaizen_result = startup_result["kaizen"]
+research_result = startup_result["research"]
 
 user_name = profile["user_name"]
 current_goal = profile.get("current_goal")
@@ -120,13 +119,6 @@ elif research_result["status"] == "partial":
 elif research_result["status"] == "failed":
     print("The public research collector could not run today.")
 
-if automatic_lesson_result["status"] == "created":
-    print("SK prepared one new baby-step lesson for review.")
-elif automatic_lesson_result["status"] == "existing":
-    print("Your current baby-step lesson is still waiting.")
-elif automatic_lesson_result["status"] == "no_research":
-    print("SK needs reviewed research before preparing a lesson.")
-
 while True:
     print("1. View current goal")
     print("2. Change current goal")
@@ -146,11 +138,15 @@ while True:
     print("16. View latest Kaizen discovery")
     print("17. Collect zero-cost public research")
     print("18. View public research inbox")
-    print("19. Start or view one baby-step lesson")
+    print()
+    print("Optional Learning Guide (not required for chat or research):")
+    print("19. Start or view a short lesson")
     print("20. Complete the current lesson")
     print("21. View learning progress")
     print("22. Review pending improvement proposals")
     print("23. View proposal review history")
+    print()
+    print("Backups and exit:")
     print("24. Create and verify continuity backup")
     print("25. Verify latest continuity backup")
     print("26. Preview and restore latest continuity backup")
