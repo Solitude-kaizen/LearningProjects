@@ -301,6 +301,12 @@ compare multiple documents, save results, or verify external facts. Full suite:
 
 ### Possible Later Work
 
+Persistence and interruption hardening is also complete: JSON profile,
+memory, and session-note writes use a shared atomic writer; failed deletion
+does not mutate the active list. Main-menu interruptions exit cleanly and
+deletion interruptions cancel. This step passed 457 tests. Other legacy
+prompt boundaries remain candidates for focused follow-on work.
+
 Longer-term possibilities include:
 
 ```text

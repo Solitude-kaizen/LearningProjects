@@ -3,9 +3,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-import json
-from datetime import datetime
-from pathlib import Path
+from .json_storage import write_json_atomic
 
 
 CONTEXT_STOP_WORDS = frozenset(
@@ -28,15 +26,7 @@ def ensure_json_file(path, default_data):
     if path.exists():
         return False
 
-    with path.open(
-        "w",
-        encoding="utf-8",
-    ) as file:
-        json.dump(
-            default_data,
-            file,
-            indent=4,
-        )
+    write_json_atomic(path, default_data)
 
     return True
 
@@ -48,8 +38,7 @@ def load_profile(profile_path):
 
 
 def save_profile(profile_path, profile):
-    with open(profile_path, "w") as file:
-        json.dump(profile, file, indent=4)
+    write_json_atomic(profile_path, profile)
 
 
 def load_memories(memory_path):
@@ -59,8 +48,7 @@ def load_memories(memory_path):
     return memory_data
 
 def save_memories(memory_path, memory_data):
-    with open(memory_path, "w") as file:
-        json.dump(memory_data, file, indent=4)
+    write_json_atomic(memory_path, memory_data)
 
 def create_memory(text, category, importance):
     created_at = datetime.now().isoformat(timespec="seconds")

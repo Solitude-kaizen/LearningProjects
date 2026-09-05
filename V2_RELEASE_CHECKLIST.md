@@ -101,6 +101,11 @@ and remains untouched and excluded from this work.
 
 ## Personal Continuity Checks
 
+Follow-on reliability check: 457 tests passed after atomic JSON saving,
+failure-safe memory deletion, and clean main-menu/deletion interruptions.
+Failure injection used temporary files. No personal recovery operation was
+performed, and atomic saving does not replace continuity backups.
+
 These protect the creator's setup; automated tests cannot establish that
 the creator has a usable personal backup.
 

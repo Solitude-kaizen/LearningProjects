@@ -164,7 +164,12 @@ while True:
         print("A resumed session note is active in chat; option 29 can dismiss it.")
     print("27. Exit")
 
-    choice = input("Choose an option: ")
+    try:
+        choice = input("Choose an option: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print()
+        print("Goodbye! No session note was saved automatically.")
+        break
 
     if choice == "1":
         if current_goal:
@@ -392,3 +397,6 @@ while True:
 
     elif choice == "30":
         run_source_review()
+
+    else:
+        print("Please choose a listed option.")

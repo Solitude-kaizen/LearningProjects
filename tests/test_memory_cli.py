@@ -41,6 +41,64 @@ def forbid_memory_changes(monkeypatch):
     monkeypatch.setattr(memory_cli, "save_memories", unexpected_change)
 
 
+@pytest.mark.parametrize("stage", ["selection", "confirmation"])
+@pytest.mark.parametrize("interruption", [EOFError, KeyboardInterrupt])
+def test_interrupted_forgetting_preserves_list_and_bytes(
+    saved_memories, forbid_memory_changes, stage, interruption,
+):
+    memory_path, memory_data = saved_memories
+    original = deepcopy(memory_data)
+    original_bytes = memory_path.read_bytes()
+    prompts = []
+    messages, record_output = create_output_recorder()
+
+    def read(prompt):
+        prompts.append(prompt)
+        if stage == "selection" or len(prompts) == 2:
+            raise interruption()
+        return "2"
+
+    assert memory_cli.run_forget_memory(memory_path, memory_data, read, record_output) is None
+    assert memory_data == original
+    assert memory_path.read_bytes() == original_bytes
+    assert "Cancelled. Nothing was forgotten." in messages
+
+
+def test_explicit_cancel_at_memory_selection_keeps_data(saved_memories, forbid_memory_changes):
+    memory_path, memory_data = saved_memories
+    original = deepcopy(memory_data)
+    original_bytes = memory_path.read_bytes()
+    messages, record_output = create_output_recorder()
+    memory_cli.run_forget_memory(memory_path, memory_data, lambda prompt: " /CANCEL ", record_output)
+    assert memory_data == original
+    assert memory_path.read_bytes() == original_bytes
+    assert "Cancelled. Nothing was forgotten." in messages
+
+
+@pytest.mark.parametrize("confirmation", ["yes", "YES", " yes "])
+def test_forget_failed_save_keeps_shared_memory_state(saved_memories, monkeypatch, confirmation):
+    memory_path, memory_data = saved_memories
+    original = deepcopy(memory_data)
+    original_bytes = memory_path.read_bytes()
+    shared_memories = memory_data["memories"]
+    messages, output = create_output_recorder()
+
+    def fail_save(path, candidate):
+        assert memory_data == original
+        assert candidate["memories"] != shared_memories
+        raise OSError("Failed test save")
+
+    monkeypatch.setattr(memory_cli, "save_memories", fail_save)
+    answers = iter(["2", confirmation])
+    assert memory_cli.run_forget_memory(
+        memory_path, memory_data, lambda prompt: next(answers), output,
+    ) is None
+    assert memory_data == original
+    assert memory_data["memories"] is shared_memories
+    assert memory_path.read_bytes() == original_bytes
+    assert "Could not save the change. Nothing was forgotten." in messages
+
+
 @pytest.mark.parametrize("confirmation", ["yes", "YES", " yes "])
 def test_forget_previews_then_saves_only_confirmed_selection(
     saved_memories,

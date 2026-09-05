@@ -94,6 +94,12 @@ The rest of the application should not depend on one specific AI vendor.
 
 ## Package Structure
 
+`json_storage.py` is the shared complete-write/flush/replace boundary for
+profile, memory, and session-note JSON. `memory_cli.py` stages a deletion in
+a copied list and updates the shared list only after persistence succeeds.
+The writer does not supply process locking or general recovery guarantees;
+continuity bundles remain a separate safeguard.
+
 `source_review_cli.py` provides a separate one-shot, explicitly confirmed
 review request in option 30. `source_review.py` validates supplied fields,
 builds source-isolated prompts, checks structured responses and literal

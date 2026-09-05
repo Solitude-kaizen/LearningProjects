@@ -67,7 +67,7 @@ It does not fetch links or include personal memories/session/chat context.
 No input or result is saved. Structured output is validated and literal
 quotes must occur in the source text, but correctness and source truth are
 not independently verified. A bounded local trial and known caveat verbosity
-are recorded in `SOURCE_REVIEW_EVALUATION.md`. Current full suite: 431 passed.
+are recorded in `SOURCE_REVIEW_EVALUATION.md`. That source-review checkpoint passed 431 tests.
 
 ## Core Principle
 
@@ -157,7 +157,13 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 431 automated tests passing, including session notes and supplied-source review
+- 457 automated tests passing, including atomic JSON saves and interruption handling
+
+Persistence hardening uses `json_storage.py` for atomic profile, memory,
+and session-note writes. Failed memory deletion leaves both the saved file
+and shared list unchanged. Main-menu EOF/Ctrl+C exits cleanly; memory-deletion
+selection/confirmation interruptions cancel. Other older prompts are still
+separate follow-on work. Full regression suite for this step: 457 passed.
 
 ## Development Environment
 
@@ -566,7 +572,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-431 passed
+457 passed
 ```
 
 Tests cover:

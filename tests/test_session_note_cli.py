@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import pytest
 
-from src.solitude_kaizen import session_notes
+from src.solitude_kaizen import json_storage, session_notes
 from src.solitude_kaizen.memory import ensure_json_file, load_memories
 from src.solitude_kaizen.session_note_cli import (
     run_prepare_session_note,
@@ -238,7 +238,7 @@ def test_failed_save_reports_failure_without_mutating_live_data(note_store, monk
     def fail_replace(*args):
         raise OSError("Test replacement failure")
 
-    monkeypatch.setattr(session_notes.os, "replace", fail_replace)
+    monkeypatch.setattr(json_storage.os, "replace", fail_replace)
     result = run_prepare_session_note(
         path, data, [], scripted_input(["New topic", "", "", "", "yes"]),
         lambda *parts: None,

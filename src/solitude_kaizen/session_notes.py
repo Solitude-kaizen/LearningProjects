@@ -1,10 +1,8 @@
 """Optional, user-reviewed continuity notes with local-only persistence."""
 
-import json
-import os
-import tempfile
 from datetime import datetime, timezone
-from pathlib import Path
+
+from .json_storage import write_json_atomic
 
 
 NOTE_FIELDS = ("topic", "decisions", "open_questions", "next_step")
@@ -97,30 +95,6 @@ def format_session_note(note):
     )
 
 
-def _write_memory_data_atomic(memory_path, updated_data):
-    """Replace the file only after a complete same-directory write succeeds."""
-    memory_path = Path(memory_path)
-    temporary_path = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=memory_path.parent,
-            prefix=f".{memory_path.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as temporary_file:
-            temporary_path = Path(temporary_file.name)
-            json.dump(updated_data, temporary_file, indent=4)
-            temporary_file.flush()
-            os.fsync(temporary_file.fileno())
-        os.replace(temporary_path, memory_path)
-        temporary_path = None
-    finally:
-        if temporary_path is not None:
-            temporary_path.unlink(missing_ok=True)
-
-
 def save_session_note(memory_path, memory_data, draft, confirmed=False):
     """Save one reviewed note only after an explicit boolean confirmation."""
     if confirmed is not True:
@@ -133,7 +107,7 @@ def save_session_note(memory_path, memory_data, draft, confirmed=False):
         "saved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     updated_data = {**memory_data, "session_note": saved}
-    _write_memory_data_atomic(memory_path, updated_data)
+    write_json_atomic(memory_path, updated_data)
     memory_data["session_note"] = saved.copy()
     return saved
 
@@ -147,6 +121,6 @@ def forget_session_note(memory_path, memory_data, confirmed=False):
         return None
     updated_data = memory_data.copy()
     del updated_data["session_note"]
-    _write_memory_data_atomic(memory_path, updated_data)
+    write_json_atomic(memory_path, updated_data)
     del memory_data["session_note"]
     return note

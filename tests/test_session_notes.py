@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 
-from src.solitude_kaizen import session_notes
+from src.solitude_kaizen import json_storage, session_notes
 from src.solitude_kaizen.session_notes import (
     MAX_FIELD_CHARS,
     NOTE_FIELDS,
@@ -297,7 +297,7 @@ def test_failed_persistence_preserves_disk_and_in_memory_state(
     def fail(*args, **kwargs):
         raise OSError("Simulated persistence failure")
 
-    target = session_notes.json if failure == "dump" else session_notes.os
+    target = json_storage.json if failure == "dump" else json_storage.os
     monkeypatch.setattr(target, failure, fail)
     with pytest.raises(OSError, match="Simulated persistence failure"):
         if operation == "save":
@@ -315,7 +315,7 @@ def test_failed_persistence_preserves_disk_and_in_memory_state(
 def test_atomic_replace_uses_complete_same_directory_temporary_file(memory_file, monkeypatch):
     path, data = memory_file
     before = path.read_bytes()
-    replace = session_notes.os.replace
+    replace = json_storage.os.replace
     observed = []
 
     def inspect_replace(source, destination):
@@ -328,7 +328,7 @@ def test_atomic_replace_uses_complete_same_directory_temporary_file(memory_file,
         observed.append(source)
         replace(source, destination)
 
-    monkeypatch.setattr(session_notes.os, "replace", inspect_replace)
+    monkeypatch.setattr(json_storage.os, "replace", inspect_replace)
     save_session_note(path, data, make_draft(topic="New"), confirmed=True)
     assert len(observed) == 1
     assert not observed[0].exists()

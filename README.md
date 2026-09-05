@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **431 passing tests** covering memory,
+The project currently has **457 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -293,7 +293,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **431 passing tests** covering memory,
+The project currently has **457 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -307,6 +307,9 @@ Menu option 6 previews the selected memory before asking for confirmation.
 Only `yes` (ignoring capitalization and surrounding spaces) permits
 deletion and saving. Any other answer cancels without changing the list
 or writing the memory file. Invalid selections also make no changes.
+`/cancel` at selection, Ctrl+C, or EOF cancels deletion without a traceback.
+The shared memory list changes only after saving succeeds; failed saves leave
+the existing file and live list intact.
 
 Memories support:
 
@@ -409,6 +412,17 @@ known tendency to list tangential caveats. Interrupting an already-sent request
 cannot undo transmission; the CLI reports that distinction.
 
 ## Reliability
+
+Profile, memory, and session-note JSON saves share an atomic writer: serialize
+and flush a temporary file beside the destination, then replace the old file.
+Failures before replacement preserve the old file; ordinary failure cleanup
+removes the temporary file. This does not provide multi-process locking,
+replace backups, or guarantee recovery from every power-loss scenario.
+
+Ctrl+C or EOF at the main menu exits cleanly without automatically saving a
+session note. Unknown choices display a short hint and menu choices tolerate
+surrounding spaces. These safeguards do not imply that every older prompt
+already handles interruptions or that an in-flight provider call can be undone.
 
 The current reliability philosophy is:
 

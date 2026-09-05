@@ -24,9 +24,16 @@ def run_forget_memory(
     for index, memory in enumerate(memories, start=1):
         print_function(index, "-", format_memory(memory))
 
-    memory_number = input_function(
-        "Enter the number of the memory to forget: "
-    )
+    try:
+        memory_number = input_function(
+            "Enter the number of the memory to forget (/cancel to cancel): "
+        )
+    except (EOFError, KeyboardInterrupt):
+        print_function("Cancelled. Nothing was forgotten.")
+        return None
+    if memory_number.strip().casefold() == "/cancel":
+        print_function("Cancelled. Nothing was forgotten.")
+        return None
     try:
         memory_index = int(memory_number) - 1
     except ValueError:
@@ -40,17 +47,27 @@ def run_forget_memory(
     print_function()
     print_function("You are about to forget:")
     print_function("-", format_memory(memories[memory_index]))
-    confirmation = input_function(
-        "Type 'yes' to confirm, anything else to cancel: "
-    )
+    try:
+        confirmation = input_function(
+            "Type 'yes' to confirm, anything else to cancel: "
+        )
+    except (EOFError, KeyboardInterrupt):
+        confirmation = ""
 
     if confirmation.strip().lower() != "yes":
         print_function("Cancelled. Nothing was forgotten.")
         return None
 
-    forgotten_memory = forget_memory(memories, memory_index)
+    updated_memories = memories.copy()
+    forgotten_memory = forget_memory(updated_memories, memory_index)
     if forgotten_memory is not None:
-        save_memories(memory_path, memory_data)
+        updated_data = {**memory_data, "memories": updated_memories}
+        try:
+            save_memories(memory_path, updated_data)
+        except (OSError, ValueError, TypeError):
+            print_function("Could not save the change. Nothing was forgotten.")
+            return None
+        memories[:] = updated_memories
         print_function("I forgot:", forgotten_memory)
 
     return forgotten_memory
