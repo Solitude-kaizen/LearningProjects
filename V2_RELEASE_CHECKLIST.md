@@ -66,6 +66,20 @@ not replace the creator's day-to-day usability judgment below.
 
 ## Optional Future Public Release Gates
 
+Follow-on session-continuity work (after the recorded 231-test checkpoint)
+adds a separately stored, reviewed note through menu 28 and explicit resume,
+edit, dismissal, and forgetting through menu 29. Full regression suite:
+345 passed. Checks used temporary data and fake inference, including restart
+privacy, cancellation, failed atomic writes, and new/legacy backup restoration.
+No personal backup was restored and no live model call was made. This is a
+further internal change, not authorization for a public release.
+
+A later [bounded local session-note check](SESSION_NOTE_EVALUATION.md)
+completed three fictional requests through the existing Ollama adapter.
+It covered absent context, resumed context, and a changed plan, without
+personal data or cloud calls. This does not expand the automated-test
+claim into a general live-model quality guarantee.
+
 These remain necessary if a public V2 release is chosen. They do not
 prevent using the internal checkpoint or making further reviewed changes.
 
@@ -109,7 +123,10 @@ need, a preview, and the exact confirmation.
 ## Known Limitations to Accept or Fix Before Release
 
 - Chat history is session-only, with six recent messages used as context
-  and at most twenty stored in memory. It is not a persistent chat archive.
+  and at most twenty stored in memory. An optional reviewed session note
+  persists separately and enters chat only after explicit resume; it is not
+  a persistent transcript or an AI-generated summary. Forgetting/dismissal
+  does not erase earlier chat details or older backup copies.
 - Memory retrieval uses keywords, not semantic understanding. Replies can
   be wrong, and relevant context can be missed.
 - Cloud chat sends the selected memory and recent conversation context to

@@ -10,6 +10,7 @@ from .conversation import (
 )
 from .memory import build_memory_context
 from .prompt import build_system_prompt
+from .session_notes import format_session_note
 
 
 def run_talk_to_companion(
@@ -19,6 +20,7 @@ def run_talk_to_companion(
     print_function=print,
     response_function=generate_response,
     provider_used_function=get_last_provider_used,
+    session_note=None,
 ):
     try:
         user_message = input_function("You: ")
@@ -48,6 +50,7 @@ def run_talk_to_companion(
     system_prompt = build_system_prompt(
         memory_context,
         conversation_context,
+        session_note_context=format_session_note(session_note) if session_note else "",
     )
 
     try:
@@ -128,6 +131,7 @@ def run_clear_conversation(
     conversation_history,
     print_function=print,
     input_function=None,
+    has_session_note=False,
 ):
     if input_function is None:
         input_function = input
@@ -135,13 +139,15 @@ def run_clear_conversation(
     message_count = len(conversation_history)
     print_function()
 
-    if message_count == 0:
+    if message_count == 0 and not has_session_note:
         print_function("Conversation history is already empty.")
         return {"status": "empty", "message_count": 0}
 
     print_function("--- Clear Conversation Preview ---")
     print_function("Messages to clear:", message_count)
     print_function("Only this session's chat will be cleared; saved memories stay.")
+    if has_session_note:
+        print_function("The resumed note will also be detached; its saved copy stays.")
     print_function("This cannot be undone within this session.")
 
     try:

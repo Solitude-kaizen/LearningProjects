@@ -94,6 +94,21 @@ The rest of the application should not depend on one specific AI vendor.
 
 ## Package Structure
 
+The core flow also accepts an optional user-approved session note.
+`session_note_cli.py` owns preview/edit/confirm/resume interaction;
+`session_notes.py` owns bounded fields, schema validation, and atomic local
+persistence. The single note is a top-level `session_note` in `memories.json`,
+outside keyword ranking. Existing backups include it without a format change.
+No full conversation transcript is persisted.
+
+`main.py` starts with no active note and only an availability hint. Explicit
+resume creates an independent active snapshot. `conversation_cli.py` passes
+it to `prompt.py` as fallible past context, not instructions or verified facts.
+Those labels are guidance, not a security sandbox. Saving edits detaches the
+active note until fresh approval; cancellation preserves state. Clear-chat
+also detaches active notes even with empty chat history. Old replies may
+retain note details until cleared, and backups retain their own copies.
+
 The main application code lives in:
 
 ```text
@@ -107,6 +122,8 @@ src/solitude_kaizen/
 ├── main.py
 ├── conversation_cli.py
 ├── conversation.py
+├── session_note_cli.py
+├── session_notes.py
 ├── research_cli.py
 ├── research_labels.py
 ├── research.py

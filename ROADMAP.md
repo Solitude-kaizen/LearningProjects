@@ -273,6 +273,26 @@ V2 should still preserve the principle:
 
 ## Future Ideas
 
+### Completed Follow-on: Reviewed Session Continuity
+
+The selected improvement after the internal V2 checkpoint is implemented:
+optional menu 28 prepares a user-editable session note; menu 29 reviews,
+explicitly resumes, edits, dismisses, or forgets it. The local draft copies
+only the latest user message as a topic. Decisions, unresolved questions,
+and next steps are user-entered. This is not automatic AI summarization or
+a persistent transcript. Note controls make no model calls; startup never
+activates the note. Saving and deletion require confirmation.
+
+The single note is separate from ordinary memories inside the existing
+memory JSON, so continuity bundles already include it. Writes use atomic
+replacement. Explicit resume permits subsequent chat prompts to include
+the note, including transmission to cloud providers when cloud chat is used.
+Dismissal does not erase previous chat details or older backup copies.
+The full regression suite passed 345 tests using temporary data and fake
+inference. This follow-on does not create a public V2 release or train a model.
+
+### Possible Later Work
+
 Longer-term possibilities include:
 
 ```text

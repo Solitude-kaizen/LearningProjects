@@ -40,6 +40,25 @@ fact recall, simple arithmetic, and appropriate uncertainty on those
 prompts only. It is not a general domain-quality benchmark; no production
 model settings or application code were changed by that check.
 
+Reviewed session continuity has since been added: menu 28 prepares a local,
+editable note (latest user topic, user-entered decisions, unresolved questions,
+and next step). Menu 29 reviews/resumes/edits/dismisses/forgets it. Confirmation
+is required to save, delete, or activate it. Startup never activates the note;
+saving does not approve model use. Explicit resume permits inclusion in later
+chat prompts with a cloud-context warning. The note lives separately from
+ordinary memories under `session_note` in the existing memory JSON and is
+included in unencrypted continuity bundles. Note controls make no AI calls.
+Full transcripts remain session-only; this is not automatic summarization.
+The full suite for this follow-on passed 345 tests with temporary data and
+fake inference. No personal data was restored or sent to a model by the tests.
+
+A subsequent three-request local-model check is documented in
+[SESSION_NOTE_EVALUATION.md](SESSION_NOTE_EVALUATION.md). With a fictional
+note, the installed model acknowledged absent context, recalled the saved
+plan, and followed a newer instruction. No personal data or cloud was used;
+these examples are not a general accuracy benchmark. Note edits still need
+explicit approval; a changed chat plan is not automatically persisted.
+
 ## Core Principle
 
 > One companion, many replaceable brains.
@@ -128,7 +147,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 231 automated tests passing, including the current V2 foundations
+- 345 automated tests passing, including reviewed session-note continuity
 
 ## Development Environment
 
@@ -537,7 +556,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-231 passed
+345 passed
 ```
 
 Tests cover:

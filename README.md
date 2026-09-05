@@ -37,6 +37,7 @@ The current version is a command-line application with:
 
 - Persistent local memory
 - Short-term conversation history
+- Optional reviewed session note for continuity between launches
 - Context-aware prompting
 - Multiple AI providers
 - Automatic cloud-to-local fallback
@@ -53,7 +54,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **231 passing tests** covering memory,
+The project currently has **345 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -291,7 +292,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **231 passing tests** covering memory,
+The project currently has **345 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -336,8 +337,50 @@ Menu option 14 previews how many messages will be cleared. Only `yes`
 (ignoring capitalization and surrounding spaces) clears the current
 session's chat; saved memories and other files are untouched. Any other
 answer, or an interruption at the confirmation prompt, cancels without
-changing the conversation. Empty history needs no confirmation. A
-confirmed clear cannot be undone within the session.
+changing the conversation. Clearing also detaches a resumed session note,
+without deleting its saved copy. Empty history needs no confirmation only
+when no note is active. A confirmed clear cannot be undone within the session.
+
+## Optional Session Continuity
+
+Option **28** prepares a local session-note draft. It copies only the latest
+user message into the topic (up to 600 characters, marked if truncated).
+It does not summarize the whole conversation or infer decisions from model
+replies. You can also prepare a note with no chat history. Review four fields:
+topic, approved decisions, unresolved questions, and a possible next step.
+Blank input keeps a field, `/clear` empties it, and `/cancel` cancels. Each
+field is limited to 600 characters. At the final preview, `edit` revises the
+draft and only `yes` saves it. Saving replaces the one existing note, after
+showing that existing note. These controls make no AI or network request.
+
+Option **29** displays the saved note and offers:
+
+- `resume`: asks for `yes` before including the note in later option-12 chats
+  for this session. A cloud provider receives it when cloud chat is used.
+- `edit`: preview and explicitly save corrections; resume again to activate them.
+- `dismiss`: detach the note from direct chat context while keeping its saved copy.
+- `forget`: preview and require `yes` before deleting just the saved note.
+
+Cancelling or interrupting an edit or confirmation preserves saved data and
+active context. Startup shows only an availability hint; it does not display
+the note's content or activate it. Saving never activates the note. Option
+**27** remains exit and never saves a note automatically. Study activities
+remain optional and independent of this feature.
+
+The note is stored as a separate top-level `session_note` in the existing
+private `memories.json`, outside automatic keyword memory selection. Writes
+use a same-directory temporary file and atomic replacement. Ordinary memories
+and other fields are preserved. Continuity bundles include the note without
+a format change and remain unencrypted. Never put credentials in a note.
+Forgetting a note does not remove copies in earlier backups or details in
+existing chat; option **14** clears the current chat and detaches active context.
+Unsupported or malformed notes remain stored but inactive, pending separate
+recovery guidance. Full transcripts are still session-only.
+
+A bounded [local session-note check](SESSION_NOTE_EVALUATION.md) exercised
+missing context, resumed context, and a changed plan using a fictional note.
+All three requests completed; this is limited evidence, not a general
+model-quality guarantee or a test with personal data.
 
 ## Reliability
 

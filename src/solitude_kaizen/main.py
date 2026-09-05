@@ -42,6 +42,7 @@ from .continuity_cli import (
 )
 from .continuous_learning import run_companion_startup
 from .memory_cli import run_forget_memory
+from .session_note_cli import run_prepare_session_note, run_review_session_note
 
 
 name = "Solitude-Kaizen"
@@ -88,6 +89,7 @@ memories = [
 ]
 
 conversation_history = []
+active_session_note = None
 memory_data["memories"] = memories
 save_memories(memory_path, memory_data)
 
@@ -103,6 +105,8 @@ health_goal = profile.get("health_goal")
 
 print(name, "V" + version)
 print("Hello,", user_name + ".")
+if "session_note" in memory_data:
+    print("A saved session note is available in option 29; it is not active in chat.")
 
 if current_goal:
     print("Your current goal is:", current_goal)
@@ -146,10 +150,16 @@ while True:
     print("22. Review pending improvement proposals")
     print("23. View proposal review history")
     print()
-    print("Backups and exit:")
+    print("Backups:")
     print("24. Create and verify continuity backup")
     print("25. Verify latest continuity backup")
     print("26. Preview and restore latest continuity backup")
+    print()
+    print("Optional session continuity (nothing is saved automatically):")
+    print("28. Prepare and review a session note")
+    print("29. Review, resume, edit, or forget the saved session note")
+    if active_session_note is not None:
+        print("A resumed session note is active in chat; option 29 can dismiss it.")
     print("27. Exit")
 
     choice = input("Choose an option: ")
@@ -304,16 +314,23 @@ while True:
         run_talk_to_companion(
             conversation_history,
             memories,
+            session_note=active_session_note,
         )
 
     elif choice == "13":
         run_view_ai_provider()
 
     elif choice == "14":
-        run_clear_conversation(conversation_history)
+        clear_result = run_clear_conversation(
+            conversation_history,
+            has_session_note=active_session_note is not None,
+        )
+        if clear_result["status"] == "cleared":
+            active_session_note = None
 
     elif choice == "15":
         run_view_conversation_status(conversation_history)
+        print("Resumed session note active:", active_session_note is not None)
 
     elif choice == "16":
         run_view_latest_kaizen_discovery(database_path)
@@ -352,6 +369,20 @@ while True:
 
         if restore_result["status"] == "restored":
             break
+
+    elif choice == "28":
+        note_result = run_prepare_session_note(
+            memory_path, memory_data, conversation_history,
+        )
+        if note_result["status"] == "saved":
+            active_session_note = None
+
+    elif choice == "29":
+        note_result = run_review_session_note(memory_path, memory_data)
+        if note_result["status"] == "resumed":
+            active_session_note = note_result["note"]
+        elif note_result["status"] in ("saved", "forgotten", "dismissed"):
+            active_session_note = None
 
     elif choice == "27":
         print("Goodbye!")
