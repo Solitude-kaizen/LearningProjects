@@ -176,12 +176,22 @@ while True:
             print("You do not have a current goal saved.")
 
     elif choice == "2":
-        new_goal = input("Enter your new goal: ")
-
+        try:
+            new_goal = input("Enter your new goal (/cancel to cancel): ")
+        except (EOFError, KeyboardInterrupt):
+            print("Cancelled. Your goal was not changed.")
+            continue
+        if new_goal.strip().casefold() == "/cancel":
+            print("Cancelled. Your goal was not changed.")
+            continue
+        updated_profile = {**profile, "current_goal": new_goal}
+        try:
+            save_profile(profile_path, updated_profile)
+        except (OSError, TypeError, ValueError):
+            print("Could not save your goal. Your previous goal was kept.")
+            continue
         profile["current_goal"] = new_goal
         current_goal = new_goal
-
-        save_profile(profile_path, profile)
 
         print("Your goal has been updated.")
 

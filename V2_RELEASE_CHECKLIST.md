@@ -2,6 +2,11 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
+Latest follow-on regression result: 484 passed. Goal changes now save before
+updating live state and handle cancellation or write failure without losing
+the prior goal. The historical results below remain evidence for their own
+checkpoints. No public release or push was performed in this development run.
+
 Working scope proposed on 2026-09-04. Following the review, the recommended
 path is to continue from the internal checkpoint without requiring a
 public tag. The creator would still need to approve any future public
