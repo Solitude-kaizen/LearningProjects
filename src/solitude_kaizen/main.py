@@ -4,10 +4,8 @@ from .memory import (
     save_profile,
     load_memories,
     save_memories,
-    create_memory,
     search_memories,
     format_memory,
-    validate_importance,
     validate_category,
     normalize_memory,
     filter_memories_by_category,
@@ -41,7 +39,7 @@ from .continuity_cli import (
     run_verify_latest_continuity_backup,
 )
 from .continuous_learning import run_companion_startup
-from .memory_cli import run_forget_memory
+from .memory_cli import run_forget_memory, run_remember_memory
 from .session_note_cli import run_prepare_session_note, run_review_session_note
 from .source_review_cli import run_source_review
 
@@ -197,45 +195,7 @@ while True:
         print("Health Goal:", health_goal)
 
     elif choice == "4":
-        new_memory = input("What would you like me to remember? ")
-
-        while True:
-            category_input = input(
-                "What category does this memory belong to? "
-            )
-
-            category = validate_category(category_input)
-
-            if category is not None:
-                break
-
-            print(
-                "Please choose: learning, career, health, "
-                "project, personal, or test."
-            )
-
-        while True:
-            importance_input = input(
-                "How important is this memory? (1-5): "
-            )
-
-            importance = validate_importance(importance_input)
-
-            if importance is not None:
-                break
-
-            print("Please enter a valid importance level between 1 and 5.")
-
-        memory_item = create_memory(
-            new_memory,
-            category,
-            importance
-        )
-
-        memories.append(memory_item)
-        save_memories(memory_path, memory_data)
-
-        print("I will remember that.")
+        run_remember_memory(memory_path, memory_data)
     elif choice == "5":
         print()
         print("--- Memories ---")

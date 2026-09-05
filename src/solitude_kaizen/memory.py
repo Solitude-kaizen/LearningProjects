@@ -96,7 +96,10 @@ def format_memory(memory):
 
 def validate_importance(value):
     if value.isdigit():
-        importance = int(value)
+        try:
+            importance = int(value)
+        except ValueError:
+            return None
 
         if 1 <= importance <= 5:
             return importance

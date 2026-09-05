@@ -101,6 +101,11 @@ and remains untouched and excluded from this work.
 
 ## Personal Continuity Checks
 
+Further reliability checkpoint: 478 tests passed after adding preview and
+confirmation to new-memory creation. Cancellation and injected save failures
+preserve existing temporary test data. No public release or personal backup
+operation was performed.
+
 Follow-on reliability check: 457 tests passed after atomic JSON saving,
 failure-safe memory deletion, and clean main-menu/deletion interruptions.
 Failure injection used temporary files. No personal recovery operation was

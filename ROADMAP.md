@@ -301,6 +301,10 @@ compare multiple documents, save results, or verify external facts. Full suite:
 
 ### Possible Later Work
 
+Memory creation now also has a focused confirmation boundary in `memory_cli.py`:
+preview, cancellation, a 1000-character text bound, and no live mutation until
+the atomic save succeeds. The full suite passed 478 tests at this checkpoint.
+
 Persistence and interruption hardening is also complete: JSON profile,
 memory, and session-note writes use a shared atomic writer; failed deletion
 does not mutate the active list. Main-menu interruptions exit cleanly and

@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **457 passing tests** covering memory,
+The project currently has **478 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -293,7 +293,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **457 passing tests** covering memory,
+The project currently has **478 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -302,6 +302,13 @@ safe restoration rollback.
 ## Memory
 
 Long-term memories are stored locally.
+
+Option **4** previews a new memory's text, category, and importance before
+saving. Only `yes` confirms. Blank text, `/cancel`, Ctrl+C, or EOF cancels
+before saving; text is limited to 1000 characters. Invalid categories or
+importance values can be corrected. New memories may be selected for later
+cloud chat, so never store credentials. The shared list is updated only
+after the atomic save succeeds; a failed save adds nothing.
 
 Menu option 6 previews the selected memory before asking for confirmation.
 Only `yes` (ignoring capitalization and surrounding spaces) permits

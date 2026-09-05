@@ -95,8 +95,8 @@ The rest of the application should not depend on one specific AI vendor.
 ## Package Structure
 
 `json_storage.py` is the shared complete-write/flush/replace boundary for
-profile, memory, and session-note JSON. `memory_cli.py` stages a deletion in
-a copied list and updates the shared list only after persistence succeeds.
+profile, memory, and session-note JSON. `memory_cli.py` stages additions or
+deletions in a copied list and updates shared state only after saving succeeds.
 The writer does not supply process locking or general recovery guarantees;
 continuity bundles remain a separate safeguard.
 
@@ -147,6 +147,9 @@ src/solitude_kaizen/
 ├── continuity.py
 ├── memory_cli.py
 ├── memory.py
+├── json_storage.py
+├── source_review.py
+├── source_review_cli.py
 ├── prompt.py
 ├── ai_service.py
 ├── database.py
@@ -180,14 +183,20 @@ Responsibilities include:
 - Calling memory functions
 - Delegating conversation, research, learning, and continuity commands
   to focused CLI modules
-- Delegating the forget-memory interaction to `memory_cli.py`
+- Delegating memory creation and forgetting to `memory_cli.py`
 
 The conversation, research, learning, and continuity extractions form an
-incremental CLI cleanup. The forget-memory action now has its own tested
-interaction boundary; other memory and profile commands remain in
+incremental CLI cleanup. Memory creation and forgetting have their own tested
+interaction boundary; other memory views and profile commands remain in
 `main.py`.
 
 ## `memory_cli.py`
+
+`run_remember_memory` collects bounded text, category, and importance,
+previews them with a cloud-context warning, and requires `yes` before saving.
+Blank text, `/cancel`, Ctrl+C, and EOF cancel; failed saves do not add a live
+memory. Both creation and forgetting preserve shared list identity and
+commit in-memory changes only after the atomic write succeeds.
 
 `run_forget_memory` lists memories, validates a selection, previews it,
 and asks for an explicit `yes` before calling the existing deletion and
