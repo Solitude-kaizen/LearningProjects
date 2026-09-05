@@ -94,6 +94,14 @@ The rest of the application should not depend on one specific AI vendor.
 
 ## Package Structure
 
+`source_review_cli.py` provides a separate one-shot, explicitly confirmed
+review request in option 30. `source_review.py` validates supplied fields,
+builds source-isolated prompts, checks structured responses and literal
+quote membership, and formats interpretation separately from evidence.
+It never uses memory/session/conversation state, fetches source URLs, or
+persists results. It delegates inference to the existing provider interface;
+prompt guidance is not proof of truth or a security sandbox.
+
 The core flow also accepts an optional user-approved session note.
 `session_note_cli.py` owns preview/edit/confirm/resume interaction;
 `session_notes.py` owns bounded fields, schema validation, and atomic local

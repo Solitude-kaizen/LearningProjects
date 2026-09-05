@@ -59,6 +59,16 @@ plan, and followed a newer instruction. No personal data or cloud was used;
 these examples are not a general accuracy benchmark. Note edits still need
 explicit approval; a changed chat plan is not automatically persisted.
 
+## Supplied-Source Review
+
+Optional source review is now available in menu 30: one pasted excerpt,
+title, optional link, and question, previewed before a confirmed model call.
+It does not fetch links or include personal memories/session/chat context.
+No input or result is saved. Structured output is validated and literal
+quotes must occur in the source text, but correctness and source truth are
+not independently verified. A bounded local trial and known caveat verbosity
+are recorded in `SOURCE_REVIEW_EVALUATION.md`. Current full suite: 431 passed.
+
 ## Core Principle
 
 > One companion, many replaceable brains.
@@ -147,7 +157,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 345 automated tests passing, including reviewed session-note continuity
+- 431 automated tests passing, including session notes and supplied-source review
 
 ## Development Environment
 
@@ -556,7 +566,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-345 passed
+431 passed
 ```
 
 Tests cover:

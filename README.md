@@ -38,6 +38,7 @@ The current version is a command-line application with:
 - Persistent local memory
 - Short-term conversation history
 - Optional reviewed session note for continuity between launches
+- Optional single-source review of pasted text, with checked literal quotations
 - Context-aware prompting
 - Multiple AI providers
 - Automatic cloud-to-local fallback
@@ -54,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **345 passing tests** covering memory,
+The project currently has **431 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -292,7 +293,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **345 passing tests** covering memory,
+The project currently has **431 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -381,6 +382,31 @@ A bounded [local session-note check](SESSION_NOTE_EVALUATION.md) exercised
 missing context, resumed context, and a changed plan using a fictional note.
 All three requests completed; this is limited evidence, not a general
 model-quality guarantee or a test with personal data.
+
+## Optional Source Review
+
+Option **30** accepts one source title, an optional HTTP(S) link, a pasted
+excerpt, and your question. Finish the excerpt with `/done` on its own line;
+`/cancel`, Ctrl+C, or EOF before confirmation cancels without sending anything.
+The excerpt is limited to 6000 characters / 100 lines; title and question
+are bounded too. Source links cannot contain embedded credentials.
+
+SK previews exactly this input and the configured provider. Only `yes` sends
+the review request. Cloud use sends the supplied material to that provider
+and may incur costs; existing fallback rules apply. Personal memories, session
+notes, profile, and conversation history are excluded. No links are fetched,
+no tools are executed, and neither the input nor review is saved by SK.
+
+The model is asked for an interpretation, exact quoted evidence, and
+uncertainties. SK checks response structure and requires each quote to appear
+in the supplied excerpt. An unsupported quote or malformed response is rejected
+without automatically retrying. Matching words does not prove the source is
+true or that an interpretation follows from it. The source link is user-supplied
+provenance, not a verified association. Review outputs remain fallible.
+
+See [the bounded local evaluation](SOURCE_REVIEW_EVALUATION.md), including a
+known tendency to list tangential caveats. Interrupting an already-sent request
+cannot undo transmission; the CLI reports that distinction.
 
 ## Reliability
 

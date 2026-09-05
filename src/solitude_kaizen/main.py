@@ -43,6 +43,7 @@ from .continuity_cli import (
 from .continuous_learning import run_companion_startup
 from .memory_cli import run_forget_memory
 from .session_note_cli import run_prepare_session_note, run_review_session_note
+from .source_review_cli import run_source_review
 
 
 name = "Solitude-Kaizen"
@@ -142,6 +143,7 @@ while True:
     print("16. View latest Kaizen discovery")
     print("17. Collect zero-cost public research")
     print("18. View public research inbox")
+    print("30. Review a supplied source excerpt (optional; no browsing)")
     print()
     print("Optional Learning Guide (not required for chat or research):")
     print("19. Start or view a short lesson")
@@ -387,3 +389,6 @@ while True:
     elif choice == "27":
         print("Goodbye!")
         break
+
+    elif choice == "30":
+        run_source_review()

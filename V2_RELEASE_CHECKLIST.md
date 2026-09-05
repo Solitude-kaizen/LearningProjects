@@ -150,6 +150,13 @@ need, a preview, and the exact confirmation.
 
 ## Requested Next Direction: HR, Business, and Research
 
+Follow-on: menu 30 now provides a single supplied-source review with explicit
+request confirmation, no personal context or persistence, and exact-quotation
+validation. The full suite passed 431 tests. A bounded local-model trial is
+documented in `SOURCE_REVIEW_EVALUATION.md`; this does not establish fact
+verification or a general HR/business research service. Multi-source comparison
+remains future work. No public release is authorized by this addition.
+
 The creator has named these areas of interest. Proposed sequencing is to
 complete this release boundary first, then scope one optional workflow
 at a time. These are not installed capabilities or mandatory V2 gates.

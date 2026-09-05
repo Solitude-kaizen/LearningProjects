@@ -291,6 +291,14 @@ Dismissal does not erase previous chat details or older backup copies.
 The full regression suite passed 345 tests using temporary data and fake
 inference. This follow-on does not create a public V2 release or train a model.
 
+### Completed Follow-on: Supplied-Source Review
+
+The first supplied-source review is also implemented in option 30. It reviews
+one pasted excerpt after explicit consent, validates literal quoted evidence,
+and separates model interpretation from uncertainty. It does not browse,
+compare multiple documents, save results, or verify external facts. Full suite:
+431 passing tests. Bounded local observations are in `SOURCE_REVIEW_EVALUATION.md`.
+
 ### Possible Later Work
 
 Longer-term possibilities include:
