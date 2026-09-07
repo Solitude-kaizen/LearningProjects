@@ -84,9 +84,11 @@ def run_start_or_view_learning_lesson(
 
 def run_complete_current_learning_lesson(
     database_path,
-    input_function=input,
+    input_function=None,
     print_function=print,
 ):
+    if input_function is None:
+        input_function = input
     active_lesson = get_active_learning_lesson(database_path)
 
     if active_lesson is None:
@@ -100,9 +102,16 @@ def run_complete_current_learning_lesson(
     print_function()
     print_function("Reflection question:")
     print_function(active_lesson["reflection_question"])
-    reflection = input_function(
-        "What did you learn, and what remains uncertain? "
-    )
+    try:
+        reflection = input_function(
+            "What did you learn, and what remains uncertain? (/cancel to leave) "
+        )
+    except (EOFError, KeyboardInterrupt):
+        reflection = "/cancel"
+
+    if reflection.strip().casefold() == "/cancel":
+        print_function("Canceled. Your lesson remains unfinished; no reflection was saved.")
+        return {"status": "canceled"}
 
     try:
         result = finish_active_learning_lesson(

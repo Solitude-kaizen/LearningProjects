@@ -2,8 +2,10 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 513 passed (2026-09-08), including safe
-read-only search/category cancellation and restore-confirmation cancellation.
+Latest follow-on regression result: 521 passed (2026-09-08), including safe
+read-only search/category, restore-confirmation, and reflection cancellation.
+Reflection cancellation preserves the temporary database unchanged and
+does not complete the lesson or create a pending review.
 Temporary live files and the existing backup remain unchanged when the
 confirmation is canceled, including Ctrl+C or end-of-input; no emergency
 backup or restoration starts. This does not cover interruption mid-restore.

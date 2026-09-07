@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **513 passing tests** covering memory,
+The project currently has **521 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -263,7 +263,9 @@ The CLI currently provides options for:
 - Viewing the public research inbox
 - Viewing the latest Daily Kaizen proposal
 - Optionally starting a short, metadata-based study activity
-- Recording a local reflection and viewing learning progress
+- Recording a local reflection and viewing learning progress; `/cancel`,
+  Ctrl+C, or end-of-input at the reflection prompt leaves the lesson
+  unfinished without saving a reflection
 - Approving, rejecting, or postponing completed lesson proposals
 - Viewing proposal review history
 - Creating and verifying a local continuity backup
@@ -297,7 +299,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **513 passing tests** covering memory,
+The project currently has **521 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

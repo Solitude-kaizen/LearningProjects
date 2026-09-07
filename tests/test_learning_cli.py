@@ -1,3 +1,6 @@
+import pytest
+
+from src.solitude_kaizen import learning_cli
 from src.solitude_kaizen.database import (
     add_research_item,
     initialize_database,
@@ -173,3 +176,38 @@ def test_proposal_review_flow_stops_after_invalid_id(tmp_path):
     assert result["status"] == "invalid_proposal_id"
     assert "Please enter a valid proposal ID." in messages
     assert read_proposal_review_history(database_path) == []
+
+
+@pytest.mark.parametrize("cancellation", ["/cancel", " /CANCEL ", EOFError, KeyboardInterrupt])
+@pytest.mark.parametrize("use_default_input", [False, True])
+def test_reflection_cancellation_preserves_lesson(
+    tmp_path, monkeypatch, cancellation, use_default_input,
+):
+    database_path = create_learning_database(tmp_path)
+    run_start_or_view_learning_lesson(database_path, print_function=lambda *args: None)
+    original_lesson = get_active_learning_lesson(database_path)
+    original_bytes = database_path.read_bytes()
+    messages, record_output = create_output_recorder()
+
+    def cancel_input(prompt):
+        if cancellation in (EOFError, KeyboardInterrupt):
+            raise cancellation()
+        return cancellation
+
+    def unexpected_completion(*args, **kwargs):
+        pytest.fail("Cancellation must not attempt to finish the lesson.")
+
+    monkeypatch.setattr(learning_cli, "finish_active_learning_lesson", unexpected_completion)
+    monkeypatch.setattr("builtins.input", cancel_input)
+    result = run_complete_current_learning_lesson(
+        database_path,
+        input_function=None if use_default_input else cancel_input,
+        print_function=record_output,
+    )
+
+    assert result["status"] == "canceled"
+    assert database_path.read_bytes() == original_bytes
+    assert get_active_learning_lesson(database_path) == original_lesson
+    assert list_pending_learning_proposals(database_path) == []
+    assert read_proposal_review_history(database_path) == []
+    assert "Canceled. Your lesson remains unfinished; no reflection was saved." in messages
