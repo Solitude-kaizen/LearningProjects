@@ -122,6 +122,16 @@ def run_talk_to_companion(
             "provider": None,
         }
 
+    if not isinstance(response, str) or not response.strip():
+        conversation_history.pop()
+        print_function("The provider returned no usable text. The unanswered turn was not kept.")
+        return {
+            "status": "invalid_response",
+            "error": None,
+            "response": None,
+            "provider": None,
+        }
+
     if response == AI_UNAVAILABLE_MESSAGE:
         conversation_history.pop()
         print_function(AI_UNAVAILABLE_MESSAGE)

@@ -141,3 +141,24 @@ def test_main_reviewed_chat_preserves_files_and_obeys_confirmation(tmp_path, mon
     assert len(calls) == (1 if confirmation == "yes" else 0)
     assert len(state["conversation_history"]) == (2 if confirmation == "yes" else 0)
     assert all(path.read_bytes() == before for path, before in originals.items())
+
+
+@pytest.mark.parametrize("response", [None, "", " \n\t", 0, False, {"unexpected": "private raw data"}, ["unexpected"]])
+@pytest.mark.parametrize("reviewed", [False, True])
+def test_invalid_provider_output_never_becomes_conversation(response, reviewed):
+    history, memories, note = sample_context()
+    original = deepcopy((history, memories, note))
+    answers = iter(["Python", "yes"])
+    output = []
+    result = run_talk_to_companion(
+        history, memories, session_note=note, review_before_send=reviewed,
+        input_function=lambda prompt: next(answers),
+        print_function=lambda *parts: output.append(" ".join(map(str, parts))),
+        response_function=lambda *args: response,
+        provider_info_function=provider_info,
+        provider_used_function=lambda: pytest.fail("Invalid output is not a successful reply"),
+    )
+    assert result["status"] == "invalid_response"
+    assert (history, memories, note) == original
+    assert "private raw data" not in "\n".join(output)
+    assert any("no usable text" in line for line in output)

@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **581 passing tests** covering memory,
+The project currently has **595 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -320,7 +320,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **581 passing tests** covering memory,
+The project currently has **595 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -471,6 +471,8 @@ Ctrl+C during the chat response call now removes the unanswered session turn
 and returns control without automatic retry. The request may already have
 reached its provider; this does not guarantee server-side cancellation.
 The all-providers-unavailable result likewise does not become a saved chat turn.
+Blank or non-text replies are rejected without printing the malformed output
+or retaining the unanswered turn, in ordinary and reviewed chat alike.
 
 The current reliability philosophy is:
 
