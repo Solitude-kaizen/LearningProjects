@@ -2,7 +2,7 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 611 passed (2026-09-08). Checks cover
+Latest follow-on regression result: 612 passed (2026-09-08). Checks cover
 optional reviewed chat (option 32), faithful application preview/request
 agreement (with hidden controls escaped only for display), cancellation with
 unchanged files, interrupted/unavailable chat
@@ -10,6 +10,8 @@ cleanup, and rejection of blank/non-text replies without changing prior
 context. Read-only Memory Lens (option 31) uses the unchanged selection rules.
 The selector audit includes 250 deterministic generated cases; reviewed chat
 checks enforce the six-message/five-memory bounds and failure cleanup.
+Another 250 generated display cases verify lossless escape representation,
+including literal backslashes, Unicode, and non-BMP hidden format characters.
 The preceding safeguard checks include safe
 read-only search/category, restore-confirmation, reflection, and proposal-review
 cancellation. Canceling any review prompt leaves the temporary database

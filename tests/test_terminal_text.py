@@ -1,3 +1,6 @@
+import codecs
+import random
+
 import pytest
 
 from src.solitude_kaizen.terminal_text import preview_text
@@ -52,3 +55,19 @@ def test_lens_does_not_emit_control_sequences_from_memory():
     assert "\x1b" not in "\n".join(output)
     assert "\\u001b" in "\n".join(output)
     assert memories[0]["text"] == "Python\x1b[2J"
+
+
+def test_preview_representation_is_lossless_and_distinguishes_literal_escapes():
+    # The display must not make a literal escape string indistinguishable
+    # from an actual hidden control. Exercise the non-BMP escape branch too.
+    assert preview_text("\x1b") != preview_text("\\u001b")
+    rng = random.Random(812)
+    alphabet = list("Hello 世界 café\\u001b\n") + ["\x1b", "\r", "\t", "\u202e", "\ud800", "\U000e0001", "😀"]
+    for _ in range(250):
+        original = "".join(rng.choice(alphabet) for _ in range(40))
+        rendered = preview_text(original)
+        # Escape only remaining readable non-ASCII characters, then decode
+        # the documented display escapes. This is a test oracle, not runtime code.
+        restored = codecs.decode(rendered.encode("ascii", "backslashreplace"), "unicode_escape")
+        assert restored == original
+        assert all(control not in rendered for control in ("\x1b", "\r", "\t", "\u202e", "\ud800", "\U000e0001"))

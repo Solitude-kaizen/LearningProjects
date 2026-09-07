@@ -67,5 +67,5 @@ were involved. This verifies the interaction, not HR advice quality.
   remote cancellation. SK removes the unanswered local turn.
 - Existing memories and backups are not rewritten by either preview.
 
-Full regression suite at this checkpoint: 611 passing tests. Additional
+Full regression suite at this checkpoint: 612 passing tests. Additional
 coverage-percentage tooling was not installed; no coverage percentage is claimed.
