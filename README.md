@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **569 passing tests** covering memory,
+The project currently has **581 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -279,6 +279,16 @@ to 2000 characters. This is only a memory-selection preview, not a full
 outgoing prompt preview or an explanation of a model's reasoning. Recent
 chat and a resumed note can also enter chat context. Previewing does not
 reserve a selection or authorize a later cloud request.
+
+Option 32 offers reviewed chat: inspect the complete application system
+prompt (selected memories, recent chat, and any resumed note) and your
+message before typing `yes` to send. Anything else, Ctrl+C, or end-of-input
+at confirmation cancels without changing history or making a model call.
+The exact displayed application texts are passed to the response function;
+provider wrappers may add formatting, and existing fallback rules apply.
+This preview is displayed locally and may expose personal text on screen.
+It is not a secret scanner or a guarantee about provider-side processing.
+Ordinary chat (option 12) remains a one-prompt workflow without this preview.
 - Creating and verifying a local continuity backup
 - Rechecking the latest continuity backup
 - Previewing and safely restoring the latest continuity backup
@@ -310,7 +320,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **569 passing tests** covering memory,
+The project currently has **581 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

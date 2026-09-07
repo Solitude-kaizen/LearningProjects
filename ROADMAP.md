@@ -317,6 +317,13 @@ or access to a model's internal reasoning. It does not preview the full prompt.
 
 ### Possible Later Work
 
+Reviewed chat is available as optional menu 32, alongside unchanged ordinary
+chat. It displays application context and message, requires `yes`, and sends
+the displayed texts without rebuilding them. The 581-test checkpoint verifies
+exact preview/request agreement, cancellation, and unchanged temporary files.
+This extends SK's inspect-before-action pattern; it is not remote-processing
+attestation, secret detection, or a claim of novel research.
+
 On 2026-09-08, read-only memory search and category lookup gained safe
 cancellation and separate tested CLI boundaries. Blank input no longer
 implicitly displays every memory; option 5 remains the explicit all-memory

@@ -218,6 +218,18 @@ save, so it cannot hide an unwanted write from the cancellation path.
 
 ## `conversation_cli.py`
 
+Option 32 reuses the normal chat boundary with `review_before_send=True`.
+Context is built without mutating history. Provider configuration and the
+application system/user texts are displayed before an explicit `yes`.
+Only then is the pending user turn appended and inference invoked with those
+same texts. Canceling does not append, save, or contact inference. Option 12
+does not request preview metadata or an extra confirmation. Provider wrappers
+and fallback remain separate; the preview is not the complete wire payload.
+
+Option 31 delegates to `memory_lens_cli.py`, a local-only explanation of the
+same selector used by `build_memory_context`. Its shared-keyword evidence
+and fallback label explain retrieval, not inference or truth.
+
 `conversation_cli.py` owns the interactive talk and provider-status
 workflow:
 

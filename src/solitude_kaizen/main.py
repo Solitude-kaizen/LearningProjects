@@ -140,6 +140,7 @@ while True:
     print("14. clear conversation")
     print("15. View conversation status")
     print("31. Memory Lens: inspect memory selection without sending")
+    print("32. Talk with a full context preview before sending")
     print("16. View latest Kaizen discovery")
     print("17. Collect zero-cost public research")
     print("18. View public research inbox")
@@ -337,6 +338,14 @@ while True:
 
     elif choice == "31":
         run_memory_lens(memories)
+
+    elif choice == "32":
+        run_talk_to_companion(
+            conversation_history,
+            memories,
+            session_note=active_session_note,
+            review_before_send=True,
+        )
 
     else:
         print("Please choose a listed option.")

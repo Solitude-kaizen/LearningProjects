@@ -6,7 +6,8 @@ from .ai_service import (
     get_provider_info,
 )
 from .conversation import (
-    prepare_user_turn,
+    add_message_to_history,
+    build_conversation_context,
     record_assistant_response,
 )
 from .memory import build_memory_context
@@ -17,12 +18,16 @@ from .session_notes import format_session_note
 def run_talk_to_companion(
     conversation_history,
     memories,
-    input_function=input,
+    input_function=None,
     print_function=print,
     response_function=generate_response,
     provider_used_function=get_last_provider_used,
     session_note=None,
+    review_before_send=False,
+    provider_info_function=None,
 ):
+    if input_function is None:
+        input_function = input
     try:
         user_message = input_function("You: ")
     except (EOFError, KeyboardInterrupt):
@@ -38,10 +43,9 @@ def run_talk_to_companion(
             "provider": None,
         }
 
-    conversation_context = prepare_user_turn(
+    conversation_context = build_conversation_context(
         conversation_history,
-        user_message,
-        context_limit=6,
+        limit=6,
     )
     memory_context = build_memory_context(
         memories,
@@ -53,6 +57,36 @@ def run_talk_to_companion(
         conversation_context,
         session_note_context=format_session_note(session_note) if session_note else "",
     )
+
+    if review_before_send:
+        if provider_info_function is None:
+            provider_info_function = get_provider_info
+        try:
+            provider_info = provider_info_function()
+        except ProviderError as error:
+            print_function("Could not prepare chat preview:", str(error))
+            return {"status": "failed", "error": error, "response": None, "provider": None}
+        print_function("--- Review Before Send ---")
+        print_function("Configured provider:", provider_info["provider"])
+        print_function("Model:", provider_info["model"])
+        print_function("Application system prompt:")
+        print_function(system_prompt)
+        print_function("Your message:")
+        print_function(user_message)
+        print_function(
+            "These are the application texts to send. Provider wrappers may add formatting. "
+            "Cloud requests share this context with the provider and may cost money. "
+            "Existing fallback rules apply. Nothing has been sent yet."
+        )
+        try:
+            confirmation = input_function("Type 'yes' to send, anything else to cancel: ")
+        except (EOFError, KeyboardInterrupt):
+            confirmation = ""
+        if confirmation.strip().casefold() != "yes":
+            print_function("Chat cancelled. No message was sent.")
+            return {"status": "cancelled", "error": None, "response": None, "provider": None}
+
+    add_message_to_history(conversation_history, "user", user_message)
 
     try:
         response = response_function(
