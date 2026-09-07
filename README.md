@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **484 passing tests** covering memory,
+The project currently has **508 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -293,7 +293,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **484 passing tests** covering memory,
+The project currently has **508 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -317,6 +317,12 @@ or writing the memory file. Invalid selections also make no changes.
 `/cancel` at selection, Ctrl+C, or EOF cancels deletion without a traceback.
 The shared memory list changes only after saving succeeds; failed saves leave
 the existing file and live list intact.
+
+Options **7** (search) and **8** (category lookup) are read-only. Blank input,
+`/cancel`, Ctrl+C, or EOF cancels and returns to the menu without displaying
+memory contents. Nonblank input ignores surrounding spaces. A blank search
+no longer implicitly shows every memory; use option **5** to view all memories.
+These lookups do not save, call a model, or use the network.
 
 Memories support:
 

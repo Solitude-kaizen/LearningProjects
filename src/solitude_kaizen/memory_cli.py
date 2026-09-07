@@ -1,7 +1,67 @@
 from .memory import (
     create_memory, forget_memory, format_memory, save_memories,
+    search_memories, filter_memories_by_category,
     validate_category, validate_importance,
 )
+
+
+def _read_lookup(prompt, input_function, print_function):
+    try:
+        value = input_function(prompt).strip()
+    except (EOFError, KeyboardInterrupt):
+        value = ""
+    if not value or value.casefold() == "/cancel":
+        print_function("Memory lookup cancelled.")
+        return None
+    return value
+
+
+def run_search_memories(memories, input_function=None, print_function=None):
+    """Read-only lookup; blank input never implicitly displays all memories."""
+    if input_function is None:
+        input_function = input
+    if print_function is None:
+        print_function = print
+    term = _read_lookup(
+        "Search memories for (blank or /cancel to cancel): ",
+        input_function, print_function,
+    )
+    if term is None:
+        return {"status": "cancelled", "matches": []}
+    matches = search_memories(memories, term)
+    if matches:
+        print_function("--- Matching Memories ---")
+        for item in matches:
+            print_function("-", format_memory(item))
+    else:
+        print_function("I could not find a matching memory.")
+    return {"status": "completed", "matches": matches}
+
+
+def run_view_memories_by_category(memories, input_function=None, print_function=None):
+    """Read-only category view with an explicit, safe cancellation boundary."""
+    if input_function is None:
+        input_function = input
+    if print_function is None:
+        print_function = print
+    value = _read_lookup(
+        "Which category would you like to view (blank or /cancel to cancel)? ",
+        input_function, print_function,
+    )
+    if value is None:
+        return {"status": "cancelled", "matches": []}
+    category = validate_category(value)
+    if category is None:
+        print_function("Please choose: learning, career, health, project, personal, or test.")
+        return {"status": "invalid", "matches": []}
+    matches = filter_memories_by_category(memories, category)
+    if matches:
+        print_function("---", category.title(), "Memories ---")
+        for item in matches:
+            print_function("-", format_memory(item))
+    else:
+        print_function("I do not have memories in that category.")
+    return {"status": "completed", "matches": matches}
 
 
 def run_remember_memory(memory_path, memory_data, input_function=None, print_function=None):

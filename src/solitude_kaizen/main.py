@@ -4,11 +4,8 @@ from .memory import (
     save_profile,
     load_memories,
     save_memories,
-    search_memories,
     format_memory,
-    validate_category,
     normalize_memory,
-    filter_memories_by_category,
     sort_memories_by_importance,
     sort_memories_by_recency,
     rank_memories,
@@ -39,7 +36,10 @@ from .continuity_cli import (
     run_verify_latest_continuity_backup,
 )
 from .continuous_learning import run_companion_startup
-from .memory_cli import run_forget_memory, run_remember_memory
+from .memory_cli import (
+    run_forget_memory, run_remember_memory,
+    run_search_memories, run_view_memories_by_category,
+)
 from .session_note_cli import run_prepare_session_note, run_review_session_note
 from .source_review_cli import run_source_review
 
@@ -220,45 +220,10 @@ while True:
         run_forget_memory(memory_path, memory_data)
 
     elif choice == "7":
-        search_term = input("Search memories for: ")
-
-        matches = search_memories(memories, search_term)
-
-        if matches:
-            print()
-            print("--- Matching Memories ---")
-
-            for memory in matches:
-                print("-", format_memory(memory))
-        else:
-            print("I could not find a matching memory.")
+        run_search_memories(memories)
 
     elif choice == "8":
-        category_input = input(
-            "Which category would you like to view? "
-        )
-
-        category = validate_category(category_input)
-
-        if category is None:
-            print(
-                "Please choose: learning, career, health, "
-                "project, personal, or test."
-            )
-        else:
-            matches = filter_memories_by_category(
-                memories,
-                category
-            )
-
-            if matches:
-                print()
-                print("---", category.title(), "Memories ---")
-
-                for memory in matches:
-                    print("-", format_memory(memory))
-            else:
-                print("I do not have memories in that category.")
+        run_view_memories_by_category(memories)
 
     elif choice == "9":
         sorted_memories = sort_memories_by_importance(memories)

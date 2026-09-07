@@ -157,7 +157,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 484 automated tests passing, including failure-safe memory and goal updates
+- 508 automated tests passing, including safe read-only memory lookups
 
 Persistence hardening uses `json_storage.py` for atomic profile, memory,
 and session-note writes. Failed memory deletion leaves both the saved file
@@ -430,7 +430,7 @@ Responsibilities:
 - Creation of shared short-term conversation state
 - Delegation of conversation, research, learning, and continuity
   commands to separate CLI boundaries
-- Delegation of the forget-memory interaction to `memory_cli.py`
+- Delegation of memory creation, forgetting, search, and category lookup to `memory_cli.py`
 
 ### `memory_cli.py`
 
@@ -439,8 +439,10 @@ confirmation. Blank new text and interrupted input cancel. New text is
 bounded to 1000 characters, and invalid category/importance input can be
 corrected. Both actions stage a candidate list, save atomically, and only
 then update the shared list. The low-level deletion operation is unchanged;
-other memory views and profile actions remain in `main.py`. Temporary-data
-tests cover cancellation, failed writes, and confirmed main-menu persistence.
+search and category lookup also live here as read-only commands. Blank input,
+`/cancel`, Ctrl+C, and EOF cancel without displaying memories. Other memory
+views and profile actions remain in `main.py`. Temporary-data tests cover
+cancellation, failed writes, confirmed persistence, and unchanged lookup files.
 
 ### `conversation_cli.py`
 
@@ -573,7 +575,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-484 passed
+508 passed
 ```
 
 Tests cover:

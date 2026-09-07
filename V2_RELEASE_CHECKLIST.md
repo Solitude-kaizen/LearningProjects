@@ -2,7 +2,9 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 484 passed. Goal changes now save before
+Latest follow-on regression result: 508 passed (2026-09-08), including safe
+read-only search/category cancellation and unchanged temporary files.
+Goal changes save before
 updating live state and handle cancellation or write failure without losing
 the prior goal. The historical results below remain evidence for their own
 checkpoints. No public release or push was performed in this development run.

@@ -301,6 +301,11 @@ compare multiple documents, save results, or verify external facts. Full suite:
 
 ### Possible Later Work
 
+On 2026-09-08, read-only memory search and category lookup gained safe
+cancellation and separate tested CLI boundaries. Blank input no longer
+implicitly displays every memory; option 5 remains the explicit all-memory
+view. This checkpoint passed 508 tests and made no personal-data changes.
+
 Memory creation now also has a focused confirmation boundary in `memory_cli.py`:
 preview, cancellation, a 1000-character text bound, and no live mutation until
 the atomic save succeeds. The full suite passed 478 tests at this checkpoint.

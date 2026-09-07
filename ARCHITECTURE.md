@@ -183,12 +183,17 @@ Responsibilities include:
 - Calling memory functions
 - Delegating conversation, research, learning, and continuity commands
   to focused CLI modules
-- Delegating memory creation and forgetting to `memory_cli.py`
+- Delegating memory creation, forgetting, search, and category lookup to `memory_cli.py`
 
 The conversation, research, learning, and continuity extractions form an
 incremental CLI cleanup. Memory creation and forgetting have their own tested
 interaction boundary; other memory views and profile commands remain in
 `main.py`.
+
+Search and category lookup now also delegate to `memory_cli.py`. Their
+input boundary handles blank input, `/cancel`, EOF, and Ctrl+C before
+performing a lookup. They return results without saving or model calls;
+the low-level memory search/filter functions retain their existing behavior.
 
 ## `memory_cli.py`
 
