@@ -2,8 +2,11 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 508 passed (2026-09-08), including safe
-read-only search/category cancellation and unchanged temporary files.
+Latest follow-on regression result: 513 passed (2026-09-08), including safe
+read-only search/category cancellation and restore-confirmation cancellation.
+Temporary live files and the existing backup remain unchanged when the
+confirmation is canceled, including Ctrl+C or end-of-input; no emergency
+backup or restoration starts. This does not cover interruption mid-restore.
 Goal changes save before
 updating live state and handle cancellation or write failure without losing
 the prior goal. The historical results below remain evidence for their own

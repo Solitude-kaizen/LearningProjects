@@ -97,9 +97,11 @@ def run_verify_latest_continuity_backup(
 
 def run_restore_latest_continuity_backup(
     paths,
-    input_function=input,
+    input_function=None,
     print_function=print,
 ):
+    if input_function is None:
+        input_function = input
     latest_bundle = get_latest_continuity_bundle(
         paths.backup_directory
     )
@@ -193,7 +195,10 @@ def run_restore_latest_continuity_backup(
     )
     print_function("To continue, type this exact phrase:")
     print_function(preview["confirmation_phrase"])
-    confirmation = input_function("Confirmation: ")
+    try:
+        confirmation = input_function("Confirmation: ")
+    except (EOFError, KeyboardInterrupt):
+        confirmation = ""
 
     if confirmation != preview["confirmation_phrase"]:
         print_function("Restore canceled. Nothing was changed.")

@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **508 passing tests** covering memory,
+The project currently has **513 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -285,6 +285,10 @@ cleanly on the next start. Safe Restore V1 requires all current
 continuity files to be valid enough to protect first; recovery from an
 already missing or corrupted live file remains a guided future step.
 
+At the confirmation prompt, Ctrl+C or end-of-input cancels without changing
+live files or creating an emergency backup. This safeguard applies before
+restoration starts, not to interruption during restoration.
+
 ## Running Tests
 
 Run the automated test suite with:
@@ -293,7 +297,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **508 passing tests** covering memory,
+The project currently has **513 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

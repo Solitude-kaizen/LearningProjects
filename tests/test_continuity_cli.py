@@ -3,6 +3,7 @@ from pathlib import Path
 
 import pytest
 
+from src.solitude_kaizen import continuity_cli
 from src.solitude_kaizen.continuity_cli import (
     ContinuityPaths,
     run_create_continuity_backup,
@@ -76,7 +77,11 @@ def test_create_and_verify_backup_flows_report_results(tmp_path):
     assert "Status: valid" in messages
 
 
-def test_restore_flow_cancels_before_creating_emergency_backup(tmp_path):
+@pytest.mark.parametrize("cancellation", ["cancel", EOFError, KeyboardInterrupt])
+@pytest.mark.parametrize("use_default_input", [False, True])
+def test_restore_flow_cancels_before_creating_emergency_backup(
+    tmp_path, monkeypatch, cancellation, use_default_input,
+):
     paths = create_continuity_paths(tmp_path)
     created = run_create_continuity_backup(
         paths,
@@ -92,9 +97,28 @@ def test_restore_flow_cancels_before_creating_emergency_backup(tmp_path):
     )
     messages, record_output = create_output_recorder()
 
+    protected_paths = [
+        Path(paths.profile_path), Path(paths.memory_path),
+        Path(paths.database_path), Path(paths.identity_path),
+        Path(created["bundle_path"]),
+    ]
+    original_bytes = {path: path.read_bytes() for path in protected_paths}
+
+    def cancel_input(prompt):
+        assert "Proposed file changes:" in messages
+        if cancellation in (EOFError, KeyboardInterrupt):
+            raise cancellation()
+        return cancellation
+
+    def unexpected_restore(*args, **kwargs):
+        pytest.fail("Cancelled confirmation must not start restore or emergency backup.")
+
+    monkeypatch.setattr(continuity_cli, "restore_continuity_bundle", unexpected_restore)
+    monkeypatch.setattr(continuity_cli, "create_continuity_bundle", unexpected_restore)
+    monkeypatch.setattr("builtins.input", cancel_input)
     result = run_restore_latest_continuity_backup(
         paths,
-        input_function=lambda prompt: "cancel",
+        input_function=None if use_default_input else cancel_input,
         print_function=record_output,
     )
 
@@ -107,6 +131,7 @@ def test_restore_flow_cancels_before_creating_emergency_backup(tmp_path):
     ) == backup_count
     assert "Restore canceled. Nothing was changed." in messages
     assert Path(created["bundle_path"]).is_file()
+    assert all(path.read_bytes() == before for path, before in original_bytes.items())
 
 
 def test_restore_flow_returns_restart_signal_after_success(tmp_path):

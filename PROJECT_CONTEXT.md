@@ -157,7 +157,8 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 508 automated tests passing, including safe read-only memory lookups
+- 513 automated tests passing, including safe read-only memory lookups
+  and restore-confirmation cancellation before any restore or emergency backup
 
 Persistence hardening uses `json_storage.py` for atomic profile, memory,
 and session-note writes. Failed memory deletion leaves both the saved file
@@ -575,7 +576,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-508 passed
+513 passed
 ```
 
 Tests cover:
