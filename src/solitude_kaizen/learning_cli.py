@@ -160,9 +160,22 @@ def run_view_learning_progress(
 
 def run_review_pending_learning_proposal(
     database_path,
-    input_function=input,
+    input_function=None,
     print_function=print,
 ):
+    if input_function is None:
+        input_function = input
+
+    def read_review_input(prompt):
+        try:
+            value = input_function(prompt)
+        except (EOFError, KeyboardInterrupt):
+            value = "/cancel"
+        if value.strip().casefold() == "/cancel":
+            print_function("Review canceled. No decision was recorded.")
+            return None
+        return value
+
     proposals = list_pending_learning_proposals(database_path)
 
     print_function()
@@ -188,18 +201,23 @@ def run_review_pending_learning_proposal(
         if proposal["latest_review_action"] == "postponed":
             print_function("  Previously postponed; still pending.")
 
-    proposal_input = input_function(
-        "Enter the proposal ID to review: "
+    proposal_input = read_review_input(
+        "Enter the proposal ID to review (/cancel to leave): "
     )
+    if proposal_input is None:
+        return {"status": "canceled"}
 
-    if not proposal_input.isdigit():
+    try:
+        if not proposal_input.isdigit():
+            raise ValueError("Invalid proposal ID")
+        proposal_id = int(proposal_input)
+    except ValueError:
         print_function("Please enter a valid proposal ID.")
 
         return {
             "status": "invalid_proposal_id",
         }
 
-    proposal_id = int(proposal_input)
     selected_proposal = next(
         (
             proposal
@@ -220,12 +238,16 @@ def run_review_pending_learning_proposal(
         selected_proposal,
         print_function=print_function,
     )
-    action = input_function(
-        "Choose approve, reject, or postpone: "
+    action = read_review_input(
+        "Choose approve, reject, or postpone (/cancel to leave): "
     )
-    reason = input_function(
-        "Give a short reason for your decision: "
+    if action is None:
+        return {"status": "canceled"}
+    reason = read_review_input(
+        "Give a short reason for your decision (/cancel to leave): "
     )
+    if reason is None:
+        return {"status": "canceled"}
 
     try:
         result = review_learning_proposal(

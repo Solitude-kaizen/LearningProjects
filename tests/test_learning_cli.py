@@ -161,10 +161,11 @@ def test_proposal_review_flow_approves_planning_without_execution(
     )
 
 
-def test_proposal_review_flow_stops_after_invalid_id(tmp_path):
+@pytest.mark.parametrize("invalid_id", ["not-a-number", "²", "9" * 5000])
+def test_proposal_review_flow_stops_after_invalid_id(tmp_path, invalid_id):
     database_path = create_learning_database(tmp_path)
     complete_learning_lesson(database_path)
-    answers = iter(["not-a-number"])
+    answers = iter([invalid_id])
     messages, record_output = create_output_recorder()
 
     result = run_review_pending_learning_proposal(
@@ -211,3 +212,45 @@ def test_reflection_cancellation_preserves_lesson(
     assert list_pending_learning_proposals(database_path) == []
     assert read_proposal_review_history(database_path) == []
     assert "Canceled. Your lesson remains unfinished; no reflection was saved." in messages
+
+
+@pytest.mark.parametrize("stage", [0, 1, 2])
+@pytest.mark.parametrize("cancellation", ["/cancel", " /CANCEL ", EOFError, KeyboardInterrupt])
+@pytest.mark.parametrize("use_default_input", [False, True])
+def test_proposal_review_cancellation_preserves_database(
+    tmp_path, monkeypatch, stage, cancellation, use_default_input,
+):
+    database_path = create_learning_database(tmp_path)
+    complete_learning_lesson(database_path)
+    original_proposals = list_pending_learning_proposals(database_path)
+    original_bytes = database_path.read_bytes()
+    answers = iter([str(original_proposals[0]["id"]), "approve"][:stage])
+    calls = []
+    messages, record_output = create_output_recorder()
+
+    def cancel_input(prompt):
+        calls.append(prompt)
+        if len(calls) <= stage:
+            return next(answers)
+        assert len(calls) == stage + 1
+        if cancellation in (EOFError, KeyboardInterrupt):
+            raise cancellation()
+        return cancellation
+
+    def unexpected_review(*args, **kwargs):
+        pytest.fail("Canceled review must not attempt to record a decision.")
+
+    monkeypatch.setattr(learning_cli, "review_learning_proposal", unexpected_review)
+    monkeypatch.setattr("builtins.input", cancel_input)
+    result = run_review_pending_learning_proposal(
+        database_path,
+        input_function=None if use_default_input else cancel_input,
+        print_function=record_output,
+    )
+
+    assert result["status"] == "canceled"
+    assert len(calls) == stage + 1
+    assert database_path.read_bytes() == original_bytes
+    assert list_pending_learning_proposals(database_path) == original_proposals
+    assert read_proposal_review_history(database_path) == []
+    assert "Review canceled. No decision was recorded." in messages

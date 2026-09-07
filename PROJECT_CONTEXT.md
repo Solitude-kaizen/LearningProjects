@@ -157,7 +157,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 521 automated tests passing, including safe read-only memory lookups
+- 547 automated tests passing, including safe read-only memory lookups
   and restore-confirmation cancellation before any restore or emergency backup
 
 Persistence hardening uses `json_storage.py` for atomic profile, memory,
@@ -494,8 +494,9 @@ Responsibilities:
 - Lesson display and reflection interaction; `/cancel`, Ctrl+C, and
   end-of-input cancel reflection entry without completing the lesson
 - Learning-progress display
-- Pending proposal selection
+- Pending proposal selection with guarded numeric ID conversion
 - Approve, reject, and postpone interaction
+- Cancellation at any review prompt leaves the proposal and review history unchanged
 - Proposal review-history display
 - User-facing learning validation messages
 
@@ -577,7 +578,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-521 passed
+547 passed
 ```
 
 Tests cover:

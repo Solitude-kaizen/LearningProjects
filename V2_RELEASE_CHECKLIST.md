@@ -2,8 +2,11 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 521 passed (2026-09-08), including safe
-read-only search/category, restore-confirmation, and reflection cancellation.
+Latest follow-on regression result: 547 passed (2026-09-08), including safe
+read-only search/category, restore-confirmation, reflection, and proposal-review
+cancellation. Canceling any review prompt leaves the temporary database
+unchanged and never calls the decision-recording function. Invalid numeric
+proposal IDs are rejected without a conversion traceback.
 Reflection cancellation preserves the temporary database unchanged and
 does not complete the lesson or create a pending review.
 Temporary live files and the existing backup remain unchanged when the
