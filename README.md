@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **563 passing tests** covering memory,
+The project currently has **569 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -310,7 +310,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **563 passing tests** covering memory,
+The project currently has **569 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -457,6 +457,10 @@ Ctrl+C or EOF at the main menu exits cleanly without automatically saving a
 session note. Unknown choices display a short hint and menu choices tolerate
 surrounding spaces. These safeguards do not imply that every older prompt
 already handles interruptions or that an in-flight provider call can be undone.
+Ctrl+C during the chat response call now removes the unanswered session turn
+and returns control without automatic retry. The request may already have
+reached its provider; this does not guarantee server-side cancellation.
+The all-providers-unavailable result likewise does not become a saved chat turn.
 
 The current reliability philosophy is:
 

@@ -238,7 +238,10 @@ Chat input now cancels safely on blank/whitespace-only messages, EOF, or
 Ctrl+C at the message prompt, before changing history or contacting an
 AI provider. Tests confirm return to the menu, preserved follow-up context,
 unchanged saved files, and intact formatting for normal messages. This
-does not add cancellation of an already-running provider request.
+input-only guard does not undo a sent request. A subsequent 569-test checkpoint
+adds local handling of Ctrl+C during the response call and the unavailable
+provider sentinel, preserving prior history and removing the unanswered turn.
+Remote cancellation or reversal of transmission is not guaranteed.
 
 The initial source-labeling improvement is complete in
 `research_labels.py`: the inbox shows URL-based source-type hints and

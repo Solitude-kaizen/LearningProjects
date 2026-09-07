@@ -8,7 +8,7 @@ from src.solitude_kaizen import conversation_cli, memory
 from src.solitude_kaizen.database import initialize_database
 from src.solitude_kaizen.memory import ensure_json_file, load_memories
 
-from src.solitude_kaizen.ai_service import ProviderError
+from src.solitude_kaizen.ai_service import AI_UNAVAILABLE_MESSAGE, ProviderError
 from src.solitude_kaizen.conversation_cli import (
     run_clear_conversation,
     run_talk_to_companion,
@@ -306,6 +306,55 @@ def test_provider_flow_displays_current_provider_information():
     assert "Active provider: ollama" in messages
     assert "Model: qwen3:4b-instruct" in messages
     assert "Type: local" in messages
+
+
+@pytest.mark.parametrize("failure,status", [(KeyboardInterrupt, "interrupted"), (AI_UNAVAILABLE_MESSAGE, "failed")])
+@pytest.mark.parametrize("history_size", [0, 2, 20])
+def test_interrupted_or_unavailable_reply_preserves_history_and_followup(tmp_path, failure, status, history_size):
+    memory_path = tmp_path / "memories.json"
+    saved = {"memories": create_memories()}
+    ensure_json_file(memory_path, saved)
+    original_bytes = memory_path.read_bytes()
+    history = [{"role": "user" if i % 2 == 0 else "assistant", "content": f"Earlier {i}"} for i in range(history_size)]
+    original = deepcopy(history)
+    calls = []
+    messages, record = create_output_recorder()
+
+    def fail_response(system_prompt, message):
+        calls.append(message)
+        if failure is KeyboardInterrupt:
+            raise KeyboardInterrupt()
+        return failure
+
+    def forbidden():
+        pytest.fail("No successful provider lookup should occur.")
+
+    result = run_talk_to_companion(
+        history, saved["memories"], input_function=lambda prompt: "Abandoned question",
+        print_function=record, response_function=fail_response, provider_used_function=forbidden,
+    )
+    assert result["status"] == status
+    assert result["response"] is None
+    assert history == original
+    assert calls == ["Abandoned question"]
+    assert memory_path.read_bytes() == original_bytes
+    if status == "interrupted":
+        assert any("may already have reached" in line for line in messages)
+        assert not any("No message was sent" in line for line in messages)
+
+    def followup(system_prompt, message):
+        assert "Abandoned question" not in system_prompt
+        if original:
+            assert original[-1]["content"] in system_prompt
+        return "Follow-up answer"
+
+    result = run_talk_to_companion(
+        history, saved["memories"], input_function=lambda prompt: "Continue",
+        print_function=record, response_function=followup, provider_used_function=lambda: "test",
+    )
+    assert result["status"] == "completed"
+    assert history[-1]["content"] == "Follow-up answer"
+    assert len(history) <= 20
 
 
 def test_provider_flow_reports_invalid_configuration():

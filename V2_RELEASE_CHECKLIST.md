@@ -2,7 +2,8 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 563 passed (2026-09-08), including the
+Latest follow-on regression result: 569 passed (2026-09-08), including
+interrupted/unavailable chat cleanup with preserved follow-up context, and the
 read-only Memory Lens (option 31) and unchanged existing selection behavior.
 The preceding safeguard checks include safe
 read-only search/category, restore-confirmation, reflection, and proposal-review

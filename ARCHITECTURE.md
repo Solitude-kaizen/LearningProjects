@@ -234,7 +234,12 @@ context construction, history mutation, or provider calls. EOF or a
 keyboard interruption while reading the message follows the same
 `cancelled` return path, with no response, error, or provider. Nonblank
 messages are passed through unchanged, preserving code indentation.
-This guard covers input only, not interruption during an AI request.
+The input guard runs before a request. A separate `KeyboardInterrupt`
+boundary around the response call removes the pending user turn and reports
+`interrupted`, with an explicit warning that transmission may have occurred.
+The unavailable-provider sentinel also removes the pending turn and returns
+`failed` rather than recording a diagnostic as an assistant answer. Neither
+path retries or guarantees remote cancellation; prior history is preserved.
 Main-menu tests verify cancellation returns to the menu and the next
 valid chat retains its earlier context, with no extra file saves.
 

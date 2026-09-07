@@ -1,4 +1,5 @@
 from .ai_service import (
+    AI_UNAVAILABLE_MESSAGE,
     ProviderError,
     generate_response,
     get_last_provider_used,
@@ -58,6 +59,19 @@ def run_talk_to_companion(
             system_prompt,
             user_message,
         )
+    except KeyboardInterrupt:
+        conversation_history.pop()
+        print_function()
+        print_function(
+            "Chat interrupted. The request may already have reached the provider. "
+            "The unanswered turn was removed from this session; no automatic retry was made."
+        )
+        return {
+            "status": "interrupted",
+            "error": None,
+            "response": None,
+            "provider": None,
+        }
     except ProviderError as error:
         conversation_history.pop()
         print_function()
@@ -70,6 +84,17 @@ def run_talk_to_companion(
         return {
             "status": "failed",
             "error": error,
+            "response": None,
+            "provider": None,
+        }
+
+    if response == AI_UNAVAILABLE_MESSAGE:
+        conversation_history.pop()
+        print_function(AI_UNAVAILABLE_MESSAGE)
+        print_function("The unanswered turn was not kept in conversation history.")
+        return {
+            "status": "failed",
+            "error": None,
             "response": None,
             "provider": None,
         }
