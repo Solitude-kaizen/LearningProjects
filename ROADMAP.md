@@ -299,6 +299,19 @@ and separates model interpretation from uncertainty. It does not browse,
 compare multiple documents, save results, or verify external facts. Full suite:
 431 passing tests. Bounded local observations are in `SOURCE_REVIEW_EVALUATION.md`.
 
+### Completed Follow-on: Memory Lens
+
+Option 31 provides a local, read-only explanation of chat memory selection.
+It exposes shared keywords, stable importance/recency tie-breaks, and the
+no-match fallback without a model call or new saved data. Existing chat
+ranking remains unchanged. The checkpoint passed 563 tests.
+
+Design rationale: apply the explanation-accuracy principle described in
+[NIST's Four Principles of Explainable AI](https://www.nist.gov/publications/four-principles-explainable-artificial-intelligence)
+by obtaining reasons directly from the selector. This is independently
+implemented for SK; it is not a claim of novel research, NIST certification,
+or access to a model's internal reasoning. It does not preview the full prompt.
+
 ### Possible Later Work
 
 On 2026-09-08, read-only memory search and category lookup gained safe

@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **547 passing tests** covering memory,
+The project currently has **563 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -269,6 +269,16 @@ The CLI currently provides options for:
 - Approving, rejecting, or postponing completed lesson proposals; `/cancel`,
   Ctrl+C, or end-of-input at any review prompt exits without recording a decision
 - Viewing proposal review history
+
+Option 31, Memory Lens, previews which saved memories chat would select for
+a question. It shows shared keywords or the importance/recency fallback,
+using the actual selector rather than a model-generated explanation.
+It makes no network/model calls, saves nothing, and does not add a chat turn.
+Blank input, `/cancel`, Ctrl+C, or end-of-input cancels; questions are limited
+to 2000 characters. This is only a memory-selection preview, not a full
+outgoing prompt preview or an explanation of a model's reasoning. Recent
+chat and a resumed note can also enter chat context. Previewing does not
+reserve a selection or authorize a later cloud request.
 - Creating and verifying a local continuity backup
 - Rechecking the latest continuity backup
 - Previewing and safely restoring the latest continuity backup
@@ -300,7 +310,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **547 passing tests** covering memory,
+The project currently has **563 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

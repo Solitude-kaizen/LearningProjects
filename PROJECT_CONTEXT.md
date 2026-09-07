@@ -157,7 +157,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 547 automated tests passing, including safe read-only memory lookups
+- 563 automated tests passing, including safe read-only memory lookups
   and restore-confirmation cancellation before any restore or emergency backup
 
 Persistence hardening uses `json_storage.py` for atomic profile, memory,
@@ -433,6 +433,13 @@ Responsibilities:
   commands to separate CLI boundaries
 - Delegation of memory creation, forgetting, search, and category lookup to `memory_cli.py`
 
+### `memory_lens_cli.py`
+
+Option 31 explains the actual chat memory selection locally. Shared keywords
+come from `explain_memory_selection` in `memory.py`, which also powers the
+existing selector. Fallback is explicitly not evidence of relevance. No
+network, persistence, chat history mutation, or model-reasoning explanation.
+
 ### `memory_cli.py`
 
 Owns creating and forgetting memories, with preview and explicit `yes`
@@ -578,7 +585,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-547 passed
+563 passed
 ```
 
 Tests cover:

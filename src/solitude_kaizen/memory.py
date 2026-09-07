@@ -206,25 +206,37 @@ def _context_keywords(text):
 
 def select_memories_for_context(memories, limit=5, query=None):
     """Use query matches when available, otherwise keep the existing ranking."""
+    return [entry["memory"] for entry in explain_memory_selection(memories, limit, query)["selected"]]
+
+
+def explain_memory_selection(memories, limit=5, query=None):
+    """Expose the actual selector's evidence, not a model-generated explanation."""
     ranked_memories = rank_memories(memories)
     query_keywords = _context_keywords(query or "")
-
+    mode = "fallback"
+    entries = [{"memory": memory, "matched_keywords": []} for memory in ranked_memories]
     if query_keywords:
         matches = []
         for memory in ranked_memories:
             keywords = _context_keywords(
                 f"{memory['text']} {memory['category']}"
             )
-            overlap = len(query_keywords & keywords)
+            overlap = sorted(query_keywords & keywords)
             if overlap:
-                matches.append((overlap, memory))
+                matches.append({"memory": memory, "matched_keywords": overlap})
 
         if matches:
             # Stable sorting preserves importance and recency for equal scores.
-            matches.sort(key=lambda match: match[0], reverse=True)
-            ranked_memories = [memory for _, memory in matches]
+            matches.sort(key=lambda match: len(match["matched_keywords"]), reverse=True)
+            entries = matches
+            mode = "keyword_match"
 
-    return ranked_memories[:limit]
+    return {
+        "mode": mode if memories else "empty",
+        "query_keywords": sorted(query_keywords),
+        "selected": entries[:limit],
+        "total_memories": len(memories),
+    }
 
 def build_memory_context(memories, limit=5, query=None):
     selected_memories = select_memories_for_context(
