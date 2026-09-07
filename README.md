@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **595 passing tests** covering memory,
+The project currently has **600 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -269,6 +269,9 @@ The CLI currently provides options for:
 - Approving, rejecting, or postponing completed lesson proposals; `/cancel`,
   Ctrl+C, or end-of-input at any review prompt exits without recording a decision
 - Viewing proposal review history
+- Creating and verifying a local continuity backup
+- Rechecking the latest continuity backup
+- Previewing and safely restoring the latest continuity backup
 
 Option 31, Memory Lens, previews which saved memories chat would select for
 a question. It shows shared keywords or the importance/recency fallback,
@@ -289,9 +292,6 @@ provider wrappers may add formatting, and existing fallback rules apply.
 This preview is displayed locally and may expose personal text on screen.
 It is not a secret scanner or a guarantee about provider-side processing.
 Ordinary chat (option 12) remains a one-prompt workflow without this preview.
-- Creating and verifying a local continuity backup
-- Rechecking the latest continuity backup
-- Previewing and safely restoring the latest continuity backup
 
 Continuity bundles are stored under the ignored local `data/backups`
 directory. They contain SK's identity, profile, memories, and a
@@ -320,7 +320,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **595 passing tests** covering memory,
+The project currently has **600 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -468,7 +468,7 @@ session note. Unknown choices display a short hint and menu choices tolerate
 surrounding spaces. These safeguards do not imply that every older prompt
 already handles interruptions or that an in-flight provider call can be undone.
 Ctrl+C during the chat response call now removes the unanswered session turn
-and returns control without automatic retry. The request may already have
+and returns control without SK resubmitting the turn. The request may already have
 reached its provider; this does not guarantee server-side cancellation.
 The all-providers-unavailable result likewise does not become a saved chat turn.
 Blank or non-text replies are rejected without printing the malformed output

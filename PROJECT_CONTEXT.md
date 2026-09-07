@@ -157,7 +157,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 595 automated tests passing, including safe read-only memory lookups
+- 600 automated tests passing, including safe read-only memory lookups
   and restore-confirmation cancellation before any restore or emergency backup
 
 Persistence hardening uses `json_storage.py` for atomic profile, memory,
@@ -457,6 +457,7 @@ cancellation, failed writes, confirmed persistence, and unchanged lookup files.
 Responsibilities:
 
 - Talk interaction, blank/interrupted-input guard, and prompt-context assembly
+- Optional exact application-context preview before `yes` authorizes the request
 - Completed-turn recording
 - Failed-turn cleanup
 - Provider-used and provider-configuration display
@@ -585,7 +586,7 @@ python -m pytest -q
 Current verified baseline:
 
 ```text
-595 passed
+600 passed
 ```
 
 Tests cover:

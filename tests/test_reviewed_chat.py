@@ -162,3 +162,50 @@ def test_invalid_provider_output_never_becomes_conversation(response, reviewed):
     assert (history, memories, note) == original
     assert "private raw data" not in "\n".join(output)
     assert any("no usable text" in line for line in output)
+
+
+def test_reviewed_context_has_only_six_recent_messages_and_five_memories():
+    history = [{"role": "user" if i % 2 == 0 else "assistant", "content": f"TURN_{i:02d}"} for i in range(20)]
+    memories = [dict(sample_context()[1][0], text=f"Python MEMORY_{i:02d}") for i in range(8)]
+    answers = iter(["Python", "yes"])
+    output = []
+    def respond(system, message):
+        for i in range(20):
+            assert (f"TURN_{i:02d}" in system) == (i >= 14)
+        for i in range(8):
+            assert (f"MEMORY_{i:02d}" in system) == (i < 5)
+        assert system in output
+        return "Answer"
+    run_talk_to_companion(
+        history, memories, review_before_send=True,
+        input_function=lambda prompt: next(answers),
+        print_function=lambda *parts: output.append(" ".join(map(str, parts))),
+        response_function=respond, provider_info_function=provider_info,
+        provider_used_function=lambda: "test",
+    )
+    assert len(history) == 20
+
+
+@pytest.mark.parametrize("failure", [KeyboardInterrupt, "provider_error", "unavailable"])
+def test_confirmed_review_failure_keeps_previous_context(failure):
+    from src.solitude_kaizen.ai_service import AI_UNAVAILABLE_MESSAGE
+    history, memories, note = sample_context()
+    original = deepcopy((history, memories, note))
+    answers = iter(["Python", "yes"])
+    calls = []
+    def respond(*args):
+        calls.append(args)
+        if failure is KeyboardInterrupt:
+            raise KeyboardInterrupt()
+        if failure == "provider_error":
+            raise ProviderError("test", "connection", "Unavailable")
+        return AI_UNAVAILABLE_MESSAGE
+    result = run_talk_to_companion(
+        history, memories, session_note=note, review_before_send=True,
+        input_function=lambda prompt: next(answers), print_function=lambda *args: None,
+        response_function=respond, provider_info_function=provider_info,
+        provider_used_function=lambda: pytest.fail("Failed request has no successful provider"),
+    )
+    assert result["status"] in ("interrupted", "failed")
+    assert len(calls) == 1
+    assert (history, memories, note) == original

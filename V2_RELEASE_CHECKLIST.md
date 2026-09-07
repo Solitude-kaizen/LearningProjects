@@ -2,11 +2,13 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 595 passed (2026-09-08). Checks cover
+Latest follow-on regression result: 600 passed (2026-09-08). Checks cover
 optional reviewed chat (option 32), exact application preview/request
 agreement, cancellation with unchanged files, interrupted/unavailable chat
 cleanup, and rejection of blank/non-text replies without changing prior
 context. Read-only Memory Lens (option 31) uses the unchanged selection rules.
+The selector audit includes 250 deterministic generated cases; reviewed chat
+checks enforce the six-message/five-memory bounds and failure cleanup.
 The preceding safeguard checks include safe
 read-only search/category, restore-confirmation, reflection, and proposal-review
 cancellation. Canceling any review prompt leaves the temporary database
@@ -173,7 +175,8 @@ need, a preview, and the exact confirmation.
   included files; never store credentials there.
 - Guarded restore currently requires valid live files to protect first;
   recovering an already missing/corrupted live state needs separate guidance.
-- Chat-input cancellation does not cancel a provider request already running.
+- Input cancellation prevents a new request. Ctrl+C during chat inference
+  returns locally but cannot guarantee remote cancellation or undo transmission.
   Other prompts do not yet uniformly handle keyboard interruption/EOF.
 - SK does not load Codex skills, run subagents, or provide model-controlled
   general tool execution. Prompt instructions are not a security sandbox.

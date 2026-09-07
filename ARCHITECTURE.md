@@ -556,7 +556,11 @@ Display provider used
 
 The current user message must appear only once in the model request flow.
 
-`prepare_user_turn()` builds conversation context **before** adding the current message to history.
+The CLI uses `build_conversation_context()` before adding the current message.
+It then builds memory/system context and, in reviewed mode, obtains `yes`.
+Only after those steps does it append the user message and invoke inference.
+The older `prepare_user_turn()` convenience helper remains available but is
+not used by the current chat CLI.
 
 The current message is then passed separately to the provider.
 

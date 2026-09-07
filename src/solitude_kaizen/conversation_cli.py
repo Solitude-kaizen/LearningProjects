@@ -98,7 +98,7 @@ def run_talk_to_companion(
         print_function()
         print_function(
             "Chat interrupted. The request may already have reached the provider. "
-            "The unanswered turn was removed from this session; no automatic retry was made."
+            "The unanswered turn was removed from this session; SK will not resubmit it."
         )
         return {
             "status": "interrupted",

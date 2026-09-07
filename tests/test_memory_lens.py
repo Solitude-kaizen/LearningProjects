@@ -1,5 +1,6 @@
 from copy import deepcopy
 import runpy
+import random
 
 import pytest
 
@@ -96,3 +97,31 @@ def test_lens_empty_memories_explains_limits():
     assert result["selection"]["selected"] == []
     assert "No saved memories are available." in output
     assert any("not the model's reasoning" in line for line in output)
+
+
+def test_selection_evidence_agrees_with_independent_generated_cases():
+    # Fixed vocabulary makes expected keyword sets independent of the tokenizer.
+    rng = random.Random(731)
+    vocabulary = ["python", "hiring", "budget", "research", "training"]
+    for _ in range(250):
+        query_words = set(rng.sample(vocabulary, rng.randrange(4)))
+        saved = []
+        expected_words = []
+        for index in range(rng.randrange(15)):
+            words = set(rng.sample(vocabulary, rng.randrange(4)))
+            saved.append({
+                "text": " ".join(sorted(words)), "category": "personal",
+                "importance": rng.randint(1, 5),
+                "created_at": rng.choice(["unknown", "2026-08-01", "2026-09-01"]),
+            })
+            expected_words.append(words & query_words)
+        indices = list(range(len(saved)))
+        matching = [index for index in indices if expected_words[index]]
+        expected = sorted(matching or indices, key=lambda index: (
+            len(expected_words[index]), saved[index]["importance"],
+            saved[index]["created_at"] != "unknown", saved[index]["created_at"],
+        ), reverse=True)[:5]
+        report = explain_memory_selection(saved, query=" ".join(sorted(query_words)))
+        assert [entry["memory"] for entry in report["selected"]] == [saved[index] for index in expected]
+        assert [entry["matched_keywords"] for entry in report["selected"]] == [sorted(expected_words[index]) for index in expected]
+        assert report["mode"] == ("empty" if not saved else "keyword_match" if matching else "fallback")
