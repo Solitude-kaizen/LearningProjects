@@ -13,6 +13,7 @@ from .conversation import (
 from .memory import build_memory_context
 from .prompt import build_system_prompt
 from .session_notes import format_session_note
+from .terminal_text import preview_text
 
 
 def run_talk_to_companion(
@@ -69,10 +70,11 @@ def run_talk_to_companion(
         print_function("--- Review Before Send ---")
         print_function("Configured provider:", provider_info["provider"])
         print_function("Model:", provider_info["model"])
+        print_function("Display note: backslashes and hidden control characters are escaped; original text is sent.")
         print_function("Application system prompt:")
-        print_function(system_prompt)
+        print_function(preview_text(system_prompt))
         print_function("Your message:")
-        print_function(user_message)
+        print_function(preview_text(user_message))
         print_function(
             "These are the application texts to send. Provider wrappers may add formatting. "
             "Cloud requests share this context with the provider and may cost money. "

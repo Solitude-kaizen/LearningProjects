@@ -55,7 +55,7 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **600 passing tests** covering memory,
+The project currently has **611 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -287,11 +287,17 @@ Option 32 offers reviewed chat: inspect the complete application system
 prompt (selected memories, recent chat, and any resumed note) and your
 message before typing `yes` to send. Anything else, Ctrl+C, or end-of-input
 at confirmation cancels without changing history or making a model call.
-The exact displayed application texts are passed to the response function;
+The original application texts represented by the preview are passed to the response function;
 provider wrappers may add formatting, and existing fallback rules apply.
 This preview is displayed locally and may expose personal text on screen.
 It is not a secret scanner or a guarantee about provider-side processing.
 Ordinary chat (option 12) remains a one-prompt workflow without this preview.
+
+Both new previews escape backslashes and hidden control/format characters
+for display (for example, an escape character appears as `\u001b`). Original
+text is not rewritten or cleaned before sending. This helps expose hidden
+terminal controls; it does not verify content, remove secrets, or secure all
+legacy screens. Normal Unicode and line breaks remain readable.
 
 Continuity bundles are stored under the ignored local `data/backups`
 directory. They contain SK's identity, profile, memories, and a
@@ -320,7 +326,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **600 passing tests** covering memory,
+The project currently has **611 passing tests** covering memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

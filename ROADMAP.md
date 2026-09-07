@@ -321,6 +321,8 @@ Reviewed chat is available as optional menu 32, alongside unchanged ordinary
 chat. It displays application context and message, requires `yes`, and sends
 the displayed texts without rebuilding them. The 581-test checkpoint verifies
 exact preview/request agreement, cancellation, and unchanged temporary files.
+The later 611-test checkpoint escapes hidden controls and backslashes only
+in preview rendering; requests retain their original text.
 This extends SK's inspect-before-action pattern; it is not remote-processing
 attestation, secret detection, or a claim of novel research.
 

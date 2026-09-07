@@ -226,6 +226,12 @@ same texts. Canceling does not append, save, or contact inference. Option 12
 does not request preview metadata or an extra confirmation. Provider wrappers
 and fallback remain separate; the preview is not the complete wire payload.
 
+`terminal_text.preview_text` renders backslashes and hidden control/format
+characters as visible escapes in the two new context previews. These are
+display representations; the original application text goes to inference.
+This limited output protection does not sanitize model input, detect secrets,
+or cover all legacy displays.
+
 Option 31 delegates to `memory_lens_cli.py`, a local-only explanation of the
 same selector used by `build_memory_context`. Its shared-keyword evidence
 and fallback label explain retrieval, not inference or truth.
