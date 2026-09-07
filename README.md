@@ -292,6 +292,8 @@ provider wrappers may add formatting, and existing fallback rules apply.
 This preview is displayed locally and may expose personal text on screen.
 It is not a secret scanner or a guarantee about provider-side processing.
 Ordinary chat (option 12) remains a one-prompt workflow without this preview.
+See [the context preview guide](CONTEXT_PREVIEW_GUIDE.md) for a short
+walkthrough, an offline verification example, and privacy boundaries.
 
 Both new previews escape backslashes and hidden control/format characters
 for display (for example, an escape character appears as `\u001b`). Original
