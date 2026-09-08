@@ -2,7 +2,13 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 612 passed (2026-09-08). Checks cover
+Latest follow-on regression result: 623 passed (2026-09-09). Legacy importance
+normalization reuses the guarded validator: non-convertible numeric strings
+and excessively long digit strings receive the existing default of 3 instead
+of crashing startup. Temporary-file startup tests preserve memory text and
+unrelated top-level data; no personal memory files were opened or migrated.
+The existing startup normalization save remains in place. Other malformed
+memory fields are not repaired by this narrowly scoped change. Checks cover
 optional reviewed chat (option 32), faithful application preview/request
 agreement (with hidden controls escaped only for display), cancellation with
 unchanged files, interrupted/unavailable chat

@@ -139,8 +139,8 @@ def normalize_memory(memory):
 
     importance = memory.get("importance", 3)
 
-    if isinstance(importance, str) and importance.isdigit():
-        importance = int(importance)
+    if isinstance(importance, str):
+        importance = validate_importance(importance)
 
     if not isinstance(importance, int) or not 1 <= importance <= 5:
         importance = 3
