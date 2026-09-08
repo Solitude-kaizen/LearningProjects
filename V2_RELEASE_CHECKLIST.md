@@ -2,7 +2,11 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 623 passed (2026-09-09). Legacy importance
+Latest follow-on regression result: 624 passed (2026-09-09). A bounded local
+HR/business/AI trial and retrieval-versus-training guidance fix are recorded
+in [COMPANION_SCENARIO_EVALUATION.md](COMPANION_SCENARIO_EVALUATION.md).
+Remaining domain-answer weaknesses and the limits of the rechecks are explicit.
+Legacy importance
 normalization reuses the guarded validator: non-convertible numeric strings
 and excessively long digit strings receive the existing default of 3 instead
 of crashing startup. Temporary-file startup tests preserve memory text and
