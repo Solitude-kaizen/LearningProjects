@@ -101,3 +101,27 @@ verified, and no professional-domain capability is established by this trial.
 Future evaluation should use unseen paraphrases and business questions with
 explicitly separated revenue, variable costs, and fixed costs. Do not treat
 these prompt changes as a guarantee against hallucination or as self-training.
+
+## Business follow-up — 2026-09-14
+
+Starting checkpoint: `093f3a8`. A focused prompt addition asks profit answers
+to check revenue (selling price and quantity sold) and total costs, and
+distinguish a spending budget from actual costs/revenue. No provider settings
+or memory-ranking rules changed. The same local-only harness repeated the
+two Business questions, with the same fictional memories and generation options.
+
+The first answer again calculated 600 / 20 = 30 pesos. Its planning steps
+remained basic: divide the budget and track material costs. The follow-up was:
+
+> Guaranteed profit cannot be determined without knowing the selling price per pack and total costs (e.g., materials, labor). Missing information: revenue per pack and cost per pack. Profit = (Selling Price − Cost) × Quantity. Without these, no guaranteed profit can be calculated.
+
+The previously omitted selling price is now explicit alongside costs. The
+simplified per-unit formula assumes costs have been fully allocated; it is
+not evidence of complete accounting reasoning or guaranteed outcomes.
+Both turns selected only the relevant business memory and ended normally
+(`done_reason=stop`), taking 36.93 and 4.26 seconds. Two additional local
+requests were made; no cloud calls or personal-data changes occurred.
+
+The full regression suite passed 625 tests. The new unit test checks prompt
+content, not model compliance. HR/AI scenarios were not rerun for this focused
+follow-up. Generalization to unseen wording and stronger planning remain open.

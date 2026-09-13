@@ -2,7 +2,10 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 624 passed (2026-09-09). A bounded local
+Latest follow-on regression result: 625 passed (2026-09-14). The business
+follow-up now names selling price and costs in its local recheck after a
+focused prompt clarification; broader planning quality is not established.
+A bounded local
 HR/business/AI trial and retrieval-versus-training guidance fix are recorded
 in [COMPANION_SCENARIO_EVALUATION.md](COMPANION_SCENARIO_EVALUATION.md).
 Remaining domain-answer weaknesses and the limits of the rechecks are explicit.
