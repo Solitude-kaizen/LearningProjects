@@ -157,7 +157,7 @@ Current verified state:
   cancellation retains chat context, and neither path changes saved files
 - Research inbox source-domain/type hints with explicit unverified-claims
   notices; viewing does not fetch links or change stored records
-- 625 automated tests passing, including safe read-only memory lookups
+- 660 tests passing, including safe read-only memory lookups
   and restore-confirmation cancellation before any restore or emergency backup
 
 Persistence hardening uses `json_storage.py` for atomic profile, memory,
@@ -584,10 +584,15 @@ Run:
 python -m pytest -q
 ```
 
-Current verified baseline:
+Latest calculator verification: 35 focused tests pass; the full local run
+passes 660 tests (2026-09-15), after correcting the `codecs.decode` test typo.
+Option 33 uses exact rational arithmetic on bounded decimal inputs, without
+model calls, persistence, or automatic verification of ordinary chat numbers.
+
+Current fully passing baseline:
 
 ```text
-625 passed
+660 passed
 ```
 
 Tests cover:

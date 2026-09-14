@@ -55,7 +55,9 @@ The current version is a command-line application with:
 - Guarded continuity restoration with preview and automatic rollback
 - Automated tests
 
-The project currently has **625 passing tests** covering memory,
+Latest local verification: **660 passed** (2026-09-15). The `codecs.decode`
+test typo is corrected. The calculator's 35 tests also pass independently.
+The suite covers memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and
@@ -320,6 +322,15 @@ At the confirmation prompt, Ctrl+C or end-of-input cancels without changing
 live files or creating an emergency backup. This safeguard applies before
 restoration starts, not to interruption during restoration.
 
+## Exact Calculator
+
+Option 33 calculates from two supplied decimal numbers and `+ - * /`.
+For example, `1250.50 / 25` produces `50.02`. Inputs are limited to 50
+characters without commas, units, or exponents. Repeating decimals remain
+exact fractions; no currency rounding is applied. Blank input, `/cancel`,
+Ctrl+C, or end-of-input cancels. Nothing is sent, saved, or added to chat.
+This checks arithmetic, not real-world assumptions or numbers in AI replies.
+
 ## Running Tests
 
 Run the automated test suite with:
@@ -328,7 +339,7 @@ Run the automated test suite with:
 python -m pytest -q
 ```
 
-The project currently has **625 passing tests** covering memory,
+Latest local verification: **660 passed**. The suite covers memory,
 conversation handling, provider routing, fallback behavior, error
 handling, configuration, SQLite storage, public research collection,
 the offline learning loop, proposal controls, continuity backups, and

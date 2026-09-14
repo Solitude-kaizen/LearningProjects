@@ -2,7 +2,14 @@
 
 Status: internal V2 checkpoint; no public V2 release has been authorized.
 
-Latest follow-on regression result: 625 passed (2026-09-14). The business
+Latest local result: 660 passed (2026-09-15). The `codecs.decode` test typo
+was corrected under the user's request to fix and save the project.
+The 35 exact-calculator tests pass independently, including menu/file
+isolation and a 1000-case fraction grid. No public release tag is authorized.
+Option 33 calculates explicit
+inputs without inference; it does not repair ordinary model-generated numbers.
+
+Previous fully passing regression result: 625 passed (2026-09-14). The business
 follow-up now names selling price and costs in its local recheck after a
 focused prompt clarification; broader planning quality is not established.
 A bounded local

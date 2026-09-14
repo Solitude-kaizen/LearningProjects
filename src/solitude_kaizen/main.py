@@ -43,6 +43,7 @@ from .memory_cli import (
 from .session_note_cli import run_prepare_session_note, run_review_session_note
 from .source_review_cli import run_source_review
 from .memory_lens_cli import run_memory_lens
+from .calculator import run_calculator
 
 
 name = "Solitude-Kaizen"
@@ -141,6 +142,7 @@ while True:
     print("15. View conversation status")
     print("31. Memory Lens: inspect memory selection without sending")
     print("32. Talk with a full context preview before sending")
+    print("33. Calculate with exact numbers (no AI call)")
     print("16. View latest Kaizen discovery")
     print("17. Collect zero-cost public research")
     print("18. View public research inbox")
@@ -346,6 +348,9 @@ while True:
             session_note=active_session_note,
             review_before_send=True,
         )
+
+    elif choice == "33":
+        run_calculator()
 
     else:
         print("Please choose a listed option.")
